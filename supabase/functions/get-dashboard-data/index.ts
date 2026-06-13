@@ -259,13 +259,24 @@ Deno.serve(async (req: Request) => {
     const revenueTarget = 10000000; // 10 Million IDR target
     const targetProgress = exactTotalRevenue >= revenueTarget ? 100 : Number(((exactTotalRevenue / revenueTarget) * 100).toFixed(1));
 
-    // Stats Cards Formatted using EXACT statistics from the period
+    // Fetch wallet balance from database
+    const { data: walletData, error: walletQueryError } = await supabase
+      .from("merchant_wallet")
+      .select("balance")
+      .maybeSingle();
+
+    if (walletQueryError) {
+      console.error("Error querying wallet balance:", walletQueryError);
+    }
+    const currentBalance = Number(walletData?.balance ?? 2000);
+
+    // Stats Cards Formatted using EXACT statistics from the period and balance from DB
     const stats = {
-      totalSales: {
-        value: exactPaidPayments.toLocaleString("id-ID"),
-        growth: salesGrowth >= 0 ? `+${salesGrowth}%` : `${salesGrowth}%`,
-        isPositive: salesGrowth >= 0,
-        lastMonth: lastMonthSales.toLocaleString("id-ID"),
+      balance: {
+        value: currentBalance.toLocaleString("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }),
+        growth: "", // No growth metric needed for absolute balance
+        isPositive: true,
+        lastMonth: "Rp 2.000",
       },
       newCustomers: {
         value: uniqueCustomers.size.toLocaleString("id-ID"), // Estimated from list

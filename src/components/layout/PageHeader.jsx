@@ -1,10 +1,11 @@
-import { Upload04Icon, FilterIcon, ArrowDown01Icon, Refresh01Icon } from 'hugeicons-react';
+import { Upload04Icon, FilterIcon, ArrowDown01Icon, Refresh01Icon, Coins01Icon } from 'hugeicons-react';
 
 export default function PageHeader({
   title = 'Sales Overview',
   subtitle = 'Your current sales summary and activity',
   onRefresh,
   isLoading,
+  onWithdraw,
 }) {
   return (
     <div className="page-header">
@@ -13,6 +14,24 @@ export default function PageHeader({
         <p>{subtitle}</p>
       </div>
       <div className="page-header-actions">
+        {onWithdraw && (
+          <button 
+            className="btn-filter" 
+            onClick={onWithdraw} 
+            style={{ 
+              backgroundColor: '#00B69B', 
+              color: '#FFFFFF', 
+              border: 'none', 
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px'
+            }}
+          >
+            <Coins01Icon size={16} />
+            Tarik Saldo
+          </button>
+        )}
         {onRefresh && (
           <button 
             className={`btn-export ${isLoading ? 'loading' : ''}`} 

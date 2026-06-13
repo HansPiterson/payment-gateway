@@ -19,11 +19,11 @@ const ArrowDown = () => (
 
 const defaultStatsData = [
   {
-    label: 'Total Sales',
-    value: '2,500',
-    change: 4.9,
-    lastMonth: '2,345',
-    Icon: ShoppingCart01Icon,
+    label: 'Balance',
+    value: 'Rp 2.000',
+    change: null,
+    lastMonth: 'Rp 2.000',
+    Icon: DollarCircleIcon,
     isPrimary: true,
     iconClass: '',
   },
@@ -59,11 +59,11 @@ const defaultStatsData = [
 export default function StatsCards({ stats }) {
   const statsData = stats ? [
     {
-      label: 'Total Sales',
-      value: stats.totalSales.value,
-      change: stats.totalSales.growth ? parseFloat(stats.totalSales.growth) : 0,
-      lastMonth: stats.totalSales.lastMonth,
-      Icon: ShoppingCart01Icon,
+      label: 'Balance',
+      value: stats.balance.value,
+      change: null,
+      lastMonth: stats.balance.lastMonth,
+      Icon: DollarCircleIcon,
       isPrimary: true,
       iconClass: '',
     },

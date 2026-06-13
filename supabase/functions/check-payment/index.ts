@@ -39,6 +39,7 @@ Deno.serve(async (req: Request) => {
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const supabase = createClient(supabaseUrl, supabaseServiceRoleKey);
 
     // Call Bayar.gg Check Payment API
     const bayarResponse = await fetch(
@@ -64,14 +65,16 @@ Deno.serve(async (req: Request) => {
     }
 
     const bayarData = await bayarResponse.json();
+    const normalisedStatus = String(bayarData.status ?? "unknown").toLowerCase();
+
+    // Fetch existing payment status to detect payment state changes
+    const { data: existingPayment } = await supabase
+      .from("payments")
+      .select("status, amount")
+      .eq("invoice_id", invoiceId)
+      .maybeSingle();
 
     // Sync the status back to our database
-    const supabase = createClient(supabaseUrl, supabaseServiceRoleKey);
-
-    const normalisedStatus = String(
-      bayarData.status ?? "unknown",
-    ).toLowerCase();
-
     const { data: payment, error: dbError } = await supabase
       .from("payments")
       .update({
@@ -100,6 +103,34 @@ Deno.serve(async (req: Request) => {
       }
       console.error("Database update error:", dbError);
       throw dbError;
+    }
+
+    // IF payment just transitioned to paid, increment wallet balance
+    const wasPaid = existingPayment?.status === "paid" || existingPayment?.status === "success";
+    const isNowPaid = normalisedStatus === "paid" || normalisedStatus === "success";
+
+    if (!wasPaid && isNowPaid) {
+      const { data: wallet } = await supabase
+        .from("merchant_wallet")
+        .select("id, balance")
+        .maybeSingle();
+
+      if (wallet) {
+        const paymentAmount = Number(payment.amount ?? 0);
+        const { error: walletError } = await supabase
+          .from("merchant_wallet")
+          .update({
+            balance: Number(wallet.balance) + paymentAmount,
+            updated_at: new Date(),
+          })
+          .eq("id", wallet.id);
+
+        if (walletError) {
+          console.error("Failed to update wallet balance on check:", walletError);
+        } else {
+          console.log(`Wallet balance increased by Rp ${paymentAmount} via manual check`);
+        }
+      }
     }
 
     return new Response(

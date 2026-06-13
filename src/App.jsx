@@ -50,6 +50,13 @@ export default function App() {
   const [customerData, setCustomerData] = useState(null);
   const [paymentResult, setPaymentResult] = useState(null);
 
+  // Withdraw States
+  const [isWithdrawOpen, setIsWithdrawOpen] = useState(false);
+  const [withdrawAmount, setWithdrawAmount] = useState('');
+  const [withdrawLoading, setWithdrawLoading] = useState(false);
+  const [withdrawError, setWithdrawError] = useState(null);
+  const [withdrawSuccess, setWithdrawSuccess] = useState(null);
+
   useEffect(() => {
     if (activeTab === 'dashboard') {
       fetchDashboardData();
@@ -112,6 +119,54 @@ export default function App() {
     setPaymentResult(null);
   };
 
+  const handleWithdrawSubmit = async (e) => {
+    e.preventDefault();
+    setWithdrawLoading(true);
+    setWithdrawError(null);
+    setWithdrawSuccess(null);
+
+    const amount = Number(withdrawAmount);
+    if (isNaN(amount) || amount <= 0) {
+      setWithdrawError('Jumlah penarikan tidak valid.');
+      setWithdrawLoading(false);
+      return;
+    }
+
+    try {
+      const response = await fetch(`${FUNCTIONS_URL}/create-withdrawal`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${supabaseAnonKey}`,
+          'apikey': supabaseAnonKey,
+        },
+        body: JSON.stringify({ amount }),
+      });
+
+      const res = await response.json();
+      if (!response.ok) {
+        throw new Error(res.error || 'Gagal memproses penarikan.');
+      }
+
+      if (res.success) {
+        setWithdrawSuccess(res.data.message);
+        setWithdrawAmount('');
+        // Refresh dashboard data
+        fetchDashboardData();
+        // Close modal after delay
+        setTimeout(() => {
+          setIsWithdrawOpen(false);
+          setWithdrawSuccess(null);
+        }, 2000);
+      }
+    } catch (err) {
+      console.error(err);
+      setWithdrawError(err.message);
+    } finally {
+      setWithdrawLoading(false);
+    }
+  };
+
   return (
     <div className="app">
       <Navbar activeTab={activeTab} onTabChange={setActiveTab} />
@@ -119,7 +174,11 @@ export default function App() {
       {activeTab === 'dashboard' && (
         <main className="page-content">
           <div className="animate-in">
-            <PageHeader onRefresh={fetchDashboardData} isLoading={loading} />
+            <PageHeader 
+              onRefresh={fetchDashboardData} 
+              isLoading={loading} 
+              onWithdraw={() => setIsWithdrawOpen(true)}
+            />
           </div>
 
           {loading && !dashboardData && (
@@ -250,6 +309,55 @@ export default function App() {
         </main>
       )}
 
+      {/* Withdraw Modal */}
+      {isWithdrawOpen && (
+        <div className="modal-overlay" onClick={() => setIsWithdrawOpen(false)}>
+          <div className="modal-container" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3 className="modal-title">Tarik Saldo</h3>
+              <button className="modal-close-btn" onClick={() => setIsWithdrawOpen(false)}>✕</button>
+            </div>
+            <form onSubmit={handleWithdrawSubmit}>
+              <div className="modal-body">
+                {withdrawSuccess && <div className="alert-success">{withdrawSuccess}</div>}
+                {withdrawError && <div className="alert-error">{withdrawError}</div>}
+                
+                <div className="form-group">
+                  <label className="form-label" htmlFor="withdraw-amount">Jumlah Penarikan (Rupiah)</label>
+                  <input
+                    type="number"
+                    id="withdraw-amount"
+                    className="form-input"
+                    placeholder="Contoh: 1000"
+                    value={withdrawAmount}
+                    onChange={(e) => setWithdrawAmount(e.target.value)}
+                    required
+                    disabled={withdrawLoading || withdrawSuccess}
+                  />
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button 
+                  type="button" 
+                  className="btn-cancel" 
+                  onClick={() => setIsWithdrawOpen(false)}
+                  disabled={withdrawLoading}
+                >
+                  Batal
+                </button>
+                <button 
+                  type="submit" 
+                  className="btn-withdraw" 
+                  disabled={withdrawLoading || withdrawSuccess}
+                >
+                  {withdrawLoading ? 'Memproses...' : 'Tarik Saldo'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       <style>{`
         .dashboard-loading {
           display: flex;
@@ -310,6 +418,131 @@ export default function App() {
         }
         .retry-btn:hover {
           background: #3570F4;
+        }
+
+        /* Modal Style */
+        .modal-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(0, 0, 0, 0.5);
+          backdrop-filter: blur(4px);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 1000;
+          animation: fadeIn 0.2s ease-out;
+        }
+        .modal-container {
+          background: #FFFFFF;
+          border-radius: 16px;
+          padding: 32px;
+          max-width: 440px;
+          width: 100%;
+          box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+          animation: slideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+          font-family: 'Poppins', sans-serif;
+        }
+        .modal-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 20px;
+        }
+        .modal-title {
+          font-size: 20px;
+          font-weight: 600;
+          color: #202224;
+        }
+        .modal-close-btn {
+          background: none;
+          border: none;
+          font-size: 20px;
+          color: #9CA3AF;
+          cursor: pointer;
+        }
+        .modal-body {
+          margin-bottom: 24px;
+        }
+        .form-group {
+          margin-bottom: 16px;
+          text-align: left;
+        }
+        .form-label {
+          display: block;
+          font-size: 14px;
+          font-weight: 500;
+          color: #4B5563;
+          margin-bottom: 6px;
+        }
+        .form-input {
+          width: 100%;
+          padding: 10px 14px;
+          border: 1px solid #E5E7EB;
+          border-radius: 8px;
+          font-size: 15px;
+          outline: none;
+          font-family: 'Poppins', sans-serif;
+          color: #202224;
+          box-sizing: border-box;
+        }
+        .form-input:focus {
+          border-color: #4880FF;
+        }
+        .modal-footer {
+          display: flex;
+          justify-content: flex-end;
+          gap: 12px;
+        }
+        .btn-cancel {
+          background: #F3F4F6;
+          color: #4B5563;
+          border: none;
+          padding: 10px 20px;
+          border-radius: 8px;
+          font-weight: 500;
+          cursor: pointer;
+        }
+        .btn-withdraw {
+          background: #00B69B;
+          color: #FFFFFF;
+          border: none;
+          padding: 10px 20px;
+          border-radius: 8px;
+          font-weight: 500;
+          cursor: pointer;
+        }
+        .btn-withdraw:disabled {
+          background: #A7F3D0;
+          cursor: not-allowed;
+        }
+        .alert-success {
+          background: #ECFDF5;
+          color: #065F46;
+          padding: 12px;
+          border-radius: 8px;
+          font-size: 14px;
+          margin-bottom: 16px;
+          border: 1px solid #A7F3D0;
+        }
+        .alert-error {
+          background: #FEF2F2;
+          color: #991B1B;
+          padding: 12px;
+          border-radius: 8px;
+          font-size: 14px;
+          margin-bottom: 16px;
+          border: 1px solid #FCA5A5;
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        @keyframes slideUp {
+          from { transform: translateY(20px); opacity: 0; }
+          to { transform: translateY(0); opacity: 1; }
         }
       `}</style>
     </div>
