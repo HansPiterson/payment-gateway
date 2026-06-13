@@ -77,8 +77,8 @@ const defaultOverview = {
 export default function SalesOverview({ overview }) {
   const data = overview || defaultOverview;
   
-  const isSalesUp = !data.salesGrowth.startsWith('-');
-  const isRevenueUp = !data.revenueGrowth.startsWith('-');
+  const isSalesUp = data.salesGrowth ? !data.salesGrowth.startsWith('-') : true;
+  const isRevenueUp = data.revenueGrowth ? !data.revenueGrowth.startsWith('-') : true;
 
   return (
     <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 flex flex-col h-full justify-between">
@@ -94,15 +94,15 @@ export default function SalesOverview({ overview }) {
       </div>
 
       <div className="flex-1 flex items-center justify-center my-6">
-        <SegmentedRing progress={data.growth} />
+        <SegmentedRing progress={data.growth ?? 0} />
       </div>
 
       <div className="grid grid-cols-2 gap-4 pt-4 border-t border-zinc-850">
         <div className="text-left">
           <span className="text-[10px] font-bold text-zinc-550 uppercase tracking-wider block">Number of Sales</span>
           <div className="flex items-center gap-2 mt-1.5 flex-wrap">
-            <span className="text-lg font-black text-zinc-100">{data.salesCount.toLocaleString("id-ID")}</span>
-            {data.salesGrowth !== '0%' && data.salesGrowth !== '+0%' && (
+            <span className="text-lg font-black text-zinc-100">{(data.salesCount ?? 0).toLocaleString("id-ID")}</span>
+            {data.salesGrowth && data.salesGrowth !== '0%' && data.salesGrowth !== '+0%' && (
               <span className={`text-[9px] font-extrabold px-1.5 py-0.5 rounded-full flex items-center gap-0.5 ${
                 isSalesUp ? 'bg-zinc-200 text-zinc-950' : 'bg-zinc-950 text-zinc-400 border border-zinc-800'
               }`}>
@@ -116,8 +116,8 @@ export default function SalesOverview({ overview }) {
         <div className="text-left border-l border-zinc-850 pl-4">
           <span className="text-[10px] font-bold text-zinc-550 uppercase tracking-wider block">Total Revenue</span>
           <div className="flex items-center gap-2 mt-1.5 flex-wrap">
-            <span className="text-sm font-black text-zinc-150 truncate max-w-[100px]">{data.revenue}</span>
-            {data.revenueGrowth !== '0%' && data.revenueGrowth !== '+0%' && (
+            <span className="text-sm font-black text-zinc-150 truncate max-w-[100px]">{data.revenue || 'Rp 0'}</span>
+            {data.revenueGrowth && data.revenueGrowth !== '0%' && data.revenueGrowth !== '+0%' && (
               <span className={`text-[9px] font-extrabold px-1.5 py-0.5 rounded-full flex items-center gap-0.5 ${
                 isRevenueUp ? 'bg-zinc-200 text-zinc-950' : 'bg-zinc-950 text-zinc-400 border border-zinc-800'
               }`}>
