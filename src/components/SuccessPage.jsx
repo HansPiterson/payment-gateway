@@ -12,23 +12,26 @@ export default function SuccessPage({ paymentData, customer, service }) {
     }).format(price);
   };
 
-  // Confetti effect
+  // Confetti effect (Monochrome grey scale)
   useEffect(() => {
     if (confettiRef.current) return;
     confettiRef.current = true;
 
-    const colors = ['#6366f1', '#06b6d4', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6'];
+    const colors = ['#f4f4f5', '#e4e4e7', '#d4d4d8', '#a1a1aa', '#71717a', '#3f3f46'];
     const container = document.body;
 
     for (let i = 0; i < 60; i++) {
       const piece = document.createElement('div');
       piece.className = 'confetti-piece';
+      piece.style.position = 'fixed';
+      piece.style.top = '-10px';
       piece.style.left = Math.random() * 100 + 'vw';
       piece.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-      piece.style.animationDuration = (Math.random() * 2 + 2) + 's';
-      piece.style.animationDelay = (Math.random() * 1.5) + 's';
-      piece.style.width = (Math.random() * 6 + 4) + 'px';
-      piece.style.height = (Math.random() * 6 + 4) + 'px';
+      piece.style.animation = `confetti-fall ${Math.random() * 2 + 2}s linear forwards`;
+      piece.style.animationDelay = Math.random() * 1.5 + 's';
+      piece.style.width = Math.random() * 6 + 4 + 'px';
+      piece.style.height = Math.random() * 6 + 4 + 'px';
+      piece.style.zIndex = '9999';
       piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
       container.appendChild(piece);
 
@@ -40,72 +43,76 @@ export default function SuccessPage({ paymentData, customer, service }) {
   }, []);
 
   return (
-    <div className="success-container">
-      <div className="glass-card">
-        <div className="success-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <div className="w-full max-w-xl mx-auto text-center animate-fade-in">
+      <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 md:p-8 shadow-xl">
+        <div className="w-16 h-16 rounded-full bg-zinc-100 flex items-center justify-center mx-auto mb-6 text-zinc-950 shadow-md">
+          <svg className="w-8 h-8 stroke-zinc-950" fill="none" viewBox="0 0 24 24" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="20 6 9 17 4 12" />
           </svg>
         </div>
 
-        <h2 className="success-title">Pembayaran Berhasil! 🎉</h2>
-        <p className="success-subtitle">
+        <h2 className="text-xl md:text-2xl font-black text-zinc-100 tracking-tight">Pembayaran Berhasil!</h2>
+        <p className="text-xs text-zinc-400 mt-2 max-w-xs mx-auto leading-relaxed">
           Terima kasih, {customer?.name}. Pembayaran Anda telah kami terima.
         </p>
 
-        <div className="success-details">
-          <div className="success-detail-row">
-            <span className="success-detail-label">Invoice</span>
-            <span className="success-detail-value" style={{ fontFamily: 'monospace', fontSize: '12px' }}>
+        <div className="my-8 bg-zinc-950 border border-zinc-850 rounded-xl p-4 space-y-3 text-sm text-left">
+          <div className="flex justify-between items-center">
+            <span className="text-zinc-550 text-xs font-bold uppercase tracking-wider">Invoice ID</span>
+            <span className="font-mono text-xs text-zinc-200 bg-zinc-900 border border-zinc-800 px-2 py-0.5 rounded">
               {paymentData?.invoice_id || '-'}
             </span>
           </div>
-          <div className="success-detail-row">
-            <span className="success-detail-label">Layanan</span>
-            <span className="success-detail-value">{service?.name}</span>
+          <div className="flex justify-between items-center">
+            <span className="text-zinc-550 text-xs font-bold uppercase tracking-wider">Layanan</span>
+            <span className="font-bold text-zinc-200">{service?.name}</span>
           </div>
-          <div className="success-detail-row">
-            <span className="success-detail-label">Jumlah</span>
-            <span className="success-detail-value" style={{ color: 'var(--accent-green)' }}>
-              {formatPrice(service?.price)}
-            </span>
+          <div className="flex justify-between items-center">
+            <span className="text-zinc-550 text-xs font-bold uppercase tracking-wider">Jumlah</span>
+            <span className="font-extrabold text-zinc-100">{formatPrice(service?.price)}</span>
           </div>
-          <div className="success-detail-row">
-            <span className="success-detail-label">Metode</span>
-            <span className="success-detail-value">QRIS</span>
+          <div className="flex justify-between items-center">
+            <span className="text-zinc-550 text-xs font-bold uppercase tracking-wider">Metode</span>
+            <span className="text-zinc-200">QRIS</span>
           </div>
-          <div className="success-detail-row">
-            <span className="success-detail-label">Status</span>
-            <span className="success-detail-value" style={{
-              background: 'rgba(16, 185, 129, 0.12)',
-              color: 'var(--accent-green)',
-              padding: '2px 10px',
-              borderRadius: '10px',
-              fontSize: '12px',
-              fontWeight: 700,
-            }}>
+          <div className="flex justify-between items-center">
+            <span className="text-zinc-550 text-xs font-bold uppercase tracking-wider">Status</span>
+            <span className="bg-zinc-100 text-zinc-950 font-bold px-2.5 py-0.5 rounded-full text-[10px] tracking-wider">
               PAID
             </span>
           </div>
-          <div className="success-detail-row">
-            <span className="success-detail-label">Email</span>
-            <span className="success-detail-value">{customer?.email}</span>
+          <div className="flex justify-between items-center">
+            <span className="text-zinc-550 text-xs font-bold uppercase tracking-wider">Email</span>
+            <span className="text-zinc-200 font-medium truncate max-w-[180px]">{customer?.email}</span>
           </div>
         </div>
 
-        <p style={{ fontSize: '13px', color: 'var(--text-muted)', lineHeight: '1.6', marginBottom: '20px' }}>
-          Detail transaksi telah dikirim ke <strong style={{ color: 'var(--text-secondary)' }}>{customer?.email}</strong>.
-          Silakan hubungi kami jika ada pertanyaan.
+        <p className="text-xs text-zinc-500 leading-relaxed mb-6">
+          Detail transaksi telah dikirim ke <strong className="text-zinc-350">{customer?.email}</strong>.<br />
+          Silakan hubungi admin jika ada pertanyaan.
         </p>
 
         <button
-          className="btn-primary"
+          className="w-full py-3 px-4 bg-zinc-100 hover:bg-zinc-200 text-zinc-950 font-bold rounded-lg transition-colors text-sm shadow-sm"
           onClick={() => window.location.reload()}
           id="btn-new-payment"
         >
           Buat Pembayaran Baru
         </button>
       </div>
+
+      <style>{`
+        @keyframes confetti-fall {
+          0% {
+            transform: translateY(-20px) rotate(0deg);
+            opacity: 1;
+          }
+          100% {
+            transform: translateY(105vh) rotate(720deg);
+            opacity: 0.3;
+          }
+        }
+      `}</style>
     </div>
   );
 }

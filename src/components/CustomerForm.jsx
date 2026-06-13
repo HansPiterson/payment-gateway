@@ -41,69 +41,81 @@ export default function CustomerForm({ onSubmit, onBack, initialData }) {
   };
 
   return (
-    <div className="animate-slide-in">
-      <button className="btn-back" onClick={onBack} type="button">
+    <div className="w-full max-w-xl mx-auto text-left">
+      <button
+        className="inline-flex items-center gap-1 text-xs font-bold text-zinc-450 hover:text-zinc-100 mb-6 transition-colors"
+        onClick={onBack}
+        type="button"
+      >
         ← Kembali
       </button>
 
-      <div className="glass-card">
-        <div className="glass-card-header">
-          <h2 className="glass-card-title">Data Diri</h2>
-          <p className="glass-card-subtitle">
-            Lengkapi informasi untuk proses pembayaran
-          </p>
+      <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 md:p-8 shadow-xl">
+        <div className="mb-6">
+          <h2 className="text-xl font-bold text-zinc-100">Data Diri</h2>
+          <p className="text-xs text-zinc-450 mt-1">Lengkapi informasi untuk proses pembayaran</p>
         </div>
 
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label className="form-label" htmlFor="customer-name">
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div>
+            <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block mb-2" htmlFor="customer-name">
               Nama Lengkap
             </label>
             <input
               id="customer-name"
-              className={`form-input ${errors.name ? 'error' : ''}`}
+              className={`w-full py-2.5 px-4 rounded-lg bg-zinc-950 text-zinc-150 border outline-none text-sm transition-all focus:border-zinc-400 focus:ring-1 focus:ring-zinc-400 ${
+                errors.name ? 'border-zinc-500' : 'border-zinc-850'
+              }`}
               type="text"
               placeholder="Masukkan nama lengkap"
               value={form.name}
               onChange={(e) => handleChange('name', e.target.value)}
               autoComplete="name"
             />
-            {errors.name && <p className="form-error">{errors.name}</p>}
+            {errors.name && <p className="text-[11px] text-zinc-400 italic mt-1.5">{errors.name}</p>}
           </div>
 
-          <div className="form-group">
-            <label className="form-label" htmlFor="customer-email">
+          <div>
+            <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block mb-2" htmlFor="customer-email">
               Email
             </label>
             <input
               id="customer-email"
-              className={`form-input ${errors.email ? 'error' : ''}`}
+              className={`w-full py-2.5 px-4 rounded-lg bg-zinc-950 text-zinc-150 border outline-none text-sm transition-all focus:border-zinc-400 focus:ring-1 focus:ring-zinc-400 ${
+                errors.email ? 'border-zinc-500' : 'border-zinc-850'
+              }`}
               type="email"
               placeholder="email@contoh.com"
               value={form.email}
               onChange={(e) => handleChange('email', e.target.value)}
               autoComplete="email"
             />
-            {errors.email && <p className="form-error">{errors.email}</p>}
+            {errors.email && <p className="text-[11px] text-zinc-400 italic mt-1.5">{errors.email}</p>}
           </div>
 
-          <div className="form-group">
-            <label className="form-label" htmlFor="customer-phone">
+          <div>
+            <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block mb-2" htmlFor="customer-phone">
               Nomor Telepon
             </label>
             <input
               id="customer-phone"
-              className={`form-input ${errors.phone ? 'error' : ''}`}
+              className={`w-full py-2.5 px-4 rounded-lg bg-zinc-950 text-zinc-150 border outline-none text-sm transition-all focus:border-zinc-400 focus:ring-1 focus:ring-zinc-400 ${
+                errors.phone ? 'border-zinc-500' : 'border-zinc-850'
+              }`}
               type="tel"
               placeholder="08xxxxxxxxxx"
               value={form.phone}
               onChange={(e) => handleChange('phone', e.target.value)}
               autoComplete="tel"
             />
-            {errors.phone && <p className="form-error">{errors.phone}</p>}
+            {errors.phone && <p className="text-[11px] text-zinc-400 italic mt-1.5">{errors.phone}</p>}
           </div>
 
-          <button className="btn-primary" type="submit" id="btn-continue-payment">
+          <button
+            className="w-full py-3 px-4 bg-zinc-100 hover:bg-zinc-200 text-zinc-950 font-bold rounded-lg transition-colors text-sm shadow-sm flex items-center justify-center gap-1.5 mt-2"
+            type="submit"
+            id="btn-continue-payment"
+          >
             Lanjut ke Pembayaran →
           </button>
         </form>

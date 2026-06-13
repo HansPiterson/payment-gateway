@@ -1,18 +1,17 @@
 import {
-  ShoppingCart01Icon,
   UserAdd01Icon,
   RotateLeft01Icon,
   DollarCircleIcon,
 } from 'hugeicons-react';
 
 const ArrowUp = () => (
-  <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+  <svg width="8" height="8" viewBox="0 0 10 10" fill="none" className="inline-block">
     <path d="M5 2L8 6H2L5 2Z" fill="currentColor" />
   </svg>
 );
 
 const ArrowDown = () => (
-  <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+  <svg width="8" height="8" viewBox="0 0 10 10" fill="none" className="inline-block">
     <path d="M5 8L2 4H8L5 8Z" fill="currentColor" />
   </svg>
 );
@@ -25,7 +24,6 @@ const defaultStatsData = [
     lastMonth: 'Rp 2.000',
     Icon: DollarCircleIcon,
     isPrimary: true,
-    iconClass: '',
   },
   {
     label: 'New Customer',
@@ -34,7 +32,6 @@ const defaultStatsData = [
     lastMonth: '89',
     Icon: UserAdd01Icon,
     isPrimary: false,
-    iconClass: 'blue',
   },
   {
     label: 'Return Products',
@@ -43,7 +40,6 @@ const defaultStatsData = [
     lastMonth: '60',
     Icon: RotateLeft01Icon,
     isPrimary: false,
-    iconClass: 'green',
   },
   {
     label: 'Total Revenue',
@@ -52,7 +48,6 @@ const defaultStatsData = [
     lastMonth: 'Rp 620.000',
     Icon: DollarCircleIcon,
     isPrimary: false,
-    iconClass: 'purple',
   },
 ];
 
@@ -65,7 +60,6 @@ export default function StatsCards({ stats }) {
       lastMonth: stats.balance.lastMonth,
       Icon: DollarCircleIcon,
       isPrimary: true,
-      iconClass: '',
     },
     {
       label: 'New Customer',
@@ -74,7 +68,6 @@ export default function StatsCards({ stats }) {
       lastMonth: stats.newCustomers.lastMonth,
       Icon: UserAdd01Icon,
       isPrimary: false,
-      iconClass: 'blue',
     },
     {
       label: 'Return Products',
@@ -83,7 +76,6 @@ export default function StatsCards({ stats }) {
       lastMonth: stats.returnProducts.lastMonth,
       Icon: RotateLeft01Icon,
       isPrimary: false,
-      iconClass: 'green',
     },
     {
       label: 'Total Revenue',
@@ -92,39 +84,56 @@ export default function StatsCards({ stats }) {
       lastMonth: stats.totalRevenue.lastMonth,
       Icon: DollarCircleIcon,
       isPrimary: false,
-      iconClass: 'purple',
     },
   ] : defaultStatsData;
 
   return (
-    <div className="stats-grid">
-      {statsData.map((stat, index) => {
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6">
+      {statsData.map((stat) => {
         const isUp = stat.change !== null && stat.change > 0;
         const isDown = stat.change !== null && stat.change < 0;
 
         return (
           <div
             key={stat.label}
-            className={`stat-card animate-in animate-in-${index + 1} ${stat.isPrimary ? 'primary' : ''}`}
+            className={`rounded-xl p-5 border transition-all hover:scale-[1.01] ${
+              stat.isPrimary
+                ? 'bg-zinc-100 border-zinc-200 text-zinc-950 shadow-lg'
+                : 'bg-zinc-900 border-zinc-800 text-zinc-100'
+            }`}
           >
-            <div className="stat-card-header">
-              <span className="stat-card-label">{stat.label}</span>
-              <div className={`stat-card-icon ${stat.isPrimary ? '' : stat.iconClass}`}>
-                <stat.Icon size={22} color={stat.isPrimary ? '#fff' : undefined} />
+            <div className="flex items-center justify-between">
+              <span className={`text-[10px] font-extrabold uppercase tracking-wider ${
+                stat.isPrimary ? 'text-zinc-500' : 'text-zinc-400'
+              }`}>
+                {stat.label}
+              </span>
+              <div className={`p-1.5 rounded-lg ${
+                stat.isPrimary ? 'bg-zinc-200 text-zinc-950' : 'bg-zinc-800 text-zinc-300'
+              }`}>
+                <stat.Icon size={18} />
               </div>
             </div>
 
-            <div className="stat-card-value-row">
-              <span className="stat-card-value">{stat.value}</span>
+            <div className="flex items-baseline justify-between mt-4">
+              <span className="text-xl md:text-2xl font-black tracking-tight">{stat.value}</span>
               {stat.change !== null && stat.change !== 0 && (
-                <span className={`stat-badge ${isUp ? 'up' : 'down'}`}>
+                <span className={`text-[10px] font-black px-2 py-0.5 rounded-full flex items-center gap-0.5 ${
+                  isUp
+                    ? 'bg-zinc-200 text-zinc-950'
+                    : 'bg-zinc-950 text-zinc-400 border border-zinc-800'
+                }`}>
                   {isUp ? <ArrowUp /> : <ArrowDown />}
                   {Math.abs(stat.change).toFixed(1)}%
                 </span>
               )}
             </div>
 
-            <span className="stat-card-compare">Last month: {stat.lastMonth}</span>
+            <span className={`text-[10px] mt-2 block font-medium ${
+              stat.isPrimary ? 'text-zinc-500' : 'text-zinc-500'
+            }`}>
+              Last month: {stat.lastMonth}
+            </span>
           </div>
         );
       })}

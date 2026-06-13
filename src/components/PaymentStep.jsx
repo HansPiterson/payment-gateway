@@ -182,84 +182,95 @@ export default function PaymentStep({ service, customer, onSuccess, onBack }) {
   }, [createPayment]);
 
   return (
-    <div className="animate-slide-in">
-      <button className="btn-back" onClick={onBack} type="button">
+    <div className="w-full max-w-xl mx-auto text-left">
+      <button
+        className="inline-flex items-center gap-1 text-xs font-bold text-zinc-450 hover:text-zinc-100 mb-6 transition-colors"
+        onClick={onBack}
+        type="button"
+      >
         ← Kembali
       </button>
 
-      <div className="glass-card">
-        <div className="glass-card-header">
-          <h2 className="glass-card-title">Pembayaran</h2>
-          <p className="glass-card-subtitle">Scan QRIS untuk menyelesaikan pembayaran</p>
+      <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 md:p-8 shadow-xl">
+        <div className="mb-6">
+          <h2 className="text-xl font-bold text-zinc-100">Pembayaran</h2>
+          <p className="text-xs text-zinc-450 mt-1">Scan QRIS untuk menyelesaikan pembayaran</p>
         </div>
 
         {/* Order Summary */}
-        <div className="order-summary">
-          <div className="order-summary-title">Ringkasan Pesanan</div>
-          <div className="order-summary-row">
-            <span className="order-summary-label">{service.name}</span>
-            <span className="order-summary-value">{formatPrice(service.price)}</span>
+        <div className="bg-zinc-950 border border-zinc-850 p-4 rounded-xl space-y-2.5 mb-6 text-sm">
+          <div className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-2">Ringkasan Pesanan</div>
+          <div className="flex justify-between items-center text-zinc-400">
+            <span>{service.name}</span>
+            <span className="font-semibold text-zinc-200">{formatPrice(service.price)}</span>
           </div>
-          <div className="order-summary-row">
-            <span className="order-summary-label">Nama</span>
-            <span className="order-summary-value">{customer.name}</span>
+          <div className="flex justify-between items-center text-zinc-400">
+            <span>Nama Customer</span>
+            <span className="font-semibold text-zinc-200 truncate max-w-[150px]">{customer.name}</span>
           </div>
-          <div className="order-summary-row total">
-            <span>Total</span>
-            <span>{formatPrice(service.price)}</span>
+          <div className="h-px bg-zinc-850 my-1" />
+          <div className="flex justify-between items-center font-bold text-zinc-100 text-base">
+            <span>Total Bayar</span>
+            <span className="font-extrabold">{formatPrice(service.price)}</span>
           </div>
         </div>
 
         {/* Payment States */}
         {state === 'creating' && (
-          <div className="loading-overlay">
-            <div className="loading-spinner-lg" />
-            <span className="loading-text">Membuat pembayaran...</span>
+          <div className="flex flex-col items-center justify-center py-16 text-center">
+            <div className="w-8 h-8 border-3 border-zinc-800 border-t-zinc-200 rounded-full animate-spin mb-4" />
+            <span className="text-sm text-zinc-400 font-semibold">Membuat invoice pembayaran...</span>
           </div>
         )}
 
         {state === 'error' && (
-          <div style={{ textAlign: 'center', padding: '30px 0' }}>
-            <div style={{
-              width: '56px', height: '56px', borderRadius: '50%',
-              background: 'rgba(239, 68, 68, 0.12)', display: 'flex',
-              alignItems: 'center', justifyContent: 'center',
-              margin: '0 auto 16px', fontSize: '24px'
-            }}>
+          <div className="text-center py-8">
+            <div className="w-12 h-12 rounded-full bg-zinc-950 border border-zinc-800 flex items-center justify-center text-zinc-400 text-xl font-bold mx-auto mb-4">
               ✕
             </div>
-            <p style={{ color: 'var(--accent-red)', fontSize: '14px', marginBottom: '16px' }}>
+            <p className="text-xs text-zinc-400 mb-6 max-w-xs mx-auto leading-relaxed">
               {error}
             </p>
-            <button className="btn-primary" onClick={createPayment} style={{ maxWidth: '240px', margin: '0 auto' }}>
+            <button
+              className="w-full py-3 px-4 bg-zinc-100 hover:bg-zinc-200 text-zinc-950 font-bold rounded-lg transition-colors text-sm shadow-sm max-w-[200px] mx-auto block"
+              onClick={createPayment}
+            >
               Coba Lagi
             </button>
           </div>
         )}
 
         {state === 'ready' && (
-          <>
-            <div className="payment-embed-container" ref={embedContainerRef} />
-            <div className="payment-status pending">
-              <div className="spinner" />
-              Menunggu pembayaran...
+          <div className="space-y-4">
+            <div className="border border-zinc-850 rounded-xl overflow-hidden bg-zinc-950 p-2">
+              <div ref={embedContainerRef} className="w-full" />
             </div>
+
+            <div className="flex items-center justify-center gap-2 py-3 px-4 rounded-lg bg-zinc-950 border border-zinc-855 text-zinc-400 text-xs font-semibold">
+              <div className="w-3.5 h-3.5 border-2 border-zinc-800 border-t-zinc-400 rounded-full animate-spin" />
+              Menunggu pembayaran Anda...
+            </div>
+
             <button
-              className="btn-secondary"
+              className="w-full py-2.5 px-4 bg-zinc-900 border border-zinc-800 text-zinc-300 hover:bg-zinc-800 hover:text-zinc-100 font-bold rounded-lg transition-all text-xs flex items-center justify-center gap-2"
               onClick={checkManually}
               disabled={checkingManually}
-              style={{ marginTop: '12px' }}
               id="btn-check-manual"
             >
-              {checkingManually ? 'Mengecek...' : '🔄 Cek Status Manual'}
+              <svg className={`w-3.5 h-3.5 ${checkingManually ? 'animate-spin' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67" />
+              </svg>
+              {checkingManually ? 'Memeriksa status...' : 'Cek Status Pembayaran Manual'}
             </button>
-          </>
+          </div>
         )}
 
         {state === 'paid' && (
-          <div className="payment-status paid" style={{ flexDirection: 'column', padding: '30px' }}>
-            <span style={{ fontSize: '32px', marginBottom: '8px' }}>✓</span>
-            <span>Pembayaran Berhasil!</span>
+          <div className="flex flex-col items-center justify-center py-10 bg-zinc-100 text-zinc-950 rounded-xl font-bold shadow-md animate-pulse">
+            <svg className="w-10 h-10 mb-2 stroke-zinc-950" fill="none" viewBox="0 0 24 24" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+            <span className="text-lg font-black tracking-wide">PEMBAYARAN BERHASIL!</span>
           </div>
         )}
       </div>

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Navbar from './components/layout/Navbar';
 import PageHeader from './components/layout/PageHeader';
 import StatsCards from './components/dashboard/StatsCards';
@@ -57,11 +57,55 @@ export default function App() {
   const [withdrawError, setWithdrawError] = useState(null);
   const [withdrawSuccess, setWithdrawSuccess] = useState(null);
 
+  const dialogRef = useRef(null);
+
   useEffect(() => {
     if (activeTab === 'dashboard' || activeTab === 'analytics') {
       fetchDashboardData();
     }
   }, [activeTab]);
+
+  // Handle native <dialog> state
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+
+    if (isWithdrawOpen) {
+      // Open dialog modal
+      dialog.showModal();
+
+      // Click event fallback for light-dismiss (outside dialog content area)
+      const handleClick = (event) => {
+        if (event.target !== dialog) return;
+        const rect = dialog.getBoundingClientRect();
+        const isDialogContent = (
+          rect.top <= event.clientY &&
+          event.clientY <= rect.top + rect.height &&
+          rect.left <= event.clientX &&
+          event.clientX <= rect.left + rect.width
+        );
+        if (!isDialogContent) {
+          setIsWithdrawOpen(false);
+        }
+      };
+
+      // Listen for Esc key cancel requests
+      const handleCancel = (event) => {
+        event.preventDefault();
+        setIsWithdrawOpen(false);
+      };
+
+      dialog.addEventListener('click', handleClick);
+      dialog.addEventListener('cancel', handleCancel);
+
+      return () => {
+        dialog.removeEventListener('click', handleClick);
+        dialog.removeEventListener('cancel', handleCancel);
+      };
+    } else {
+      dialog.close();
+    }
+  }, [isWithdrawOpen]);
 
   const fetchDashboardData = async () => {
     setLoading(true);
@@ -149,7 +193,7 @@ export default function App() {
       }
 
       if (res.success) {
-        setWithdrawSuccess(res.data.message);
+        setWithdrawSuccess(res.data.message || 'Berhasil menarik saldo.');
         setWithdrawAmount('');
         // Refresh dashboard data
         fetchDashboardData();
@@ -157,7 +201,7 @@ export default function App() {
         setTimeout(() => {
           setIsWithdrawOpen(false);
           setWithdrawSuccess(null);
-        }, 2000);
+        }, 1800);
       }
     } catch (err) {
       console.error(err);
@@ -168,12 +212,12 @@ export default function App() {
   };
 
   return (
-    <div className="app">
+    <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col font-sans">
       <Navbar activeTab={activeTab} onTabChange={setActiveTab} />
 
       {activeTab === 'dashboard' && (
-        <main className="page-content">
-          <div className="animate-in">
+        <main className="flex-1 w-full max-w-7xl mx-auto px-4 md:px-8 py-6 md:py-8 flex flex-col">
+          <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
             <PageHeader 
               onRefresh={fetchDashboardData} 
               isLoading={loading} 
@@ -182,118 +226,113 @@ export default function App() {
           </div>
 
           {loading && !dashboardData && (
-            <div className="dashboard-loading">
-              <div className="spinner"></div>
-              <p>Memuat data transaksi dari Bayar.gg...</p>
+            <div className="flex-1 flex flex-col items-center justify-center py-24 text-zinc-400">
+              <div className="w-8 h-8 border-3 border-zinc-800 border-t-zinc-200 rounded-full animate-spin mb-4" />
+              <p className="text-sm font-medium">Memuat data transaksi dari Bayar.gg...</p>
             </div>
           )}
 
           {error && (
-            <div className="dashboard-error">
-              <div className="error-card">
-                <h3>Terjadi Kesalahan</h3>
-                <p>{error}</p>
-                <button onClick={fetchDashboardData} className="retry-btn">Coba Lagi</button>
+            <div className="flex-1 flex items-center justify-center py-12">
+              <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 md:p-8 text-center max-w-sm w-full shadow-lg">
+                <h3 className="text-lg font-bold text-zinc-100 mb-2">Terjadi Kesalahan</h3>
+                <p className="text-xs text-zinc-400 mb-6 leading-relaxed">{error}</p>
+                <button
+                  onClick={fetchDashboardData}
+                  className="w-full py-2.5 px-4 bg-zinc-100 hover:bg-zinc-200 text-zinc-950 font-bold rounded-lg transition-colors text-xs shadow-sm"
+                >
+                  Coba Lagi
+                </button>
               </div>
             </div>
           )}
 
           {dashboardData && !loading && (
-            <>
-              <div className="animate-in animate-in-1">
-                <StatsCards stats={dashboardData.stats} />
-              </div>
-
-              <div className="animate-in animate-in-2">
-                <RecentOrders orders={dashboardData.recentOrders} />
-              </div>
-            </>
+            <div className="space-y-6 md:space-y-8 flex flex-col w-full animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <StatsCards stats={dashboardData.stats} />
+              <RecentOrders orders={dashboardData.recentOrders} />
+            </div>
           )}
         </main>
       )}
 
       {activeTab === 'payments' && (
-        <main className="page-content" style={{ display: 'flex', justifyContent: 'center' }}>
-          <div className="checkout-container" style={{ width: '100%', maxWidth: '780px' }}>
-            <header className="brand-header" style={{ marginBottom: '24px', textAlign: 'center' }}>
-              <h1 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: '28px', color: '#202224' }}>
-                Halaman Pembayaran
-              </h1>
-              <p style={{ color: '#6B7280', marginTop: '6px' }}>Pilih paket layanan dan bayar instan menggunakan QRIS</p>
-            </header>
+        <main className="flex-1 w-full max-w-3xl mx-auto px-4 py-8 flex flex-col items-center justify-start">
+          <header className="mb-6 text-center">
+            <h1 className="text-2xl md:text-3xl font-extrabold text-zinc-100 tracking-tight">
+              Halaman Pembayaran
+            </h1>
+            <p className="text-xs text-zinc-400 mt-1.5">Pilih paket layanan dan bayar instan menggunakan QRIS</p>
+          </header>
 
-            <StepIndicator currentStep={checkoutStep} totalSteps={4} />
+          <StepIndicator currentStep={checkoutStep} totalSteps={4} />
 
-            {/* Step 1: Service Selection */}
-            {checkoutStep === 1 && (
-              <div className="animate-slide-in">
-                <div className="glass-card">
-                  <div className="glass-card-header">
-                    <h2 className="glass-card-title">Pilih Layanan</h2>
-                    <p className="glass-card-subtitle">
-                      Pilih paket layanan yang sesuai dengan kebutuhan Anda
-                    </p>
-                  </div>
-
-                  <div className="services-grid">
-                    {SERVICES.map((service) => (
-                      <ServiceCard
-                        key={service.id}
-                        service={service}
-                        selected={selectedService?.id === service.id}
-                        onSelect={handleServiceSelect}
-                      />
-                    ))}
-                  </div>
-
-                  <button
-                    className="btn-primary"
-                    disabled={!selectedService}
-                    onClick={handleServiceContinue}
-                    style={{ marginTop: '20px' }}
-                    id="btn-continue-service"
-                  >
-                    Lanjutkan →
-                  </button>
+          {/* Step 1: Service Selection */}
+          {checkoutStep === 1 && (
+            <div className="w-full animate-in fade-in slide-in-from-bottom-2 duration-300">
+              <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 md:p-8 shadow-xl text-left">
+                <div className="mb-6">
+                  <h2 className="text-lg font-bold text-zinc-100">Pilih Layanan</h2>
+                  <p className="text-xs text-zinc-400 mt-1">Pilih paket layanan yang sesuai dengan kebutuhan Anda</p>
                 </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                  {SERVICES.map((service) => (
+                    <ServiceCard
+                      key={service.id}
+                      service={service}
+                      selected={selectedService?.id === service.id}
+                      onSelect={handleServiceSelect}
+                    />
+                  ))}
+                </div>
+
+                <button
+                  className="w-full py-3 px-4 bg-zinc-100 hover:bg-zinc-205 text-zinc-950 disabled:opacity-50 disabled:hover:bg-zinc-100 font-extrabold rounded-lg transition-colors text-sm shadow-sm flex items-center justify-center"
+                  disabled={!selectedService}
+                  onClick={handleServiceContinue}
+                  id="btn-continue-service"
+                >
+                  Lanjutkan →
+                </button>
               </div>
-            )}
+            </div>
+          )}
 
-            {/* Step 2: Customer Form */}
-            {checkoutStep === 2 && (
-              <CustomerForm
-                onSubmit={handleCustomerSubmit}
-                onBack={() => setCheckoutStep(1)}
-                initialData={customerData}
-              />
-            )}
+          {/* Step 2: Customer Form */}
+          {checkoutStep === 2 && (
+            <CustomerForm
+              onSubmit={handleCustomerSubmit}
+              onBack={() => setCheckoutStep(1)}
+              initialData={customerData}
+            />
+          )}
 
-            {/* Step 3: Payment */}
-            {checkoutStep === 3 && (
-              <PaymentStep
-                service={selectedService}
-                customer={customerData}
-                onSuccess={handlePaymentSuccess}
-                onBack={() => setCheckoutStep(2)}
-              />
-            )}
+          {/* Step 3: Payment */}
+          {checkoutStep === 3 && (
+            <PaymentStep
+              service={selectedService}
+              customer={customerData}
+              onSuccess={handlePaymentSuccess}
+              onBack={() => setCheckoutStep(2)}
+            />
+          )}
 
-            {/* Step 4: Success */}
-            {checkoutStep === 4 && (
-              <SuccessPage
-                paymentData={paymentResult}
-                customer={customerData}
-                service={selectedService}
-                onReset={resetCheckout}
-              />
-            )}
-          </div>
+          {/* Step 4: Success */}
+          {checkoutStep === 4 && (
+            <SuccessPage
+              paymentData={paymentResult}
+              customer={customerData}
+              service={selectedService}
+              onReset={resetCheckout}
+            />
+          )}
         </main>
       )}
 
       {activeTab === 'analytics' && (
-        <main className="page-content">
-          <div className="animate-in">
+        <main className="flex-1 w-full max-w-7xl mx-auto px-4 md:px-8 py-6 md:py-8 flex flex-col">
+          <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
             <PageHeader 
               title="Analytics" 
               subtitle="Analisis performa transaksi dan metode pembayaran" 
@@ -303,280 +342,117 @@ export default function App() {
           </div>
 
           {loading && !dashboardData && (
-            <div className="dashboard-loading">
-              <div className="spinner"></div>
-              <p>Memuat data analitik dari Bayar.gg...</p>
+            <div className="flex-1 flex flex-col items-center justify-center py-24 text-zinc-400">
+              <div className="w-8 h-8 border-3 border-zinc-800 border-t-zinc-200 rounded-full animate-spin mb-4" />
+              <p className="text-sm font-medium">Memuat data analitik dari Bayar.gg...</p>
             </div>
           )}
 
           {error && (
-            <div className="dashboard-error">
-              <div className="error-card">
-                <h3>Terjadi Kesalahan</h3>
-                <p>{error}</p>
-                <button onClick={fetchDashboardData} className="retry-btn">Coba Lagi</button>
+            <div className="flex-1 flex items-center justify-center py-12">
+              <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 md:p-8 text-center max-w-sm w-full shadow-lg">
+                <h3 className="text-lg font-bold text-zinc-100 mb-2">Terjadi Kesalahan</h3>
+                <p className="text-xs text-zinc-400 mb-6 leading-relaxed">{error}</p>
+                <button
+                  onClick={fetchDashboardData}
+                  className="w-full py-2.5 px-4 bg-zinc-100 hover:bg-zinc-200 text-zinc-950 font-bold rounded-lg transition-colors text-xs shadow-sm"
+                >
+                  Coba Lagi
+                </button>
               </div>
             </div>
           )}
 
           {dashboardData && !loading && (
-            <div className="charts-grid animate-in animate-in-1">
-              <PerformanceChart chartData={dashboardData.chartData} />
-              <SalesOverview overview={dashboardData.salesOverview} />
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8 items-start w-full animate-in fade-in slide-in-from-bottom-4 duration-550">
+              <div className="lg:col-span-2">
+                <PerformanceChart chartData={dashboardData.chartData} />
+              </div>
+              <div>
+                <SalesOverview overview={dashboardData.salesOverview} />
+              </div>
             </div>
           )}
         </main>
       )}
 
       {activeTab === 'settings' && (
-        <main className="page-content">
-          <div className="animate-in">
-            <h1 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 600, color: '#202224' }}>
+        <main className="flex-1 w-full max-w-7xl mx-auto px-4 md:px-8 py-6 md:py-8 flex flex-col items-start text-left">
+          <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+            <h1 className="text-2xl md:text-3xl font-extrabold text-zinc-100 tracking-tight">
               Settings
             </h1>
-            <p style={{ fontFamily: "'Poppins', sans-serif", color: '#666', marginTop: '10px' }}>
+            <p className="text-xs text-zinc-400 mt-1.5">
               Halaman ini sedang dalam pengembangan.
             </p>
           </div>
         </main>
       )}
 
-      {/* Withdraw Modal */}
-      {isWithdrawOpen && (
-        <div className="modal-overlay" onClick={() => setIsWithdrawOpen(false)}>
-          <div className="modal-container" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h3 className="modal-title">Tarik Saldo</h3>
-              <button className="modal-close-btn" onClick={() => setIsWithdrawOpen(false)}>✕</button>
-            </div>
-            <form onSubmit={handleWithdrawSubmit}>
-              <div className="modal-body">
-                {withdrawSuccess && <div className="alert-success">{withdrawSuccess}</div>}
-                {withdrawError && <div className="alert-error">{withdrawError}</div>}
-                
-                <div className="form-group">
-                  <label className="form-label" htmlFor="withdraw-amount">Jumlah Penarikan (Rupiah)</label>
-                  <input
-                    type="number"
-                    id="withdraw-amount"
-                    className="form-input"
-                    placeholder="Contoh: 1000"
-                    value={withdrawAmount}
-                    onChange={(e) => setWithdrawAmount(e.target.value)}
-                    required
-                    disabled={withdrawLoading || withdrawSuccess}
-                  />
-                </div>
-              </div>
-              <div className="modal-footer">
-                <button 
-                  type="button" 
-                  className="btn-cancel" 
-                  onClick={() => setIsWithdrawOpen(false)}
-                  disabled={withdrawLoading}
-                >
-                  Batal
-                </button>
-                <button 
-                  type="submit" 
-                  className="btn-withdraw" 
-                  disabled={withdrawLoading || withdrawSuccess}
-                >
-                  {withdrawLoading ? 'Memproses...' : 'Tarik Saldo'}
-                </button>
-              </div>
-            </form>
-          </div>
+      {/* Modern native <dialog> for Withdrawal */}
+      <dialog
+        ref={dialogRef}
+        closedby="any"
+        className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 md:p-8 max-w-sm w-full shadow-2xl text-zinc-100 backdrop:bg-zinc-950/80 backdrop:backdrop-blur-sm focus:outline-none outline-none animate-in fade-in zoom-in duration-200"
+        aria-labelledby="modal-title"
+      >
+        <div className="flex justify-between items-center mb-6">
+          <h3 id="modal-title" className="text-lg font-bold text-zinc-100">Tarik Saldo</h3>
+          <button
+            className="text-zinc-500 hover:text-zinc-300 font-bold text-lg focus:outline-none transition-colors"
+            onClick={() => setIsWithdrawOpen(false)}
+          >
+            ✕
+          </button>
         </div>
-      )}
 
-      <style>{`
-        .dashboard-loading {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          padding: 80px 20px;
-          font-family: 'Poppins', sans-serif;
-          color: #6B7280;
-        }
-        .dashboard-loading .spinner {
-          width: 40px;
-          height: 40px;
-          border: 4px solid rgba(72, 128, 255, 0.1);
-          border-top-color: #4880FF;
-          border-radius: 50%;
-          animation: spin 1s linear infinite;
-          margin-bottom: 16px;
-        }
-        @keyframes spin {
-          to { transform: rotate(360deg); }
-        }
-        .dashboard-error {
-          display: flex;
-          justify-content: center;
-          padding: 40px 20px;
-          font-family: 'Poppins', sans-serif;
-        }
-        .error-card {
-          background: #FFF;
-          border-radius: 12px;
-          padding: 24px;
-          box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-          text-align: center;
-          max-width: 400px;
-          width: 100%;
-        }
-        .error-card h3 {
-          color: #F93C65;
-          margin-bottom: 8px;
-          font-weight: 600;
-        }
-        .error-card p {
-          color: #6B7280;
-          font-size: 14px;
-          margin-bottom: 16px;
-        }
-        .retry-btn {
-          background: #4880FF;
-          color: #FFF;
-          border: none;
-          padding: 8px 24px;
-          border-radius: 8px;
-          font-weight: 500;
-          cursor: pointer;
-          font-family: 'Poppins', sans-serif;
-          transition: background 0.2s;
-        }
-        .retry-btn:hover {
-          background: #3570F4;
-        }
+        <form onSubmit={handleWithdrawSubmit} className="space-y-5">
+          {withdrawSuccess && (
+            <div className="bg-zinc-950 border border-zinc-800 text-zinc-200 px-4 py-3 rounded-lg text-xs font-semibold leading-relaxed">
+              {withdrawSuccess}
+            </div>
+          )}
+          {withdrawError && (
+            <div className="bg-zinc-950 border border-zinc-850 text-zinc-400 px-4 py-3 rounded-lg text-xs font-semibold leading-relaxed">
+              {withdrawError}
+            </div>
+          )}
+          
+          <div className="text-left">
+            <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block mb-2" htmlFor="withdraw-amount">
+              Jumlah Penarikan (Rupiah)
+            </label>
+            <input
+              type="number"
+              id="withdraw-amount"
+              className="w-full py-2.5 px-4 rounded-lg bg-zinc-950 text-zinc-150 border border-zinc-850 outline-none text-sm transition-all focus:border-zinc-400 focus:ring-1 focus:ring-zinc-400 disabled:opacity-50"
+              placeholder="Contoh: 1000"
+              value={withdrawAmount}
+              onChange={(e) => setWithdrawAmount(e.target.value)}
+              required
+              disabled={withdrawLoading || withdrawSuccess}
+            />
+          </div>
 
-        /* Modal Style */
-        .modal-overlay {
-          position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: rgba(0, 0, 0, 0.5);
-          backdrop-filter: blur(4px);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          z-index: 1000;
-          animation: fadeIn 0.2s ease-out;
-        }
-        .modal-container {
-          background: #FFFFFF;
-          border-radius: 16px;
-          padding: 32px;
-          max-width: 440px;
-          width: 100%;
-          box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-          animation: slideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-          font-family: 'Poppins', sans-serif;
-        }
-        .modal-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 20px;
-        }
-        .modal-title {
-          font-size: 20px;
-          font-weight: 600;
-          color: #202224;
-        }
-        .modal-close-btn {
-          background: none;
-          border: none;
-          font-size: 20px;
-          color: #9CA3AF;
-          cursor: pointer;
-        }
-        .modal-body {
-          margin-bottom: 24px;
-        }
-        .form-group {
-          margin-bottom: 16px;
-          text-align: left;
-        }
-        .form-label {
-          display: block;
-          font-size: 14px;
-          font-weight: 500;
-          color: #4B5563;
-          margin-bottom: 6px;
-        }
-        .form-input {
-          width: 100%;
-          padding: 10px 14px;
-          border: 1px solid #E5E7EB;
-          border-radius: 8px;
-          font-size: 15px;
-          outline: none;
-          font-family: 'Poppins', sans-serif;
-          color: #202224;
-          box-sizing: border-box;
-        }
-        .form-input:focus {
-          border-color: #4880FF;
-        }
-        .modal-footer {
-          display: flex;
-          justify-content: flex-end;
-          gap: 12px;
-        }
-        .btn-cancel {
-          background: #F3F4F6;
-          color: #4B5563;
-          border: none;
-          padding: 10px 20px;
-          border-radius: 8px;
-          font-weight: 500;
-          cursor: pointer;
-        }
-        .btn-withdraw {
-          background: #00B69B;
-          color: #FFFFFF;
-          border: none;
-          padding: 10px 20px;
-          border-radius: 8px;
-          font-weight: 500;
-          cursor: pointer;
-        }
-        .btn-withdraw:disabled {
-          background: #A7F3D0;
-          cursor: not-allowed;
-        }
-        .alert-success {
-          background: #ECFDF5;
-          color: #065F46;
-          padding: 12px;
-          border-radius: 8px;
-          font-size: 14px;
-          margin-bottom: 16px;
-          border: 1px solid #A7F3D0;
-        }
-        .alert-error {
-          background: #FEF2F2;
-          color: #991B1B;
-          padding: 12px;
-          border-radius: 8px;
-          font-size: 14px;
-          margin-bottom: 16px;
-          border: 1px solid #FCA5A5;
-        }
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-        @keyframes slideUp {
-          from { transform: translateY(20px); opacity: 0; }
-          to { transform: translateY(0); opacity: 1; }
-        }
-      `}</style>
+          <div className="flex justify-end gap-3 pt-2">
+            <button
+              type="button"
+              className="py-2.5 px-4 bg-zinc-950 border border-zinc-850 hover:bg-zinc-900 text-zinc-300 font-semibold rounded-lg text-xs transition-colors"
+              onClick={() => setIsWithdrawOpen(false)}
+              disabled={withdrawLoading}
+            >
+              Batal
+            </button>
+            <button
+              type="submit"
+              className="py-2.5 px-4 bg-zinc-100 hover:bg-zinc-200 text-zinc-950 font-bold rounded-lg text-xs transition-colors disabled:opacity-50 shadow-sm"
+              disabled={withdrawLoading || withdrawSuccess}
+            >
+              {withdrawLoading ? 'Memproses...' : 'Tarik Saldo'}
+            </button>
+          </div>
+        </form>
+      </dialog>
     </div>
   );
 }

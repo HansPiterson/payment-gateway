@@ -1,5 +1,15 @@
 import { useState } from 'react';
 import { ArrowDown01Icon } from 'hugeicons-react';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Cell
+} from 'recharts';
 
 const defaultMonths = [
   { label: 'May', value: 18000, sales: 320, revenue: 'Rp 18.000' },
@@ -12,102 +22,88 @@ const defaultMonths = [
   { label: 'Dec', value: 24000, sales: 350, revenue: 'Rp 24.000' },
 ];
 
+const CustomTooltip = ({ active, payload }) => {
+  if (active && payload && payload.length) {
+    const data = payload[0].payload;
+    return (
+      <div className="bg-zinc-950 border border-zinc-800 p-3 rounded-lg shadow-xl text-left">
+        <div className="text-xs font-bold text-zinc-400 mb-1">{data.label} 2026</div>
+        <div className="flex items-center gap-2 text-xs text-zinc-300">
+          <span className="w-1.5 h-1.5 bg-zinc-400 rounded-full" />
+          <span>Sales:</span>
+          <span className="font-bold ml-4">{data.sales}</span>
+        </div>
+        <div className="flex items-center gap-2 text-xs text-zinc-300 mt-1">
+          <span className="w-1.5 h-1.5 bg-zinc-200 rounded-full" />
+          <span>Revenue:</span>
+          <span className="font-bold ml-4">{data.revenue}</span>
+        </div>
+      </div>
+    );
+  }
+  return null;
+};
+
 export default function PerformanceChart({ chartData }) {
   const data = chartData || defaultMonths;
-  const [activeBar, setActiveBar] = useState(data.length - 1); // Select last item by default
+  const [activeIndex, setActiveIndex] = useState(data.length - 1);
 
-  const maxVal = Math.max(...data.map((d) => d.value), 1000);
-  
   const formatY = (val) => {
     if (val >= 1000000) return `${(val / 1000000).toFixed(1)}M`;
     if (val >= 1000) return `${(val / 1000).toFixed(0)}K`;
     return val;
   };
 
-  const yLabels = [
-    formatY(maxVal),
-    formatY(maxVal * 0.75),
-    formatY(maxVal * 0.5),
-    formatY(maxVal * 0.25),
-    formatY(maxVal * 0.1),
-    '0',
-  ];
-
   return (
-    <div className="card">
-      <div className="card-header">
-        <h3 className="card-title">Performance Overview</h3>
-        <button className="card-action">
+    <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 flex flex-col h-full min-h-[380px]">
+      <div className="flex items-center justify-between mb-6">
+        <h3 className="text-lg font-bold text-zinc-100">Performance Overview</h3>
+        <button className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-zinc-400 hover:text-zinc-200 border border-zinc-850 bg-zinc-950 rounded-lg transition-colors">
           This Year
           <ArrowDown01Icon size={14} />
         </button>
       </div>
 
-      <div className="bar-chart-container">
-        {/* Y-Axis Labels */}
-        <div className="bar-chart-y-axis">
-          {yLabels.map((label, idx) => (
-            <span key={`${label}-${idx}`} className="bar-chart-y-label">{label}</span>
-          ))}
-        </div>
-
-        {/* Chart Area */}
-        <div className="bar-chart-area">
-          {/* Grid Lines */}
-          <div className="bar-chart-grid">
-            {yLabels.map((_, i) => (
-              <div key={i} className="bar-chart-grid-line" />
-            ))}
-          </div>
-
-          {/* Bars */}
-          <div className="bar-chart-bars">
-            {data.map((month, index) => {
-              const heightPercent = maxVal > 0 ? (month.value / maxVal) * 100 : 0;
-              const isActive = activeBar === index;
-
-              return (
-                <div
-                  key={`${month.label}-${index}`}
-                  className="bar-chart-bar-wrapper"
-                  onMouseEnter={() => setActiveBar(index)}
-                >
-                  <div
-                    className="bar-chart-bar"
-                    style={{
-                      height: `${Math.max(heightPercent, 2)}%`, // Show a tiny bar even for 0
-                      opacity: isActive ? 1 : 0.65,
-                    }}
-                  />
-
-                  {/* Tooltip */}
-                  <div className="bar-chart-tooltip" style={isActive ? { opacity: 1, visibility: 'visible', transform: 'translateY(0) translateX(-50%)' } : undefined}>
-                    <div className="bar-chart-tooltip-title">
-                      {month.label} 2026
-                    </div>
-                    <div className="bar-chart-tooltip-row">
-                      <span className="bar-chart-tooltip-dot" style={{ background: '#00B69B' }} />
-                      <span>Total Sales</span>
-                      <strong style={{ marginLeft: 'auto' }}>{month.sales}</strong>
-                    </div>
-                    <div className="bar-chart-tooltip-row">
-                      <span className="bar-chart-tooltip-dot" style={{ background: '#4880FF' }} />
-                      <span>Total Revenue</span>
-                      <strong style={{ marginLeft: 'auto' }}>{month.revenue}</strong>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* X-Axis Labels */}
-        <div className="bar-chart-x-axis">
-          {data.map((month, index) => (
-            <span key={`${month.label}-${index}`} className="bar-chart-x-label">{month.label}</span>
-          ))}
-        </div>
+      <div className="w-full flex-1 min-h-[260px] text-zinc-400">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart
+            data={data}
+            margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+            onMouseMove={(state) => {
+              if (state.activeTooltipIndex !== undefined) {
+                setActiveIndex(state.activeTooltipIndex);
+              }
+            }}
+          >
+            <CartesianGrid strokeDasharray="3 3" stroke="#1f1f22" vertical={false} />
+            <XAxis
+              dataKey="label"
+              stroke="#52525b"
+              fontSize={11}
+              tickLine={false}
+              axisLine={false}
+              dy={10}
+            />
+            <YAxis
+              stroke="#52525b"
+              fontSize={11}
+              tickLine={false}
+              axisLine={false}
+              tickFormatter={formatY}
+              dx={-5}
+            />
+            <Tooltip content={<CustomTooltip />} cursor={{ fill: 'transparent' }} />
+            <Bar dataKey="value" radius={[6, 6, 0, 0]}>
+              {data.map((entry, index) => (
+                <Cell
+                  key={`cell-${index}`}
+                  fill={index === activeIndex ? '#f4f4f5' : '#27272a'}
+                  className="transition-all duration-200"
+                />
+              ))}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
       </div>
     </div>
   );

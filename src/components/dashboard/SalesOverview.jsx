@@ -1,4 +1,3 @@
-/* Segmented ring chart built from SVG arcs */
 const SEGMENTS = 60;
 const RADIUS = 80;
 const CENTER = 100;
@@ -29,7 +28,7 @@ const SegmentedRing = ({ progress = 70.8 }) => {
         key={i}
         d={describeArc(CENTER, CENTER, RADIUS, startAngle, endAngle)}
         fill="none"
-        stroke={isFilled ? 'url(#ringGradient)' : '#F0F0F4'}
+        stroke={isFilled ? 'url(#ringGradient)' : '#18181b'}
         strokeWidth="10"
         strokeLinecap="round"
       />
@@ -37,32 +36,32 @@ const SegmentedRing = ({ progress = 70.8 }) => {
   }
 
   return (
-    <svg width="200" height="200" viewBox="0 0 200 200" style={{ display: 'block', margin: '0 auto' }}>
+    <svg width="180" height="180" viewBox="0 0 200 200" className="mx-auto block">
       <defs>
         <linearGradient id="ringGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#4880FF" />
-          <stop offset="100%" stopColor="#6BA3FF" />
+          <stop offset="0%" stopColor="#f4f4f5" />
+          <stop offset="100%" stopColor="#3f3f46" />
         </linearGradient>
       </defs>
       {segments}
-      <text x={CENTER} y={CENTER - 6} textAnchor="middle" fill="#202224" fontSize="26" fontWeight="700" fontFamily="Poppins, sans-serif">
+      <text x={CENTER} y={CENTER - 6} textAnchor="middle" fill="#f4f4f5" fontSize="28" fontWeight="800" fontFamily="Poppins, sans-serif">
         {progress}%
       </text>
-      <text x={CENTER} y={CENTER + 16} textAnchor="middle" fill="#6B7280" fontSize="12" fontWeight="500" fontFamily="Poppins, sans-serif">
-        Target Progress
+      <text x={CENTER} y={CENTER + 16} textAnchor="middle" fill="#71717a" fontSize="11" fontWeight="600" fontFamily="Poppins, sans-serif" letterSpacing="0.5px">
+        TARGET PROGRESS
       </text>
     </svg>
   );
 };
 
 const ArrowUp = () => (
-  <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+  <svg width="8" height="8" viewBox="0 0 10 10" fill="none" className="inline-block">
     <path d="M5 2L8 6H2L5 2Z" fill="currentColor" />
   </svg>
 );
 
 const ArrowDown = () => (
-  <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+  <svg width="8" height="8" viewBox="0 0 10 10" fill="none" className="inline-block">
     <path d="M5 8L2 4H8L5 8Z" fill="currentColor" />
   </svg>
 );
@@ -82,41 +81,48 @@ export default function SalesOverview({ overview }) {
   const isRevenueUp = !data.revenueGrowth.startsWith('-');
 
   return (
-    <div className="card" style={{ display: 'flex', flexDirection: 'column' }}>
-      <div className="card-header">
-        <h3 className="card-title">Sales Overview</h3>
-        <button className="card-action-icon" aria-label="More options">
-          <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
-            <circle cx="4" cy="10" r="1.5" fill="#6B7280" />
-            <circle cx="10" cy="10" r="1.5" fill="#6B7280" />
-            <circle cx="16" cy="10" r="1.5" fill="#6B7280" />
+    <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 flex flex-col h-full justify-between">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-lg font-bold text-zinc-100 text-left">Sales Overview</h3>
+        <button className="text-zinc-500 hover:text-zinc-350 p-1 rounded-lg transition-colors" aria-label="More options">
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+            <circle cx="4" cy="10" r="1.5" fill="currentColor" />
+            <circle cx="10" cy="10" r="1.5" fill="currentColor" />
+            <circle cx="16" cy="10" r="1.5" fill="currentColor" />
           </svg>
         </button>
       </div>
 
-      <div className="sales-ring-container" style={{ flex: 1 }}>
+      <div className="flex-1 flex items-center justify-center my-6">
         <SegmentedRing progress={data.growth} />
       </div>
 
-      <div className="sales-stats-row">
-        <div className="sales-stat-box">
-          <div className="sales-stat-box-label">Number of Sales</div>
-          <div className="sales-stat-box-value">
-            {data.salesCount.toLocaleString("id-ID")}
+      <div className="grid grid-cols-2 gap-4 pt-4 border-t border-zinc-850">
+        <div className="text-left">
+          <span className="text-[10px] font-bold text-zinc-550 uppercase tracking-wider block">Number of Sales</span>
+          <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+            <span className="text-lg font-black text-zinc-100">{data.salesCount.toLocaleString("id-ID")}</span>
             {data.salesGrowth !== '0%' && data.salesGrowth !== '+0%' && (
-              <span className={`stat-badge ${isSalesUp ? 'up' : 'down'}`}>
-                {isSalesUp ? <ArrowUp /> : <ArrowDown />} {data.salesGrowth.replace('+', '').replace('-', '')}
+              <span className={`text-[9px] font-extrabold px-1.5 py-0.5 rounded-full flex items-center gap-0.5 ${
+                isSalesUp ? 'bg-zinc-200 text-zinc-950' : 'bg-zinc-950 text-zinc-400 border border-zinc-800'
+              }`}>
+                {isSalesUp ? <ArrowUp /> : <ArrowDown />}
+                {data.salesGrowth.replace('+', '').replace('-', '')}
               </span>
             )}
           </div>
         </div>
-        <div className="sales-stat-box">
-          <div className="sales-stat-box-label">Total Revenue</div>
-          <div className="sales-stat-box-value" style={{ fontSize: '13px', fontWeight: '700' }}>
-            {data.revenue}
+
+        <div className="text-left border-l border-zinc-850 pl-4">
+          <span className="text-[10px] font-bold text-zinc-550 uppercase tracking-wider block">Total Revenue</span>
+          <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+            <span className="text-sm font-black text-zinc-150 truncate max-w-[100px]">{data.revenue}</span>
             {data.revenueGrowth !== '0%' && data.revenueGrowth !== '+0%' && (
-              <span className={`stat-badge ${isRevenueUp ? 'up' : 'down'}`}>
-                {isRevenueUp ? <ArrowUp /> : <ArrowDown />} {data.revenueGrowth.replace('+', '').replace('-', '')}
+              <span className={`text-[9px] font-extrabold px-1.5 py-0.5 rounded-full flex items-center gap-0.5 ${
+                isRevenueUp ? 'bg-zinc-200 text-zinc-950' : 'bg-zinc-950 text-zinc-400 border border-zinc-800'
+              }`}>
+                {isRevenueUp ? <ArrowUp /> : <ArrowDown />}
+                {data.revenueGrowth.replace('+', '').replace('-', '')}
               </span>
             )}
           </div>
