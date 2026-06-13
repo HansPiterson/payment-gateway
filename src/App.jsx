@@ -5,7 +5,7 @@ import StatsCards from './components/dashboard/StatsCards';
 import PerformanceChart from './components/dashboard/PerformanceChart';
 import SalesOverview from './components/dashboard/SalesOverview';
 import RecentOrders from './components/dashboard/RecentOrders';
-import { FUNCTIONS_URL } from './lib/supabase';
+import { FUNCTIONS_URL, supabaseAnonKey } from './lib/supabase';
 
 // Checkout Components
 import StepIndicator from './components/StepIndicator';
@@ -64,6 +64,8 @@ export default function App() {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${supabaseAnonKey}`,
+          'apikey': supabaseAnonKey,
         },
       });
 

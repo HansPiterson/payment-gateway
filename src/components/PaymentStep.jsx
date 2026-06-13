@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { supabase, FUNCTIONS_URL } from '../lib/supabase';
+import { supabase, FUNCTIONS_URL, supabaseAnonKey } from '../lib/supabase';
 
 const CHECKOUT_KEY = 'chk_62c780a4f4510faa53476b14abb4faefc8fa7f9bbe7e605d';
 
@@ -28,7 +28,11 @@ export default function PaymentStep({ service, customer, onSuccess, onBack }) {
 
       const response = await fetch(`${FUNCTIONS_URL}/create-payment`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${supabaseAnonKey}`,
+          'apikey': supabaseAnonKey,
+        },
         body: JSON.stringify({
           amount: service.price,
           description: `${service.name} — BAYAR.dev`,
@@ -93,7 +97,15 @@ export default function PaymentStep({ service, customer, onSuccess, onBack }) {
     setCheckingManually(true);
     try {
       const response = await fetch(
-        `${FUNCTIONS_URL}/check-payment?invoice_id=${paymentData.invoice_id}`
+        `${FUNCTIONS_URL}/check-payment?invoice_id=${paymentData.invoice_id}`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${supabaseAnonKey}`,
+            'apikey': supabaseAnonKey,
+          }
+        }
       );
       const result = await response.json();
       const payData = result.data || result;
