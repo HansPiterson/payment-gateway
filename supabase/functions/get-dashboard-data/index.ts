@@ -26,33 +26,46 @@ Deno.serve(async (req: Request) => {
       throw new Error("BAYAR_GG_API_KEY is not configured");
     }
 
-    // Call Bayar.gg List Payments API (Fetch latest 100 payments)
-    const bayarResponse = await fetch(
-      "https://www.bayar.gg/api/list-payments.php?limit=100",
-      {
+    // Call both endpoints in parallel: account status (for exact stats) and list payments (for chart and tables)
+    const [statusResponse, listResponse] = await Promise.all([
+      fetch("https://www.bayar.gg/api/get-account-status.php", {
         method: "GET",
         headers: {
           "X-API-Key": bayarApiKey,
         },
-      },
-    );
+      }),
+      fetch("https://www.bayar.gg/api/list-payments.php?limit=100", {
+        method: "GET",
+        headers: {
+          "X-API-Key": bayarApiKey,
+        },
+      }),
+    ]);
 
-    if (!bayarResponse.ok) {
-      const errorText = await bayarResponse.text();
-      console.error("Bayar.gg list-payments error:", bayarResponse.status, errorText);
+    if (!statusResponse.ok || !listResponse.ok) {
+      console.error(
+        "Bayar.gg API error: status =",
+        statusResponse.status,
+        "list =",
+        listResponse.status
+      );
       return new Response(
         JSON.stringify({
-          error: "Failed to fetch payments from Bayar.gg",
-          details: errorText,
+          error: "Failed to fetch data from Bayar.gg APIs",
+          statusError: statusResponse.statusText,
+          listError: listResponse.statusText,
         }),
         { status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
 
-    const resData = await bayarResponse.json();
-    const rawPayments = Array.isArray(resData.data) ? resData.data : [];
+    const statusData = await statusResponse.json();
+    const listData = await listResponse.json();
 
-    // Helper variables for processing
+    const statsFromApi = statusData?.data?.statistics || {};
+    const rawPayments = Array.isArray(listData.data) ? listData.data : [];
+
+    // Helper variables for processing dates and chart
     const now = new Date();
     const currentYear = now.getFullYear();
     const currentMonthNum = now.getMonth(); // 0-11
@@ -74,10 +87,7 @@ Deno.serve(async (req: Request) => {
       };
     }
 
-    let totalRevenue = 0;
-    let totalSales = 0;
     const uniqueCustomers = new Set<string>();
-    let returnProducts = 0; // failed, cancelled, expired
 
     // MoM comparison stats
     let thisMonthRevenue = 0;
@@ -91,13 +101,12 @@ Deno.serve(async (req: Request) => {
     const lastMonthDate = new Date(currentYear, currentMonthNum - 1, 1);
     const lastMonthPrefix = `${lastMonthDate.getFullYear()}-${String(lastMonthDate.getMonth() + 1).padStart(2, '0')}`;
 
-    // Process payments
+    // Process payments list to populate chart and MoM calculations
     rawPayments.forEach((p: any) => {
       const amount = Number(p.amount || 0);
       const status = String(p.status || "pending").toLowerCase();
       const customerEmail = p.customer_email || p.customer_name || "unknown";
       
-      // We parse date, usually in format YYYY-MM-DD HH:mm:ss or ISO
       const dateStr = p.created_at || p.paid_at || "";
       if (!dateStr) return;
       
@@ -108,10 +117,7 @@ Deno.serve(async (req: Request) => {
       const pMonth = pDate.getMonth();
       const pMonthPrefix = `${pYear}-${String(pMonth + 1).padStart(2, '0')}`;
 
-      // Stats counts
       if (status === "paid") {
-        totalRevenue += amount;
-        totalSales += 1;
         uniqueCustomers.add(customerEmail);
 
         // Chart aggregation (last 6 months)
@@ -130,8 +136,6 @@ Deno.serve(async (req: Request) => {
           lastMonthSales += 1;
           lastMonthCustomers.add(customerEmail);
         }
-      } else if (status === "cancelled" || status === "expired") {
-        returnProducts += 1;
       }
     });
 
@@ -144,19 +148,17 @@ Deno.serve(async (req: Request) => {
           label: item.label,
           value: item.value,
           sales: item.sales,
-          revenue: item.value >= 1000 ? `$${(item.value / 1000).toFixed(1)}k` : `$${item.value}`
+          revenue: item.value >= 1000 ? `Rp ${(item.value / 1000).toLocaleString("id-ID")}k` : `Rp ${item.value.toLocaleString("id-ID")}`
         };
       });
 
     // Formatting recent orders (latest 10 payments)
     const recentOrders = rawPayments.slice(0, 10).map((p: any) => {
-      // Map status
       const rawStatus = String(p.status || "pending").toLowerCase();
       let displayStatus = "Pending";
       if (rawStatus === "paid") displayStatus = "Delivered";
       else if (rawStatus === "cancelled" || rawStatus === "expired") displayStatus = "Cancelled";
 
-      // Date format (Jun 10, 2026)
       const dateStr = p.created_at || p.paid_at || "";
       let formattedDate = "Pending";
       if (dateStr) {
@@ -196,32 +198,37 @@ Deno.serve(async (req: Request) => {
     const salesGrowth = calculateGrowth(thisMonthSales, lastMonthSales);
     const customersGrowth = calculateGrowth(thisMonthCustomers.size, lastMonthCustomers.size);
 
+    // EXACT lifetime metrics from status api
+    const exactTotalRevenue = Number(statsFromApi.total_revenue ?? 0);
+    const exactPaidPayments = Number(statsFromApi.paid_payments ?? 0);
+    const exactExpiredPayments = Number(statsFromApi.expired_payments ?? 0);
+
     // Default target for revenue
     const revenueTarget = 10000000; // 10 Million IDR target
-    const targetProgress = totalRevenue >= revenueTarget ? 100 : Number(((totalRevenue / revenueTarget) * 100).toFixed(1));
+    const targetProgress = exactTotalRevenue >= revenueTarget ? 100 : Number(((exactTotalRevenue / revenueTarget) * 100).toFixed(1));
 
-    // Stats Cards Formatted
+    // Stats Cards Formatted using EXACT account statistics
     const stats = {
       totalSales: {
-        value: totalSales.toLocaleString("id-ID"),
+        value: exactPaidPayments.toLocaleString("id-ID"),
         growth: salesGrowth >= 0 ? `+${salesGrowth}%` : `${salesGrowth}%`,
         isPositive: salesGrowth >= 0,
         lastMonth: lastMonthSales.toLocaleString("id-ID"),
       },
       newCustomers: {
-        value: uniqueCustomers.size.toLocaleString("id-ID"),
+        value: uniqueCustomers.size.toLocaleString("id-ID"), // Estimated from list
         growth: customersGrowth >= 0 ? `+${customersGrowth}%` : `${customersGrowth}%`,
         isPositive: customersGrowth >= 0,
         lastMonth: lastMonthCustomers.size.toLocaleString("id-ID"),
       },
       returnProducts: {
-        value: returnProducts.toLocaleString("id-ID"),
-        growth: "-0%", // Static/not critical
+        value: exactExpiredPayments.toLocaleString("id-ID"),
+        growth: "0%",
         isPositive: false,
         lastMonth: "0",
       },
       totalRevenue: {
-        value: totalRevenue.toLocaleString("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }),
+        value: exactTotalRevenue.toLocaleString("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }),
         lastMonth: lastMonthRevenue.toLocaleString("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }),
       }
     };
@@ -234,9 +241,9 @@ Deno.serve(async (req: Request) => {
           chartData,
           salesOverview: {
             growth: targetProgress,
-            salesCount: totalSales,
+            salesCount: exactPaidPayments,
             salesGrowth: salesGrowth >= 0 ? `+${salesGrowth}%` : `${salesGrowth}%`,
-            revenue: totalRevenue.toLocaleString("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }),
+            revenue: exactTotalRevenue.toLocaleString("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }),
             revenueGrowth: revenueGrowth >= 0 ? `+${revenueGrowth}%` : `${revenueGrowth}%`,
           },
           recentOrders,
