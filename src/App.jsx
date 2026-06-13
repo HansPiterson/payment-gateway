@@ -7,36 +7,9 @@ import SalesOverview from './components/dashboard/SalesOverview';
 import RecentOrders from './components/dashboard/RecentOrders';
 import { FUNCTIONS_URL, supabaseAnonKey } from './lib/supabase';
 
-// Checkout Components
-import StepIndicator from './components/StepIndicator';
-import ServiceCard from './components/ServiceCard';
-import CustomerForm from './components/CustomerForm';
-import PaymentStep from './components/PaymentStep';
-import SuccessPage from './components/SuccessPage';
+import PaymentLinkGenerator from './components/PaymentLinkGenerator';
+import DirectPayView from './components/DirectPayView';
 
-const SERVICES = [
-  {
-    id: 'basic',
-    name: 'Starter',
-    price: 50000,
-    description: 'Cocok untuk kebutuhan dasar dan project kecil.',
-    features: ['1x Konsultasi', 'Setup Dasar', 'Support 7 Hari'],
-  },
-  {
-    id: 'pro',
-    name: 'Professional',
-    price: 150000,
-    description: 'Solusi lengkap untuk bisnis dan project profesional.',
-    features: ['3x Konsultasi', 'Setup Advanced', 'Support 30 Hari', 'Priority Queue'],
-  },
-  {
-    id: 'enterprise',
-    name: 'Enterprise',
-    price: 500000,
-    description: 'Layanan premium dengan dukungan penuh untuk skala besar.',
-    features: ['Unlimited Konsultasi', 'Full Setup & Deploy', 'Support 90 Hari', 'Dedicated Team', 'Custom Integration'],
-  },
-];
 
 const DashboardSkeleton = () => (
   <div className="w-full flex-grow flex flex-col space-y-6 md:space-y-8 animate-pulse text-zinc-500">
@@ -160,11 +133,6 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Checkout States
-  const [checkoutStep, setCheckoutStep] = useState(1);
-  const [selectedService, setSelectedService] = useState(null);
-  const [customerData, setCustomerData] = useState(null);
-  const [paymentResult, setPaymentResult] = useState(null);
 
   // Withdraw States
   const [isWithdrawOpen, setIsWithdrawOpen] = useState(false);
@@ -174,6 +142,19 @@ export default function App() {
   const [withdrawSuccess, setWithdrawSuccess] = useState(null);
 
   const dialogRef = useRef(null);
+
+  const [payInvoiceId, setPayInvoiceId] = useState(null);
+
+  useEffect(() => {
+    const path = window.location.pathname;
+    if (path.startsWith('/pay/')) {
+      const id = path.replace('/pay/', '');
+      if (id) {
+        setPayInvoiceId(id);
+        setActiveTab('pay-invoice');
+      }
+    }
+  }, []);
 
   useEffect(() => {
     if (activeTab === 'dashboard' || activeTab === 'analytics') {
@@ -254,30 +235,6 @@ export default function App() {
     }
   };
 
-  const handleServiceSelect = (service) => {
-    setSelectedService(service);
-  };
-
-  const handleServiceContinue = () => {
-    if (selectedService) setCheckoutStep(2);
-  };
-
-  const handleCustomerSubmit = (data) => {
-    setCustomerData(data);
-    setCheckoutStep(3);
-  };
-
-  const handlePaymentSuccess = (data) => {
-    setPaymentResult(data);
-    setCheckoutStep(4);
-  };
-
-  const resetCheckout = () => {
-    setCheckoutStep(1);
-    setSelectedService(null);
-    setCustomerData(null);
-    setPaymentResult(null);
-  };
 
   const handleWithdrawSubmit = async (e) => {
     e.preventDefault();
@@ -329,10 +286,12 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col md:flex-row font-sans">
-      <Navbar activeTab={activeTab} onTabChange={setActiveTab} />
+      {activeTab !== 'pay-invoice' && (
+        <Navbar activeTab={activeTab} onTabChange={setActiveTab} />
+      )}
 
       {/* Main Page Content Wrapper */}
-      <div className="flex-1 flex flex-col min-w-0 pt-16 md:pt-0 overflow-x-hidden">
+      <div className={`flex-1 flex flex-col min-w-0 ${activeTab === 'pay-invoice' ? 'p-0' : 'pt-16 md:pt-0'} overflow-x-hidden`}>
         {activeTab === 'dashboard' && (
           <main className="flex-1 w-full max-w-7xl mx-auto px-4 md:px-8 py-6 md:py-8 flex flex-col">
             {loading ? (
@@ -404,76 +363,25 @@ export default function App() {
         )}
 
         {activeTab === 'payments' && (
-          <main className="flex-1 w-full max-w-3xl mx-auto px-4 py-8 flex flex-col items-center justify-start">
-            <header className="mb-6 text-center">
+          <main className="flex-1 w-full max-w-3xl mx-auto px-4 py-8 flex flex-col items-center justify-start animate-in fade-in duration-300">
+            <header className="mb-8 text-center">
               <h1 className="text-2xl md:text-3xl font-extrabold text-zinc-100 tracking-tight">
-                Halaman Pembayaran
+                Payments
               </h1>
-              <p className="text-xs text-zinc-400 mt-1.5">Pilih paket layanan dan bayar instan menggunakan QRIS</p>
+              <p className="text-xs text-zinc-400 mt-1.5">Kelola dan buat tautan pembayaran QRIS dengan cepat</p>
             </header>
 
-            <StepIndicator currentStep={checkoutStep} totalSteps={4} />
+            <div className="w-full animate-in fade-in slide-in-from-bottom-3 duration-450">
+              <PaymentLinkGenerator />
+            </div>
+          </main>
+        )}
 
-            {/* Step 1: Service Selection */}
-            {checkoutStep === 1 && (
-              <div className="w-full animate-in fade-in slide-in-from-bottom-2 duration-300">
-                <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 md:p-8 shadow-xl text-left">
-                  <div className="mb-6">
-                    <h2 className="text-lg font-bold text-zinc-100">Pilih Layanan</h2>
-                    <p className="text-xs text-zinc-400 mt-1">Pilih paket layanan yang sesuai dengan kebutuhan Anda</p>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                    {SERVICES.map((service) => (
-                      <ServiceCard
-                        key={service.id}
-                        service={service}
-                        selected={selectedService?.id === service.id}
-                        onSelect={handleServiceSelect}
-                      />
-                    ))}
-                  </div>
-
-                  <button
-                    className="w-full py-3 px-4 bg-zinc-100 hover:bg-zinc-205 text-zinc-950 disabled:opacity-50 disabled:hover:bg-zinc-100 font-extrabold rounded-lg transition-colors text-sm shadow-sm flex items-center justify-center"
-                    disabled={!selectedService}
-                    onClick={handleServiceContinue}
-                    id="btn-continue-service"
-                  >
-                    Lanjutkan →
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* Step 2: Customer Form */}
-            {checkoutStep === 2 && (
-              <CustomerForm
-                onSubmit={handleCustomerSubmit}
-                onBack={() => setCheckoutStep(1)}
-                initialData={customerData}
-              />
-            )}
-
-            {/* Step 3: Payment */}
-            {checkoutStep === 3 && (
-              <PaymentStep
-                service={selectedService}
-                customer={customerData}
-                onSuccess={handlePaymentSuccess}
-                onBack={() => setCheckoutStep(2)}
-              />
-            )}
-
-            {/* Step 4: Success */}
-            {checkoutStep === 4 && (
-              <SuccessPage
-                paymentData={paymentResult}
-                customer={customerData}
-                service={selectedService}
-                onReset={resetCheckout}
-              />
-            )}
+        {activeTab === 'pay-invoice' && (
+          <main className="flex-grow flex items-center justify-center p-4 min-h-screen bg-zinc-950">
+            <div className="w-full max-w-xl animate-in fade-in slide-in-from-bottom-3 duration-450">
+              <DirectPayView payInvoiceId={payInvoiceId} />
+            </div>
           </main>
         )}
 

@@ -3,7 +3,7 @@ import { supabase, FUNCTIONS_URL, supabaseAnonKey } from '../lib/supabase';
 
 const CHECKOUT_KEY = 'chk_62c780a4f4510faa53476b14abb4faefc8fa7f9bbe7e605d';
 
-export default function PaymentStep({ service, customer, onSuccess, onBack }) {
+export default function PaymentStep({ service, customer, onSuccess, onBack, initialPaymentData }) {
   const [state, setState] = useState('creating'); // creating | ready | paid | error
   const [paymentData, setPaymentData] = useState(null);
   const [error, setError] = useState('');
@@ -154,7 +154,7 @@ export default function PaymentStep({ service, customer, onSuccess, onBack }) {
 
       try {
         const data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
-        if (data.status === 'paid' || data.status === 'success' || data.type === 'payment_success') {
+        if (data.status === 'paid' || data.type === 'payment_success' || data.status === 'success') {
           setState('paid');
           setTimeout(() => onSuccess(paymentData), 1500);
         }
@@ -172,14 +172,20 @@ export default function PaymentStep({ service, customer, onSuccess, onBack }) {
 
   // Create payment on mount
   useEffect(() => {
-    createPayment();
+    if (initialPaymentData) {
+      setPaymentData(initialPaymentData);
+      setState('ready');
+      subscribeToPayment(initialPaymentData.invoice_id);
+    } else {
+      createPayment();
+    }
 
     return () => {
       if (subscriptionRef.current) {
         subscriptionRef.current.unsubscribe();
       }
     };
-  }, [createPayment]);
+  }, [initialPaymentData, createPayment, subscribeToPayment]);
 
   return (
     <div className="w-full max-w-xl mx-auto text-left">
