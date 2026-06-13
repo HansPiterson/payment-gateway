@@ -63,6 +63,7 @@ const DashboardSkeleton = () => (
           <div className="h-8 w-28 bg-zinc-800 rounded" />
           <div className="h-3 w-20 bg-zinc-800 rounded" />
         </div>
+      ))}
     </div>
 
     {/* API summary skeleton */}
