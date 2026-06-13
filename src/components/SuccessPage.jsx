@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
 export default function SuccessPage({ paymentData, customer, service }) {
   const confettiRef = useRef(false);
@@ -45,10 +46,12 @@ export default function SuccessPage({ paymentData, customer, service }) {
   return (
     <div className="w-full max-w-xl mx-auto text-center animate-fade-in">
       <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 md:p-8 shadow-xl">
-        <div className="w-16 h-16 rounded-full bg-zinc-100 flex items-center justify-center mx-auto mb-6 text-zinc-950 shadow-md">
-          <svg className="w-8 h-8 stroke-zinc-950" fill="none" viewBox="0 0 24 24" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="20 6 9 17 4 12" />
-          </svg>
+        <div className="w-24 h-24 mx-auto mb-4 flex items-center justify-center overflow-hidden">
+          <DotLottieReact
+            src="https://lottie.host/83b30e2a-0edb-4762-a333-93b7a889e810/dvBt3kYw1x.lottie"
+            autoplay
+            loop={false}
+          />
         </div>
 
         <h2 className="text-xl md:text-2xl font-black text-zinc-100 tracking-tight">Pembayaran Berhasil!</h2>
@@ -92,13 +95,7 @@ export default function SuccessPage({ paymentData, customer, service }) {
           Silakan hubungi admin jika ada pertanyaan.
         </p>
 
-        <button
-          className="w-full py-3 px-4 bg-zinc-100 hover:bg-zinc-200 text-zinc-950 font-bold rounded-lg transition-colors text-sm shadow-sm"
-          onClick={() => window.location.reload()}
-          id="btn-new-payment"
-        >
-          Buat Pembayaran Baru
-        </button>
+
       </div>
 
       <style>{`
