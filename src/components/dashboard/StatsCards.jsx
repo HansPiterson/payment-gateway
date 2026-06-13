@@ -129,10 +129,8 @@ export default function StatsCards({ stats }) {
               )}
             </div>
 
-            <span className={`text-[10px] mt-2 block font-medium ${
-              stat.isPrimary ? 'text-zinc-500' : 'text-zinc-500'
-            }`}>
-              Last month: {stat.lastMonth}
+            <span className={`text-[10px] mt-2 block font-medium text-zinc-500`}>
+              {stat.label === 'Balance' || stat.label === 'Total Revenue' ? stat.lastMonth : `Last month: ${stat.lastMonth}`}
             </span>
           </div>
         );

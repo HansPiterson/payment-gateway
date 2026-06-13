@@ -4,17 +4,59 @@ import {
   Settings02Icon,
   Menu01Icon,
   Cancel01Icon,
+  ArrowLeft01Icon,
+  ArrowRight01Icon,
 } from 'hugeicons-react';
 
 const navTabs = [
-  { label: 'Dashboard', key: 'dashboard' },
-  { label: 'Analytics', key: 'analytics' },
-  { label: 'Payments', key: 'payments' },
-  { label: 'Settings', key: 'settings' },
+  { 
+    label: 'Dashboard', 
+    key: 'dashboard',
+    Icon: () => (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="3" y="3" width="7" height="9" />
+        <rect x="14" y="3" width="7" height="5" />
+        <rect x="14" y="12" width="7" height="9" />
+        <rect x="3" y="16" width="7" height="5" />
+      </svg>
+    )
+  },
+  { 
+    label: 'Analytics', 
+    key: 'analytics',
+    Icon: () => (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <line x1="18" y1="20" x2="18" y2="10" />
+        <line x1="12" y1="20" x2="12" y2="4" />
+        <line x1="6" y1="20" x2="6" y2="14" />
+      </svg>
+    )
+  },
+  { 
+    label: 'Payments', 
+    key: 'payments',
+    Icon: () => (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="2" y="5" width="20" height="14" rx="2" />
+        <line x1="2" y1="10" x2="22" y2="10" />
+      </svg>
+    )
+  },
+  { 
+    label: 'Settings', 
+    key: 'settings',
+    Icon: () => (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="12" r="3" />
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+      </svg>
+    )
+  },
 ];
 
 export default function Navbar({ activeTab = 'dashboard', onTabChange }) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   const handleTabClick = (key) => {
     onTabChange?.(key);
@@ -23,80 +65,115 @@ export default function Navbar({ activeTab = 'dashboard', onTabChange }) {
 
   return (
     <>
-      <nav className="w-full h-16 bg-zinc-900 border-b border-zinc-800 px-4 md:px-8 flex items-center justify-between sticky top-0 z-50">
-        {/* Brand */}
-        <a href="/" className="flex items-center gap-2 hover:opacity-90 transition-opacity">
-          <div className="w-8 h-8 rounded-lg bg-zinc-100 flex items-center justify-center text-zinc-950">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-            </svg>
-          </div>
-          <span className="text-lg font-bold text-zinc-100 tracking-tight">BAYAR.dev</span>
-        </a>
+      {/* Sidebar for Desktop / Header for Mobile */}
+      <aside 
+        className={`fixed md:sticky top-0 left-0 bg-zinc-900 border-zinc-800 z-40 transition-all duration-300 ease-in-out flex flex-row md:flex-col justify-between md:justify-start items-center md:items-stretch
+          w-full h-16 border-b px-4 md:px-0 md:h-screen md:border-b-0 md:border-r 
+          ${isCollapsed ? 'md:w-20' : 'md:w-64'}`}
+      >
+        {/* Toggle Collapse Button (Desktop Only) */}
+        <button
+          onClick={() => setIsCollapsed(!isCollapsed)}
+          className="hidden md:flex absolute top-8 -right-3 w-6 h-6 bg-zinc-850 border border-zinc-700 text-zinc-400 hover:text-zinc-200 rounded-full items-center justify-center cursor-pointer shadow-md z-50 transition-colors"
+          aria-label="Toggle Sidebar"
+        >
+          {isCollapsed ? <ArrowRight01Icon size={12} /> : <ArrowLeft01Icon size={12} />}
+        </button>
 
-        {/* Desktop Nav */}
-        <ul className="hidden md:flex items-center gap-2">
-          {navTabs.map((tab) => (
-            <li key={tab.key}>
-              <button
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                  activeTab === tab.key
-                    ? 'bg-zinc-100 text-zinc-950 shadow-sm'
-                    : 'text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800'
-                }`}
-                onClick={() => handleTabClick(tab.key)}
-              >
-                {tab.label}
-              </button>
-            </li>
-          ))}
+        {/* Brand / Logo */}
+        <div className={`flex items-center gap-3 md:py-8 md:px-5 border-b border-zinc-850/50 md:h-24 ${isCollapsed ? 'md:justify-center' : 'md:justify-start'}`}>
+          <a href="/" className="flex items-center gap-3 hover:opacity-90 transition-opacity">
+            <div className="w-8 h-8 rounded-lg bg-zinc-100 flex items-center justify-center text-zinc-950 flex-shrink-0">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+              </svg>
+            </div>
+            <span className={`text-lg font-bold text-zinc-100 tracking-tight transition-all duration-300 ease-in-out whitespace-nowrap overflow-hidden
+              ${isCollapsed ? 'w-0 opacity-0 hidden md:block' : 'w-auto opacity-100'}`}
+            >
+              BAYAR.dev
+            </span>
+          </a>
+        </div>
+
+        {/* Desktop Vertical Menu */}
+        <ul className="hidden md:flex flex-col gap-1.5 p-4 flex-1">
+          {navTabs.map((tab) => {
+            const isActive = activeTab === tab.key;
+            return (
+              <li key={tab.key}>
+                <button
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all group relative ${
+                    isActive
+                      ? 'bg-zinc-100 text-zinc-950 shadow-sm font-semibold'
+                      : 'text-zinc-400 hover:text-zinc-150 hover:bg-zinc-850/50'
+                  }`}
+                  onClick={() => handleTabClick(tab.key)}
+                  title={isCollapsed ? tab.label : undefined}
+                >
+                  <span className={`flex-shrink-0 ${isActive ? 'text-zinc-950' : 'text-zinc-400 group-hover:text-zinc-200'}`}>
+                    <tab.Icon />
+                  </span>
+                  <span className={`transition-all duration-300 ease-in-out whitespace-nowrap overflow-hidden
+                    ${isCollapsed ? 'w-0 opacity-0' : 'w-auto opacity-100'}`}
+                  >
+                    {tab.label}
+                  </span>
+
+                  {/* Tooltip on Collapsed */}
+                  {isCollapsed && (
+                    <div className="absolute left-full ml-4 px-2.5 py-1.5 bg-zinc-950 border border-zinc-800 text-zinc-200 text-xs rounded-md shadow-xl opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-200 whitespace-nowrap z-50">
+                      {tab.label}
+                    </div>
+                  )}
+                </button>
+              </li>
+            );
+          })}
         </ul>
 
-        {/* Right Actions */}
-        <div className="flex items-center gap-2 md:gap-4">
+        {/* Right Actions / Hamburger (Mobile Only) */}
+        <div className="flex md:hidden items-center gap-2">
           <button
-            className="md:hidden p-2 text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 rounded-lg transition-colors"
+            className="p-2 text-zinc-400 hover:text-zinc-100 hover:bg-zinc-850 rounded-lg transition-colors"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="Menu"
           >
             {mobileOpen ? <Cancel01Icon size={20} /> : <Menu01Icon size={20} />}
           </button>
+        </div>
 
-          <button className="relative p-2 text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 rounded-lg transition-colors" aria-label="Notifications">
-            <Notification02Icon size={18} />
-            <span className="absolute top-2 right-2 w-2 h-2 bg-zinc-400 rounded-full" />
-          </button>
-
-          <button className="p-2 text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 rounded-lg transition-colors" aria-label="Settings">
-            <Settings02Icon size={18} />
-          </button>
-
-          <div className="h-8 w-px bg-zinc-800" />
-
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center text-xs font-bold text-zinc-200">
-              AU
-            </div>
-            <div className="hidden lg:flex flex-col text-left">
-              <span className="text-xs font-semibold text-zinc-200 leading-tight">Admin User</span>
-              <span className="text-[10px] text-zinc-500">admin@bayar.dev</span>
-            </div>
+        {/* Desktop User Profile (Bottom of Sidebar) */}
+        <div className={`hidden md:flex items-center gap-3 p-4 border-t border-zinc-850/50 ${isCollapsed ? 'justify-center' : 'justify-start'}`}>
+          <div className="w-9 h-9 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center text-xs font-bold text-zinc-200 flex-shrink-0">
+            AU
+          </div>
+          <div className={`flex flex-col text-left transition-all duration-300 ease-in-out whitespace-nowrap overflow-hidden
+            ${isCollapsed ? 'w-0 opacity-0' : 'w-auto opacity-100'}`}
+          >
+            <span className="text-xs font-semibold text-zinc-200 leading-tight">Admin User</span>
+            <span className="text-[10px] text-zinc-500">admin@bayar.dev</span>
           </div>
         </div>
-      </nav>
+      </aside>
 
-      {/* Mobile Nav Overlay */}
+      {/* Mobile Nav Drawer (Slides from Left with Smooth Animation) */}
       {mobileOpen && (
         <>
           <div
-            className="fixed inset-0 bg-zinc-950/80 backdrop-blur-sm z-40 md:hidden transition-opacity"
+            className="fixed inset-0 bg-zinc-950/80 backdrop-blur-sm z-40 md:hidden transition-opacity duration-300 animate-in fade-in"
             onClick={() => setMobileOpen(false)}
           />
-          <div className="fixed top-0 right-0 w-64 h-full bg-zinc-900 border-l border-zinc-800 z-50 md:hidden flex flex-col p-6 shadow-2xl transition-transform animate-in slide-in-from-right duration-200">
+          <div className="fixed top-0 left-0 w-64 h-full bg-zinc-900 border-r border-zinc-800 z-50 md:hidden flex flex-col p-6 shadow-2xl transition-transform duration-300 ease-in-out animate-in slide-in-from-left">
             <div className="flex items-center justify-between mb-8">
-              <span className="text-lg font-bold text-zinc-100">BAYAR.dev</span>
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded bg-zinc-100 flex items-center justify-center text-zinc-950 font-bold">
+                  ⚡
+                </div>
+                <span className="text-lg font-bold text-zinc-100">BAYAR.dev</span>
+              </div>
               <button
-                className="p-2 text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 rounded-lg transition-colors"
+                className="p-2 text-zinc-400 hover:text-zinc-100 hover:bg-zinc-850 rounded-lg transition-colors"
                 onClick={() => setMobileOpen(false)}
               >
                 <Cancel01Icon size={18} />
@@ -106,18 +183,29 @@ export default function Navbar({ activeTab = 'dashboard', onTabChange }) {
               {navTabs.map((tab) => (
                 <li key={tab.key}>
                   <button
-                    className={`w-full text-left px-4 py-3 rounded-lg text-sm font-medium transition-all ${
+                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all ${
                       activeTab === tab.key
-                        ? 'bg-zinc-100 text-zinc-950'
-                        : 'text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800'
+                        ? 'bg-zinc-100 text-zinc-950 font-semibold'
+                        : 'text-zinc-400 hover:text-zinc-100 hover:bg-zinc-850'
                     }`}
                     onClick={() => handleTabClick(tab.key)}
                   >
-                    {tab.label}
+                    <span><tab.Icon /></span>
+                    <span>{tab.label}</span>
                   </button>
                 </li>
               ))}
             </ul>
+
+            <div className="mt-auto pt-6 border-t border-zinc-850/50 flex items-center gap-3">
+              <div className="w-8 h-8 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center text-xs font-bold text-zinc-200">
+                AU
+              </div>
+              <div className="flex flex-col text-left">
+                <span className="text-xs font-semibold text-zinc-200 leading-tight">Admin User</span>
+                <span className="text-[10px] text-zinc-500">admin@bayar.dev</span>
+              </div>
+            </div>
           </div>
         </>
       )}

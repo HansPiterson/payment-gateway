@@ -270,13 +270,27 @@ Deno.serve(async (req: Request) => {
     }
     const currentBalance = Number(walletData?.balance ?? 2000);
 
-    // Stats Cards Formatted using EXACT statistics from the period and balance from DB
+    // Fetch all-time total revenue from local database payments table
+    const { data: allPaidPayments, error: paidPaymentsError } = await supabase
+      .from("payments")
+      .select("amount")
+      .or("status.eq.paid,status.eq.success");
+
+    if (paidPaymentsError) {
+      console.error("Error querying all-time paid payments:", paidPaymentsError);
+    }
+
+    const allTimeRevenue = allPaidPayments 
+      ? allPaidPayments.reduce((sum: number, p: any) => sum + Number(p.amount || 0), 0)
+      : 0;
+
+    // Stats Cards Formatted using database values for wallet and all-time revenue
     const stats = {
       balance: {
         value: currentBalance.toLocaleString("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }),
         growth: "", // No growth metric needed for absolute balance
         isPositive: true,
-        lastMonth: "Rp 2.000",
+        lastMonth: "Pencatatan Saldo",
       },
       newCustomers: {
         value: uniqueCustomers.size.toLocaleString("id-ID"), // Estimated from list
@@ -291,8 +305,8 @@ Deno.serve(async (req: Request) => {
         lastMonth: "0",
       },
       totalRevenue: {
-        value: exactTotalRevenue.toLocaleString("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }),
-        lastMonth: lastMonthRevenue.toLocaleString("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }),
+        value: allTimeRevenue.toLocaleString("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }),
+        lastMonth: "Pendapatan Keseluruhan",
       }
     };
 

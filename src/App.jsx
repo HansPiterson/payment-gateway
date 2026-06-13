@@ -38,6 +38,109 @@ const SERVICES = [
   },
 ];
 
+const DashboardSkeleton = () => (
+  <div className="w-full flex-grow flex flex-col space-y-6 md:space-y-8 animate-pulse text-zinc-500">
+    {/* PageHeader Skeleton */}
+    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-2">
+      <div className="space-y-2 text-left">
+        <div className="h-7 w-48 bg-zinc-900 border border-zinc-850 rounded-lg" />
+        <div className="h-4 w-72 bg-zinc-900 border border-zinc-850 rounded-lg" />
+      </div>
+      <div className="flex gap-2">
+        <div className="h-9 w-28 bg-zinc-900 border border-zinc-850 rounded-lg" />
+        <div className="h-9 w-24 bg-zinc-900 border border-zinc-850 rounded-lg" />
+      </div>
+    </div>
+
+    {/* Stats Cards Skeleton */}
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+      {[1, 2, 3, 4].map((i) => (
+        <div key={i} className="bg-zinc-900 border border-zinc-800 rounded-xl p-5 space-y-4">
+          <div className="flex justify-between items-center">
+            <div className="h-3 w-16 bg-zinc-800 rounded" />
+            <div className="w-7 h-7 bg-zinc-800 rounded-lg" />
+          </div>
+          <div className="h-8 w-28 bg-zinc-800 rounded" />
+          <div className="h-3 w-20 bg-zinc-800 rounded" />
+        </div>
+      ))}
+    </div>
+
+    {/* RecentOrders Table Skeleton */}
+    <div className="bg-zinc-900 border border-zinc-800 rounded-xl py-6 space-y-4 flex-1">
+      <div className="flex justify-between items-center px-6">
+        <div className="h-6 w-32 bg-zinc-800 rounded" />
+        <div className="h-8 w-44 bg-zinc-800 rounded-lg" />
+      </div>
+      <div className="h-px bg-zinc-850" />
+      <div className="px-6 space-y-3.5 pt-2">
+        {[1, 2, 3, 4, 5].map((i) => (
+          <div key={i} className="flex items-center justify-between py-2 border-b border-zinc-850/20">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-zinc-800 rounded-lg animate-pulse" />
+              <div className="space-y-2">
+                <div className="h-3.5 w-28 bg-zinc-800 rounded" />
+                <div className="h-2 w-16 bg-zinc-800 rounded" />
+              </div>
+            </div>
+            <div className="h-3.5 w-16 bg-zinc-800 rounded hidden sm:block" />
+            <div className="h-3.5 w-20 bg-zinc-800 rounded" />
+            <div className="h-6 w-20 bg-zinc-805 rounded-full" />
+            <div className="h-3.5 w-16 bg-zinc-800 rounded text-right" />
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+);
+
+const AnalyticsSkeleton = () => (
+  <div className="w-full flex-grow flex flex-col space-y-6 md:space-y-8 animate-pulse text-zinc-500">
+    {/* PageHeader Skeleton */}
+    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-2">
+      <div className="space-y-2 text-left">
+        <div className="h-7 w-48 bg-zinc-900 border border-zinc-850 rounded-lg" />
+        <div className="h-4 w-72 bg-zinc-900 border border-zinc-850 rounded-lg" />
+      </div>
+      <div className="h-9 w-24 bg-zinc-900 border border-zinc-850 rounded-lg" />
+    </div>
+
+    {/* Charts Skeleton */}
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8 items-start">
+      <div className="lg:col-span-2 bg-zinc-900 border border-zinc-800 rounded-xl p-6 h-[380px] flex flex-col justify-between">
+        <div className="flex justify-between items-center">
+          <div className="h-5 w-40 bg-zinc-800 rounded" />
+          <div className="h-8 w-24 bg-zinc-800 rounded-lg" />
+        </div>
+        <div className="flex items-end gap-3 h-52 mt-4 px-2">
+          {[40, 25, 65, 35, 85, 55, 75, 60].map((h, i) => (
+            <div key={i} className="bg-zinc-800 rounded-t-lg flex-1" style={{ height: `${h}%` }} />
+          ))}
+        </div>
+      </div>
+      <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 h-[380px] flex flex-col justify-between">
+        <div className="flex justify-between items-center">
+          <div className="h-5 w-32 bg-zinc-800 rounded" />
+          <div className="w-5 h-5 bg-zinc-800 rounded-full" />
+        </div>
+        <div className="relative w-36 h-36 rounded-full border-8 border-zinc-800 border-t-zinc-700 animate-spin mx-auto my-6 flex items-center justify-center">
+          <div className="h-4 w-12 bg-zinc-800 rounded" />
+        </div>
+        <div className="grid grid-cols-2 gap-4 pt-4 border-t border-zinc-850">
+          <div className="space-y-2 text-left">
+            <div className="h-3 w-16 bg-zinc-800 rounded" />
+            <div className="h-5 w-12 bg-zinc-800 rounded" />
+          </div>
+          <div className="space-y-2 pl-4 border-l border-zinc-850 text-left">
+            <div className="h-3 w-16 bg-zinc-800 rounded" />
+            <div className="h-5 w-20 bg-zinc-800 rounded" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
 export default function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [dashboardData, setDashboardData] = useState(null);
@@ -212,182 +315,173 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col font-sans">
+    <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col md:flex-row font-sans">
       <Navbar activeTab={activeTab} onTabChange={setActiveTab} />
 
-      {activeTab === 'dashboard' && (
-        <main className="flex-1 w-full max-w-7xl mx-auto px-4 md:px-8 py-6 md:py-8 flex flex-col">
-          <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
-            <PageHeader 
-              onRefresh={fetchDashboardData} 
-              isLoading={loading} 
-              onWithdraw={() => setIsWithdrawOpen(true)}
-            />
-          </div>
-
-          {loading && !dashboardData && (
-            <div className="flex-1 flex flex-col items-center justify-center py-24 text-zinc-400">
-              <div className="w-8 h-8 border-3 border-zinc-800 border-t-zinc-200 rounded-full animate-spin mb-4" />
-              <p className="text-sm font-medium">Memuat data transaksi dari Bayar.gg...</p>
-            </div>
-          )}
-
-          {error && (
-            <div className="flex-1 flex items-center justify-center py-12">
-              <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 md:p-8 text-center max-w-sm w-full shadow-lg">
-                <h3 className="text-lg font-bold text-zinc-100 mb-2">Terjadi Kesalahan</h3>
-                <p className="text-xs text-zinc-400 mb-6 leading-relaxed">{error}</p>
-                <button
-                  onClick={fetchDashboardData}
-                  className="w-full py-2.5 px-4 bg-zinc-100 hover:bg-zinc-200 text-zinc-950 font-bold rounded-lg transition-colors text-xs shadow-sm"
-                >
-                  Coba Lagi
-                </button>
-              </div>
-            </div>
-          )}
-
-          {dashboardData && !loading && (
-            <div className="space-y-6 md:space-y-8 flex flex-col w-full animate-in fade-in slide-in-from-bottom-4 duration-500">
-              <StatsCards stats={dashboardData.stats} />
-              <RecentOrders orders={dashboardData.recentOrders} />
-            </div>
-          )}
-        </main>
-      )}
-
-      {activeTab === 'payments' && (
-        <main className="flex-1 w-full max-w-3xl mx-auto px-4 py-8 flex flex-col items-center justify-start">
-          <header className="mb-6 text-center">
-            <h1 className="text-2xl md:text-3xl font-extrabold text-zinc-100 tracking-tight">
-              Halaman Pembayaran
-            </h1>
-            <p className="text-xs text-zinc-400 mt-1.5">Pilih paket layanan dan bayar instan menggunakan QRIS</p>
-          </header>
-
-          <StepIndicator currentStep={checkoutStep} totalSteps={4} />
-
-          {/* Step 1: Service Selection */}
-          {checkoutStep === 1 && (
-            <div className="w-full animate-in fade-in slide-in-from-bottom-2 duration-300">
-              <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 md:p-8 shadow-xl text-left">
-                <div className="mb-6">
-                  <h2 className="text-lg font-bold text-zinc-100">Pilih Layanan</h2>
-                  <p className="text-xs text-zinc-400 mt-1">Pilih paket layanan yang sesuai dengan kebutuhan Anda</p>
+      {/* Main Page Content Wrapper */}
+      <div className="flex-1 flex flex-col min-w-0 pt-16 md:pt-0 overflow-x-hidden">
+        {activeTab === 'dashboard' && (
+          <main className="flex-1 w-full max-w-7xl mx-auto px-4 md:px-8 py-6 md:py-8 flex flex-col">
+            {loading ? (
+              <DashboardSkeleton />
+            ) : error ? (
+              <div className="flex-1 flex items-center justify-center py-12">
+                <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 md:p-8 text-center max-w-sm w-full shadow-lg">
+                  <h3 className="text-lg font-bold text-zinc-100 mb-2">Terjadi Kesalahan</h3>
+                  <p className="text-xs text-zinc-400 mb-6 leading-relaxed">{error}</p>
+                  <button
+                    onClick={fetchDashboardData}
+                    className="w-full py-2.5 px-4 bg-zinc-100 hover:bg-zinc-200 text-zinc-950 font-bold rounded-lg transition-colors text-xs shadow-sm"
+                  >
+                    Coba Lagi
+                  </button>
                 </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                  {SERVICES.map((service) => (
-                    <ServiceCard
-                      key={service.id}
-                      service={service}
-                      selected={selectedService?.id === service.id}
-                      onSelect={handleServiceSelect}
-                    />
-                  ))}
+              </div>
+            ) : dashboardData ? (
+              <>
+                <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+                  <PageHeader 
+                    onRefresh={fetchDashboardData} 
+                    isLoading={loading} 
+                    onWithdraw={() => setIsWithdrawOpen(true)}
+                  />
                 </div>
+                <div className="space-y-6 md:space-y-8 flex flex-col w-full animate-in fade-in slide-in-from-bottom-4 duration-500">
+                  <StatsCards stats={dashboardData.stats} />
+                  <RecentOrders orders={dashboardData.recentOrders} />
+                </div>
+              </>
+            ) : null}
+          </main>
+        )}
 
-                <button
-                  className="w-full py-3 px-4 bg-zinc-100 hover:bg-zinc-205 text-zinc-950 disabled:opacity-50 disabled:hover:bg-zinc-100 font-extrabold rounded-lg transition-colors text-sm shadow-sm flex items-center justify-center"
-                  disabled={!selectedService}
-                  onClick={handleServiceContinue}
-                  id="btn-continue-service"
-                >
-                  Lanjutkan →
-                </button>
+        {activeTab === 'payments' && (
+          <main className="flex-1 w-full max-w-3xl mx-auto px-4 py-8 flex flex-col items-center justify-start">
+            <header className="mb-6 text-center">
+              <h1 className="text-2xl md:text-3xl font-extrabold text-zinc-100 tracking-tight">
+                Halaman Pembayaran
+              </h1>
+              <p className="text-xs text-zinc-400 mt-1.5">Pilih paket layanan dan bayar instan menggunakan QRIS</p>
+            </header>
+
+            <StepIndicator currentStep={checkoutStep} totalSteps={4} />
+
+            {/* Step 1: Service Selection */}
+            {checkoutStep === 1 && (
+              <div className="w-full animate-in fade-in slide-in-from-bottom-2 duration-300">
+                <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 md:p-8 shadow-xl text-left">
+                  <div className="mb-6">
+                    <h2 className="text-lg font-bold text-zinc-100">Pilih Layanan</h2>
+                    <p className="text-xs text-zinc-400 mt-1">Pilih paket layanan yang sesuai dengan kebutuhan Anda</p>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    {SERVICES.map((service) => (
+                      <ServiceCard
+                        key={service.id}
+                        service={service}
+                        selected={selectedService?.id === service.id}
+                        onSelect={handleServiceSelect}
+                      />
+                    ))}
+                  </div>
+
+                  <button
+                    className="w-full py-3 px-4 bg-zinc-100 hover:bg-zinc-205 text-zinc-950 disabled:opacity-50 disabled:hover:bg-zinc-100 font-extrabold rounded-lg transition-colors text-sm shadow-sm flex items-center justify-center"
+                    disabled={!selectedService}
+                    onClick={handleServiceContinue}
+                    id="btn-continue-service"
+                  >
+                    Lanjutkan →
+                  </button>
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
-          {/* Step 2: Customer Form */}
-          {checkoutStep === 2 && (
-            <CustomerForm
-              onSubmit={handleCustomerSubmit}
-              onBack={() => setCheckoutStep(1)}
-              initialData={customerData}
-            />
-          )}
+            {/* Step 2: Customer Form */}
+            {checkoutStep === 2 && (
+              <CustomerForm
+                onSubmit={handleCustomerSubmit}
+                onBack={() => setCheckoutStep(1)}
+                initialData={customerData}
+              />
+            )}
 
-          {/* Step 3: Payment */}
-          {checkoutStep === 3 && (
-            <PaymentStep
-              service={selectedService}
-              customer={customerData}
-              onSuccess={handlePaymentSuccess}
-              onBack={() => setCheckoutStep(2)}
-            />
-          )}
+            {/* Step 3: Payment */}
+            {checkoutStep === 3 && (
+              <PaymentStep
+                service={selectedService}
+                customer={customerData}
+                onSuccess={handlePaymentSuccess}
+                onBack={() => setCheckoutStep(2)}
+              />
+            )}
 
-          {/* Step 4: Success */}
-          {checkoutStep === 4 && (
-            <SuccessPage
-              paymentData={paymentResult}
-              customer={customerData}
-              service={selectedService}
-              onReset={resetCheckout}
-            />
-          )}
-        </main>
-      )}
+            {/* Step 4: Success */}
+            {checkoutStep === 4 && (
+              <SuccessPage
+                paymentData={paymentResult}
+                customer={customerData}
+                service={selectedService}
+                onReset={resetCheckout}
+              />
+            )}
+          </main>
+        )}
 
-      {activeTab === 'analytics' && (
-        <main className="flex-1 w-full max-w-7xl mx-auto px-4 md:px-8 py-6 md:py-8 flex flex-col">
-          <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
-            <PageHeader 
-              title="Analytics" 
-              subtitle="Analisis performa transaksi dan metode pembayaran" 
-              onRefresh={fetchDashboardData} 
-              isLoading={loading} 
-            />
-          </div>
-
-          {loading && !dashboardData && (
-            <div className="flex-1 flex flex-col items-center justify-center py-24 text-zinc-400">
-              <div className="w-8 h-8 border-3 border-zinc-800 border-t-zinc-200 rounded-full animate-spin mb-4" />
-              <p className="text-sm font-medium">Memuat data analitik dari Bayar.gg...</p>
-            </div>
-          )}
-
-          {error && (
-            <div className="flex-1 flex items-center justify-center py-12">
-              <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 md:p-8 text-center max-w-sm w-full shadow-lg">
-                <h3 className="text-lg font-bold text-zinc-100 mb-2">Terjadi Kesalahan</h3>
-                <p className="text-xs text-zinc-400 mb-6 leading-relaxed">{error}</p>
-                <button
-                  onClick={fetchDashboardData}
-                  className="w-full py-2.5 px-4 bg-zinc-100 hover:bg-zinc-200 text-zinc-950 font-bold rounded-lg transition-colors text-xs shadow-sm"
-                >
-                  Coba Lagi
-                </button>
+        {activeTab === 'analytics' && (
+          <main className="flex-1 w-full max-w-7xl mx-auto px-4 md:px-8 py-6 md:py-8 flex flex-col">
+            {loading ? (
+              <AnalyticsSkeleton />
+            ) : error ? (
+              <div className="flex-1 flex items-center justify-center py-12">
+                <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 md:p-8 text-center max-w-sm w-full shadow-lg">
+                  <h3 className="text-lg font-bold text-zinc-100 mb-2">Terjadi Kesalahan</h3>
+                  <p className="text-xs text-zinc-400 mb-6 leading-relaxed">{error}</p>
+                  <button
+                    onClick={fetchDashboardData}
+                    className="w-full py-2.5 px-4 bg-zinc-100 hover:bg-zinc-200 text-zinc-950 font-bold rounded-lg transition-colors text-xs shadow-sm"
+                  >
+                    Coba Lagi
+                  </button>
+                </div>
               </div>
-            </div>
-          )}
+            ) : dashboardData ? (
+              <>
+                <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+                  <PageHeader 
+                    title="Analytics" 
+                    subtitle="Analisis performa transaksi dan metode pembayaran" 
+                    onRefresh={fetchDashboardData} 
+                    isLoading={loading} 
+                  />
+                </div>
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8 items-start w-full animate-in fade-in slide-in-from-bottom-4 duration-550">
+                  <div className="lg:col-span-2">
+                    <PerformanceChart chartData={dashboardData.chartData} />
+                  </div>
+                  <div>
+                    <SalesOverview overview={dashboardData.salesOverview} />
+                  </div>
+                </div>
+              </>
+            ) : null}
+          </main>
+        )}
 
-          {dashboardData && !loading && (
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8 items-start w-full animate-in fade-in slide-in-from-bottom-4 duration-550">
-              <div className="lg:col-span-2">
-                <PerformanceChart chartData={dashboardData.chartData} />
-              </div>
-              <div>
-                <SalesOverview overview={dashboardData.salesOverview} />
-              </div>
+        {activeTab === 'settings' && (
+          <main className="flex-1 w-full max-w-7xl mx-auto px-4 md:px-8 py-6 md:py-8 flex flex-col items-start text-left">
+            <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+              <h1 className="text-2xl md:text-3xl font-extrabold text-zinc-100 tracking-tight">
+                Settings
+              </h1>
+              <p className="text-xs text-zinc-400 mt-1.5">
+                Halaman ini sedang dalam pengembangan.
+              </p>
             </div>
-          )}
-        </main>
-      )}
-
-      {activeTab === 'settings' && (
-        <main className="flex-1 w-full max-w-7xl mx-auto px-4 md:px-8 py-6 md:py-8 flex flex-col items-start text-left">
-          <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
-            <h1 className="text-2xl md:text-3xl font-extrabold text-zinc-100 tracking-tight">
-              Settings
-            </h1>
-            <p className="text-xs text-zinc-400 mt-1.5">
-              Halaman ini sedang dalam pengembangan.
-            </p>
-          </div>
-        </main>
-      )}
+          </main>
+        )}
+      </div>
 
       {/* Modern native <dialog> for Withdrawal */}
       <dialog
