@@ -75,6 +75,7 @@ Deno.serve(async (req: Request) => {
           customer_phone: customer_phone || "",
           payment_method: "qris",
           callback_url: callbackUrl,
+          payment_url: "https://www.bayar.gg/pay",
         }),
       },
     );
