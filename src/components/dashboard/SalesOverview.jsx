@@ -1,6 +1,5 @@
 /* Segmented ring chart built from SVG arcs */
 const SEGMENTS = 60;
-const FILLED = Math.round(SEGMENTS * 0.708); // 70.8%
 const RADIUS = 80;
 const CENTER = 100;
 const SEGMENT_GAP = 1.2;
@@ -18,12 +17,13 @@ function describeArc(cx, cy, r, startAngle, endAngle) {
   return `M ${start.x} ${start.y} A ${r} ${r} 0 ${largeArc} 0 ${end.x} ${end.y}`;
 }
 
-const SegmentedRing = () => {
+const SegmentedRing = ({ progress = 70.8 }) => {
+  const filledCount = Math.round(SEGMENTS * (progress / 100));
   const segments = [];
   for (let i = 0; i < SEGMENTS; i++) {
     const startAngle = i * (360 / SEGMENTS);
     const endAngle = startAngle + SEGMENT_ARC;
-    const isFilled = i < FILLED;
+    const isFilled = i < filledCount;
     segments.push(
       <path
         key={i}
@@ -45,11 +45,11 @@ const SegmentedRing = () => {
         </linearGradient>
       </defs>
       {segments}
-      <text x={CENTER} y={CENTER - 6} textAnchor="middle" fill="#202224" fontSize="28" fontWeight="700" fontFamily="Poppins, sans-serif">
-        70.8%
+      <text x={CENTER} y={CENTER - 6} textAnchor="middle" fill="#202224" fontSize="26" fontWeight="700" fontFamily="Poppins, sans-serif">
+        {progress}%
       </text>
       <text x={CENTER} y={CENTER + 16} textAnchor="middle" fill="#6B7280" fontSize="12" fontWeight="500" fontFamily="Poppins, sans-serif">
-        Sales Growth
+        Target Progress
       </text>
     </svg>
   );
@@ -61,7 +61,26 @@ const ArrowUp = () => (
   </svg>
 );
 
-export default function SalesOverview() {
+const ArrowDown = () => (
+  <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+    <path d="M5 8L2 4H8L5 8Z" fill="currentColor" />
+  </svg>
+);
+
+const defaultOverview = {
+  growth: 70.8,
+  salesCount: 2343,
+  salesGrowth: '+4.5%',
+  revenue: 'Rp 30.900.000',
+  revenueGrowth: '+4.5%',
+};
+
+export default function SalesOverview({ overview }) {
+  const data = overview || defaultOverview;
+  
+  const isSalesUp = !data.salesGrowth.startsWith('-');
+  const isRevenueUp = !data.revenueGrowth.startsWith('-');
+
   return (
     <div className="card" style={{ display: 'flex', flexDirection: 'column' }}>
       <div className="card-header">
@@ -76,26 +95,30 @@ export default function SalesOverview() {
       </div>
 
       <div className="sales-ring-container" style={{ flex: 1 }}>
-        <SegmentedRing />
+        <SegmentedRing progress={data.growth} />
       </div>
 
       <div className="sales-stats-row">
         <div className="sales-stat-box">
           <div className="sales-stat-box-label">Number of Sales</div>
           <div className="sales-stat-box-value">
-            2,343
-            <span className="stat-badge up">
-              <ArrowUp /> 4.5%
-            </span>
+            {data.salesCount.toLocaleString("id-ID")}
+            {data.salesGrowth !== '0%' && data.salesGrowth !== '+0%' && (
+              <span className={`stat-badge ${isSalesUp ? 'up' : 'down'}`}>
+                {isSalesUp ? <ArrowUp /> : <ArrowDown />} {data.salesGrowth.replace('+', '').replace('-', '')}
+              </span>
+            )}
           </div>
         </div>
         <div className="sales-stat-box">
           <div className="sales-stat-box-label">Total Revenue</div>
-          <div className="sales-stat-box-value">
-            $30.9k
-            <span className="stat-badge up">
-              <ArrowUp /> 4.5%
-            </span>
+          <div className="sales-stat-box-value" style={{ fontSize: '13px', fontWeight: '700' }}>
+            {data.revenue}
+            {data.revenueGrowth !== '0%' && data.revenueGrowth !== '+0%' && (
+              <span className={`stat-badge ${isRevenueUp ? 'up' : 'down'}`}>
+                {isRevenueUp ? <ArrowUp /> : <ArrowDown />} {data.revenueGrowth.replace('+', '').replace('-', '')}
+              </span>
+            )}
           </div>
         </div>
       </div>

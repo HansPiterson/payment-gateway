@@ -239,7 +239,8 @@ const s = {
   },
 };
 
-export default function RecentOrders() {
+export default function RecentOrders({ orders: propOrders }) {
+  const ordersList = propOrders || orders;
   const [checkedRows, setCheckedRows] = useState([]);
 
   const toggleRow = (id) => {
@@ -249,10 +250,10 @@ export default function RecentOrders() {
   };
 
   const toggleAll = () => {
-    if (checkedRows.length === orders.length) {
+    if (checkedRows.length === ordersList.length) {
       setCheckedRows([]);
     } else {
-      setCheckedRows(orders.map((o) => o.id));
+      setCheckedRows(ordersList.map((o) => o.id));
     }
   };
 
@@ -289,7 +290,7 @@ export default function RecentOrders() {
                 <input
                   type="checkbox"
                   style={s.checkbox}
-                  checked={checkedRows.length === orders.length}
+                  checked={ordersList.length > 0 && checkedRows.length === ordersList.length}
                   onChange={toggleAll}
                   aria-label="Select all"
                 />
@@ -305,7 +306,7 @@ export default function RecentOrders() {
             </tr>
           </thead>
           <tbody>
-            {orders.map((order, i) => (
+            {ordersList.map((order, i) => (
               <tr
                 key={order.id}
                 style={s.tr}
@@ -346,7 +347,7 @@ export default function RecentOrders() {
                   <span
                     style={{
                       ...s.statusBadge,
-                      ...statusStyles[order.status],
+                      ...statusStyles[order.status || 'Pending'],
                     }}
                   >
                     {order.status}
@@ -358,6 +359,13 @@ export default function RecentOrders() {
                 </td>
               </tr>
             ))}
+            {ordersList.length === 0 && (
+              <tr>
+                <td colSpan="9" style={{ ...s.td, textAlign: 'center', padding: '40px 0', color: '#9CA3AF' }}>
+                  Tidak ada transaksi baru.
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>

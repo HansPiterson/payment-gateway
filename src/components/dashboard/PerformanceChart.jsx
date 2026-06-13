@@ -1,29 +1,44 @@
 import { useState } from 'react';
 import { ArrowDown01Icon } from 'hugeicons-react';
 
-const months = [
-  { label: 'May', value: 18000, sales: 320, revenue: '$3.2k' },
-  { label: 'Jun', value: 12000, sales: 210, revenue: '$2.1k' },
-  { label: 'Jul', value: 28000, sales: 380, revenue: '$3.8k' },
-  { label: 'Aug', value: 22000, sales: 440, revenue: '$4.5k' },
-  { label: 'Sep', value: 35000, sales: 520, revenue: '$5.2k' },
-  { label: 'Oct', value: 16000, sales: 280, revenue: '$2.8k' },
-  { label: 'Nov', value: 30000, sales: 460, revenue: '$4.6k' },
-  { label: 'Dec', value: 24000, sales: 350, revenue: '$3.5k' },
+const defaultMonths = [
+  { label: 'May', value: 18000, sales: 320, revenue: 'Rp 18.000' },
+  { label: 'Jun', value: 12000, sales: 210, revenue: 'Rp 12.000' },
+  { label: 'Jul', value: 28000, sales: 380, revenue: 'Rp 28.000' },
+  { label: 'Aug', value: 22000, sales: 440, revenue: 'Rp 22.000' },
+  { label: 'Sep', value: 35000, sales: 520, revenue: 'Rp 35.000' },
+  { label: 'Oct', value: 16000, sales: 280, revenue: 'Rp 16.000' },
+  { label: 'Nov', value: 30000, sales: 460, revenue: 'Rp 30.000' },
+  { label: 'Dec', value: 24000, sales: 350, revenue: 'Rp 24.000' },
 ];
 
-const yLabels = ['40k', '30k', '20k', '10k', '5k', '0k'];
-const MAX_VALUE = 40000;
+export default function PerformanceChart({ chartData }) {
+  const data = chartData || defaultMonths;
+  const [activeBar, setActiveBar] = useState(data.length - 1); // Select last item by default
 
-export default function PerformanceChart() {
-  const [activeBar, setActiveBar] = useState(3); // August by default
+  const maxVal = Math.max(...data.map((d) => d.value), 1000);
+  
+  const formatY = (val) => {
+    if (val >= 1000000) return `${(val / 1000000).toFixed(1)}M`;
+    if (val >= 1000) return `${(val / 1000).toFixed(0)}K`;
+    return val;
+  };
+
+  const yLabels = [
+    formatY(maxVal),
+    formatY(maxVal * 0.75),
+    formatY(maxVal * 0.5),
+    formatY(maxVal * 0.25),
+    formatY(maxVal * 0.1),
+    '0',
+  ];
 
   return (
     <div className="card">
       <div className="card-header">
         <h3 className="card-title">Performance Overview</h3>
         <button className="card-action">
-          This Week
+          This Year
           <ArrowDown01Icon size={14} />
         </button>
       </div>
@@ -31,8 +46,8 @@ export default function PerformanceChart() {
       <div className="bar-chart-container">
         {/* Y-Axis Labels */}
         <div className="bar-chart-y-axis">
-          {yLabels.map((label) => (
-            <span key={label} className="bar-chart-y-label">{label}</span>
+          {yLabels.map((label, idx) => (
+            <span key={`${label}-${idx}`} className="bar-chart-y-label">{label}</span>
           ))}
         </div>
 
@@ -47,20 +62,20 @@ export default function PerformanceChart() {
 
           {/* Bars */}
           <div className="bar-chart-bars">
-            {months.map((month, index) => {
-              const heightPercent = (month.value / MAX_VALUE) * 100;
+            {data.map((month, index) => {
+              const heightPercent = maxVal > 0 ? (month.value / maxVal) * 100 : 0;
               const isActive = activeBar === index;
 
               return (
                 <div
-                  key={month.label}
+                  key={`${month.label}-${index}`}
                   className="bar-chart-bar-wrapper"
                   onMouseEnter={() => setActiveBar(index)}
                 >
                   <div
                     className="bar-chart-bar"
                     style={{
-                      height: `${heightPercent}%`,
+                      height: `${Math.max(heightPercent, 2)}%`, // Show a tiny bar even for 0
                       opacity: isActive ? 1 : 0.65,
                     }}
                   />
@@ -89,8 +104,8 @@ export default function PerformanceChart() {
 
         {/* X-Axis Labels */}
         <div className="bar-chart-x-axis">
-          {months.map((month) => (
-            <span key={month.label} className="bar-chart-x-label">{month.label}</span>
+          {data.map((month, index) => (
+            <span key={`${month.label}-${index}`} className="bar-chart-x-label">{month.label}</span>
           ))}
         </div>
       </div>

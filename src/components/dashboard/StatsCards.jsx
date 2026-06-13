@@ -17,12 +17,12 @@ const ArrowDown = () => (
   </svg>
 );
 
-const statsData = [
+const defaultStatsData = [
   {
     label: 'Total Sales',
     value: '2,500',
     change: 4.9,
-    lastMonth: '2345',
+    lastMonth: '2,345',
     Icon: ShoppingCart01Icon,
     isPrimary: true,
     iconClass: '',
@@ -47,16 +47,55 @@ const statsData = [
   },
   {
     label: 'Total Revenue',
-    value: '$8,220.64',
+    value: 'Rp 8.220.640',
     change: null,
-    lastMonth: '$620.00',
+    lastMonth: 'Rp 620.000',
     Icon: DollarCircleIcon,
     isPrimary: false,
     iconClass: 'purple',
   },
 ];
 
-export default function StatsCards() {
+export default function StatsCards({ stats }) {
+  const statsData = stats ? [
+    {
+      label: 'Total Sales',
+      value: stats.totalSales.value,
+      change: stats.totalSales.growth ? parseFloat(stats.totalSales.growth) : 0,
+      lastMonth: stats.totalSales.lastMonth,
+      Icon: ShoppingCart01Icon,
+      isPrimary: true,
+      iconClass: '',
+    },
+    {
+      label: 'New Customer',
+      value: stats.newCustomers.value,
+      change: stats.newCustomers.growth ? parseFloat(stats.newCustomers.growth) : 0,
+      lastMonth: stats.newCustomers.lastMonth,
+      Icon: UserAdd01Icon,
+      isPrimary: false,
+      iconClass: 'blue',
+    },
+    {
+      label: 'Return Products',
+      value: stats.returnProducts.value,
+      change: stats.returnProducts.growth ? parseFloat(stats.returnProducts.growth) : 0,
+      lastMonth: stats.returnProducts.lastMonth,
+      Icon: RotateLeft01Icon,
+      isPrimary: false,
+      iconClass: 'green',
+    },
+    {
+      label: 'Total Revenue',
+      value: stats.totalRevenue.value,
+      change: null,
+      lastMonth: stats.totalRevenue.lastMonth,
+      Icon: DollarCircleIcon,
+      isPrimary: false,
+      iconClass: 'purple',
+    },
+  ] : defaultStatsData;
+
   return (
     <div className="stats-grid">
       {statsData.map((stat, index) => {
@@ -77,7 +116,7 @@ export default function StatsCards() {
 
             <div className="stat-card-value-row">
               <span className="stat-card-value">{stat.value}</span>
-              {stat.change !== null && (
+              {stat.change !== null && stat.change !== 0 && (
                 <span className={`stat-badge ${isUp ? 'up' : 'down'}`}>
                   {isUp ? <ArrowUp /> : <ArrowDown />}
                   {Math.abs(stat.change).toFixed(1)}%
