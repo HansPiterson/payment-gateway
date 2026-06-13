@@ -65,7 +65,8 @@ Deno.serve(async (req: Request) => {
     }
 
     const bayarData = await bayarResponse.json();
-    const normalisedStatus = String(bayarData.status ?? "unknown").toLowerCase();
+    const resData = bayarData.data || bayarData;
+    const normalisedStatus = String(resData.status ?? "unknown").toLowerCase();
 
     // Fetch existing payment status to detect payment state changes
     const { data: existingPayment } = await supabase

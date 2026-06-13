@@ -93,6 +93,7 @@ Deno.serve(async (req: Request) => {
     }
 
     const bayarData = await bayarResponse.json();
+    const resData = bayarData.data || bayarData;
 
     // Initialise Supabase client with service role (bypasses RLS)
     const supabase = createClient(supabaseUrl, supabaseServiceRoleKey);
@@ -101,7 +102,7 @@ Deno.serve(async (req: Request) => {
     const { data: payment, error: dbError } = await supabase
       .from("payments")
       .insert({
-        invoice_id: bayarData.invoice_id ?? bayarData.invoiceId ?? null,
+        invoice_id: resData.invoice_id ?? resData.invoiceId ?? null,
         amount,
         description,
         customer_name,
@@ -109,9 +110,9 @@ Deno.serve(async (req: Request) => {
         customer_phone: customer_phone || null,
         status: "pending",
         payment_method: "qris",
-        payment_url: bayarData.payment_url ?? bayarData.paymentUrl ?? null,
-        qris_url: bayarData.qris_url ?? bayarData.qrisUrl ?? null,
-        qris_content: bayarData.qris_content ?? bayarData.qrisContent ?? bayarData.qris_string ?? bayarData.qrisString ?? null,
+        payment_url: resData.payment_url ?? resData.paymentUrl ?? null,
+        qris_url: resData.qris_url ?? resData.qrisUrl ?? null,
+        qris_content: resData.qris_content ?? resData.qrisContent ?? resData.qris_string ?? resData.qrisString ?? null,
       })
       .select()
       .single();
