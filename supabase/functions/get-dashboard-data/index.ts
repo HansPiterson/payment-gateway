@@ -254,6 +254,8 @@ Deno.serve(async (req: Request) => {
     const exactPaidPayments = Number(periodSummary.paid ?? 0);
     const exactExpiredPayments = Number(periodSummary.expired ?? 0);
     const exactCancelledPayments = Number(periodSummary.cancelled ?? 0);
+    const exactTotalPayments = Number(periodSummary.total_payments ?? 0);
+    const exactPendingPayments = Number(periodSummary.pending ?? 0);
 
     // Default target for revenue progress
     const revenueTarget = 10000000; // 10 Million IDR target
@@ -324,6 +326,12 @@ Deno.serve(async (req: Request) => {
             revenueGrowth: revenueGrowth >= 0 ? `+${revenueGrowth}%` : `${revenueGrowth}%`,
           },
           recentOrders,
+          apiSummary: {
+            totalPayments: exactTotalPayments,
+            paid: exactPaidPayments,
+            pending: exactPendingPayments,
+            totalRevenue: exactTotalRevenue.toLocaleString("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 })
+          }
         }
       }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
