@@ -64,8 +64,8 @@ export default function PerformanceChart({ chartData }) {
         </button>
       </div>
 
-      <div className="w-full flex-1 min-h-[260px] text-zinc-400">
-        <ResponsiveContainer width="100%" height="100%">
+      <div className="w-full flex-1 min-h-[260px] min-w-0 text-zinc-400">
+        <ResponsiveContainer width="100%" height={260} minWidth={0}>
           <BarChart
             data={data}
             margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
