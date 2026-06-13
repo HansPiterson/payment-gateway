@@ -26,9 +26,13 @@ Deno.serve(async (req: Request) => {
       throw new Error("BAYAR_GG_API_KEY is not configured");
     }
 
-    // Call both endpoints in parallel: account status (for exact stats) and list payments (for chart and tables)
-    const [statusResponse, listResponse] = await Promise.all([
-      fetch("https://www.bayar.gg/api/get-account-status.php", {
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseServiceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const supabase = createClient(supabaseUrl, supabaseServiceRoleKey);
+
+    // Call both endpoints: get-statistics.php (for period summary) and list-payments.php (for detail list)
+    const [statsResponse, listResponse] = await Promise.all([
+      fetch("https://www.bayar.gg/api/get-statistics.php?period=month", {
         method: "GET",
         headers: {
           "X-API-Key": bayarApiKey,
@@ -42,28 +46,75 @@ Deno.serve(async (req: Request) => {
       }),
     ]);
 
-    if (!statusResponse.ok || !listResponse.ok) {
+    if (!statsResponse.ok || !listResponse.ok) {
       console.error(
-        "Bayar.gg API error: status =",
-        statusResponse.status,
+        "Bayar.gg API error: stats =",
+        statsResponse.status,
         "list =",
         listResponse.status
       );
       return new Response(
         JSON.stringify({
           error: "Failed to fetch data from Bayar.gg APIs",
-          statusError: statusResponse.statusText,
+          statsError: statsResponse.statusText,
           listError: listResponse.statusText,
         }),
         { status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
 
-    const statusData = await statusResponse.json();
+    const statsData = await statsResponse.json();
     const listData = await listResponse.json();
 
-    const statsFromApi = statusData?.data?.statistics || {};
+    const periodSummary = statsData?.data?.summary || {};
     const rawPayments = Array.isArray(listData.data) ? listData.data : [];
+
+    // --- DATABASE SYNC LOGIC ---
+    // Save/Sync retrieved payments to local Supabase database
+    if (rawPayments.length > 0) {
+      const invoiceIds = rawPayments.map((p: any) => p.invoice_id ?? p.invoiceId).filter(Boolean);
+      
+      // Fetch existing payments first to preserve checkout URLs (payment_url and qris_url)
+      const { data: existingPayments, error: selectError } = await supabase
+        .from("payments")
+        .select("invoice_id, payment_url, qris_url")
+        .in("invoice_id", invoiceIds);
+
+      if (selectError) {
+        console.error("Error fetching existing payments for sync:", selectError);
+      }
+
+      const existingMap = new Map(existingPayments?.map(ep => [ep.invoice_id, ep]) || []);
+
+      const paymentsToUpsert = rawPayments.map((p: any) => {
+        const invId = p.invoice_id ?? p.invoiceId;
+        const existing = existingMap.get(invId);
+        return {
+          invoice_id: invId,
+          amount: Number(p.amount || 0),
+          description: p.description || "Premium Plan",
+          customer_name: p.customer_name || "Customer",
+          customer_email: p.customer_email || "customer@bayar.dev",
+          customer_phone: p.customer_phone || null,
+          status: String(p.status || "pending").toLowerCase(),
+          payment_method: p.payment_method || p.paid_via || "qris",
+          payment_url: existing?.payment_url || null,
+          qris_url: existing?.qris_url || null,
+          created_at: p.created_at ? new Date(p.created_at.replace(" ", "T")) : new Date(),
+          updated_at: new Date(),
+        };
+      });
+
+      const { error: upsertError } = await supabase
+        .from("payments")
+        .upsert(paymentsToUpsert, { onConflict: "invoice_id" });
+
+      if (upsertError) {
+        console.error("Error syncing payments to Supabase DB:", upsertError);
+      } else {
+        console.log(`Successfully synced ${paymentsToUpsert.length} payments to Supabase DB`);
+      }
+    }
 
     // Helper variables for processing dates and chart
     const now = new Date();
@@ -198,16 +249,17 @@ Deno.serve(async (req: Request) => {
     const salesGrowth = calculateGrowth(thisMonthSales, lastMonthSales);
     const customersGrowth = calculateGrowth(thisMonthCustomers.size, lastMonthCustomers.size);
 
-    // EXACT lifetime metrics from status api
-    const exactTotalRevenue = Number(statsFromApi.total_revenue ?? 0);
-    const exactPaidPayments = Number(statsFromApi.paid_payments ?? 0);
-    const exactExpiredPayments = Number(statsFromApi.expired_payments ?? 0);
+    // EXACT period statistics from /api/get-statistics.php
+    const exactTotalRevenue = Number(periodSummary.total_revenue ?? 0);
+    const exactPaidPayments = Number(periodSummary.paid ?? 0);
+    const exactExpiredPayments = Number(periodSummary.expired ?? 0);
+    const exactCancelledPayments = Number(periodSummary.cancelled ?? 0);
 
-    // Default target for revenue
+    // Default target for revenue progress
     const revenueTarget = 10000000; // 10 Million IDR target
     const targetProgress = exactTotalRevenue >= revenueTarget ? 100 : Number(((exactTotalRevenue / revenueTarget) * 100).toFixed(1));
 
-    // Stats Cards Formatted using EXACT account statistics
+    // Stats Cards Formatted using EXACT statistics from the period
     const stats = {
       totalSales: {
         value: exactPaidPayments.toLocaleString("id-ID"),
@@ -222,7 +274,7 @@ Deno.serve(async (req: Request) => {
         lastMonth: lastMonthCustomers.size.toLocaleString("id-ID"),
       },
       returnProducts: {
-        value: exactExpiredPayments.toLocaleString("id-ID"),
+        value: (exactExpiredPayments + exactCancelledPayments).toLocaleString("id-ID"),
         growth: "0%",
         isPositive: false,
         lastMonth: "0",
