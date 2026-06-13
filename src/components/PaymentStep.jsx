@@ -11,6 +11,8 @@ export default function PaymentStep({ service, customer, onSuccess, onBack, init
   const embedContainerRef = useRef(null);
   const subscriptionRef = useRef(null);
 
+  const hasQris = !!(paymentData?.qris_content || paymentData?.qris_url);
+
   const formatPrice = (price) => {
     return new Intl.NumberFormat('id-ID', {
       style: 'currency',
@@ -123,7 +125,7 @@ export default function PaymentStep({ service, customer, onSuccess, onBack, init
 
   // Load Bayar.gg pay.js embed when payment is ready
   useEffect(() => {
-    if (state !== 'ready' || !paymentData?.invoice_id || !embedContainerRef.current) return;
+    if (state !== 'ready' || hasQris || !paymentData?.invoice_id || !embedContainerRef.current) return;
 
     const container = embedContainerRef.current;
     // Clear any existing content
@@ -247,10 +249,38 @@ export default function PaymentStep({ service, customer, onSuccess, onBack, init
         )}
 
         {state === 'ready' && (
-          <div className="space-y-4">
-            <div className="border border-zinc-850 rounded-xl overflow-hidden bg-zinc-950 p-2">
-              <div ref={embedContainerRef} className="w-full" />
-            </div>
+          <div className="space-y-6">
+            {hasQris ? (
+              <div className="flex flex-col items-center justify-center p-6 bg-zinc-950 border border-zinc-850 rounded-xl animate-in fade-in duration-300">
+                {/* QR Code Container */}
+                <div className="p-4 bg-white rounded-2xl shadow-xl mb-4 flex items-center justify-center w-[220px] h-[220px] overflow-hidden">
+                  <img
+                    src={
+                      paymentData.qris_content
+                        ? `https://api.qrserver.com/v1/create-qr-code/?size=200x200&margin=0&data=${encodeURIComponent(paymentData.qris_content)}`
+                        : paymentData.qris_url
+                    }
+                    alt="QRIS Code"
+                    className="w-full h-full object-contain select-none"
+                    draggable="false"
+                  />
+                </div>
+                
+                {/* QRIS branding header */}
+                <div className="flex items-center gap-1.5 mb-2 select-none">
+                  <span className="text-rose-600 font-extrabold text-sm tracking-wider">QRIS</span>
+                  <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider">GPN</span>
+                </div>
+                
+                <p className="text-xs text-zinc-400 text-center font-medium max-w-[200px] leading-relaxed">
+                  Pindai kode QR di atas menggunakan GoPay, OVO, Dana, LinkAja, ShopeePay, atau Mobile Banking Anda.
+                </p>
+              </div>
+            ) : (
+              <div className="border border-zinc-850 rounded-xl overflow-hidden bg-zinc-950 p-2">
+                <div ref={embedContainerRef} className="w-full" />
+              </div>
+            )}
 
             <div className="flex items-center justify-center gap-2 py-3 px-4 rounded-lg bg-zinc-950 border border-zinc-855 text-zinc-400 text-xs font-semibold">
               <div className="w-3.5 h-3.5 border-2 border-zinc-800 border-t-zinc-400 rounded-full animate-spin" />

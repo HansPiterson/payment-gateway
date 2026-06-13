@@ -111,6 +111,7 @@ Deno.serve(async (req: Request) => {
         payment_method: "qris",
         payment_url: bayarData.payment_url ?? bayarData.paymentUrl ?? null,
         qris_url: bayarData.qris_url ?? bayarData.qrisUrl ?? null,
+        qris_content: bayarData.qris_content ?? bayarData.qrisContent ?? bayarData.qris_string ?? bayarData.qrisString ?? null,
       })
       .select()
       .single();
@@ -130,6 +131,7 @@ Deno.serve(async (req: Request) => {
           status: payment.status,
           payment_url: payment.payment_url,
           qris_url: payment.qris_url,
+          qris_content: payment.qris_content,
         },
       }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
