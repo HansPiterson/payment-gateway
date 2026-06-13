@@ -58,7 +58,7 @@ export default function App() {
   const [withdrawSuccess, setWithdrawSuccess] = useState(null);
 
   useEffect(() => {
-    if (activeTab === 'dashboard') {
+    if (activeTab === 'dashboard' || activeTab === 'analytics') {
       fetchDashboardData();
     }
   }, [activeTab]);
@@ -204,12 +204,7 @@ export default function App() {
                 <StatsCards stats={dashboardData.stats} />
               </div>
 
-              <div className="charts-grid animate-in animate-in-2">
-                <PerformanceChart chartData={dashboardData.chartData} />
-                <SalesOverview overview={dashboardData.salesOverview} />
-              </div>
-
-              <div className="animate-in animate-in-3">
+              <div className="animate-in animate-in-2">
                 <RecentOrders orders={dashboardData.recentOrders} />
               </div>
             </>
@@ -296,11 +291,48 @@ export default function App() {
         </main>
       )}
 
-      {(activeTab === 'analytics' || activeTab === 'settings') && (
+      {activeTab === 'analytics' && (
+        <main className="page-content">
+          <div className="animate-in">
+            <PageHeader 
+              title="Analytics" 
+              subtitle="Analisis performa transaksi dan metode pembayaran" 
+              onRefresh={fetchDashboardData} 
+              isLoading={loading} 
+            />
+          </div>
+
+          {loading && !dashboardData && (
+            <div className="dashboard-loading">
+              <div className="spinner"></div>
+              <p>Memuat data analitik dari Bayar.gg...</p>
+            </div>
+          )}
+
+          {error && (
+            <div className="dashboard-error">
+              <div className="error-card">
+                <h3>Terjadi Kesalahan</h3>
+                <p>{error}</p>
+                <button onClick={fetchDashboardData} className="retry-btn">Coba Lagi</button>
+              </div>
+            </div>
+          )}
+
+          {dashboardData && !loading && (
+            <div className="charts-grid animate-in animate-in-1">
+              <PerformanceChart chartData={dashboardData.chartData} />
+              <SalesOverview overview={dashboardData.salesOverview} />
+            </div>
+          )}
+        </main>
+      )}
+
+      {activeTab === 'settings' && (
         <main className="page-content">
           <div className="animate-in">
             <h1 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 600, color: '#202224' }}>
-              {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
+              Settings
             </h1>
             <p style={{ fontFamily: "'Poppins', sans-serif", color: '#666', marginTop: '10px' }}>
               Halaman ini sedang dalam pengembangan.
