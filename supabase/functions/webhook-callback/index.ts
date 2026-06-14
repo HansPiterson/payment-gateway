@@ -60,7 +60,7 @@ Deno.serve(async (req: Request) => {
       .from("payments")
       .update({
         status: normalisedStatus,
-        payment_method: body.payment_method ?? body.paymentMethod ?? undefined,
+        payment_method: body.iqris_payment_methodby || body.payment_method || body.paymentMethod || undefined,
         webhook_data: body,
       })
       .eq("invoice_id", invoiceId)
@@ -119,7 +119,7 @@ Deno.serve(async (req: Request) => {
         }).format(paymentAmount);
 
         const description = payment.description || body.description || "-";
-        const paymentMethod = body.payment_method ?? body.paymentMethod ?? "QRIS";
+        const paymentMethod = body.iqris_payment_methodby || body.payment_method || body.paymentMethod || "QRIS";
         
         try {
           await fetch(`https://ntfy.sh/${ntfyTopic}`, {

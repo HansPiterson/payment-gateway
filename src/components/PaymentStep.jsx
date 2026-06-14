@@ -348,17 +348,7 @@ export default function PaymentStep({ service, customer, onSuccess, onBack, init
               )}
             </div>
 
-            <button
-              className="w-full py-2.5 px-4 bg-zinc-900 border border-zinc-800 text-zinc-300 hover:bg-zinc-800 hover:text-zinc-100 font-bold rounded-lg transition-all text-xs flex items-center justify-center gap-2"
-              onClick={checkManually}
-              disabled={checkingManually}
-              id="btn-check-manual"
-            >
-              <svg className={`w-3.5 h-3.5 ${checkingManually ? 'animate-spin' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67" />
-              </svg>
-              {checkingManually ? 'Memeriksa status...' : 'Cek Status Pembayaran Manual'}
-            </button>
+
           </div>
         )}
 

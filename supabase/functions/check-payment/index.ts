@@ -91,6 +91,7 @@ Deno.serve(async (req: Request) => {
       .from("payments")
       .update({
         status: normalisedStatus,
+        payment_method: resData.iqris_payment_methodby || resData.payment_method || resData.paymentMethod || undefined,
       })
       .eq("invoice_id", invoiceId)
       .select()
@@ -141,6 +142,36 @@ Deno.serve(async (req: Request) => {
           console.error("Failed to update wallet balance on check:", walletError);
         } else {
           console.log(`Wallet balance increased by Rp ${paymentAmount} via manual check`);
+        }
+      }
+
+      // Send push notification via ntfy.sh (fallback if manual check detects it before webhook)
+      const ntfyTopic = Deno.env.get("NTFY_TOPIC");
+      if (ntfyTopic) {
+        const amountForNtfy = Number(payment.amount ?? 0);
+        const formattedAmount = new Intl.NumberFormat('id-ID', {
+          style: 'currency',
+          currency: 'IDR',
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 0
+        }).format(amountForNtfy);
+
+        const description = payment.description || "-";
+        const paymentMethod = payment.payment_method || "QRIS";
+        
+        try {
+          await fetch(`https://ntfy.sh/${ntfyTopic}`, {
+            method: 'POST',
+            body: `Deskripsi: ${description}\nMetode: ${paymentMethod}\nInvoice: ${payment.invoice_id}`,
+            headers: {
+              'Title': `Pembayaran QRIS diterima ${formattedAmount}`,
+              'Tags': 'moneybag,white_check_mark',
+              'Priority': 'high'
+            }
+          });
+          console.log(`Push notification sent to ntfy topic: ${ntfyTopic} via check-payment`);
+        } catch (ntfyError) {
+          console.error("Failed to send ntfy notification:", ntfyError);
         }
       }
     }
