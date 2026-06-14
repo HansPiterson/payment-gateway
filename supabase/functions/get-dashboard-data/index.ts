@@ -217,8 +217,8 @@ Deno.serve(async (req: Request) => {
     const recentOrders = rawPayments.slice(0, 10).map((p: any) => {
       const rawStatus = String(p.status || "pending").toLowerCase();
       let displayStatus = "Pending";
-      if (rawStatus === "paid") displayStatus = "Delivered";
-      else if (rawStatus === "cancelled" || rawStatus === "expired") displayStatus = "Cancelled";
+      if (rawStatus === "paid" || rawStatus === "success") displayStatus = "Paid";
+      else if (rawStatus === "expired" || rawStatus === "cancelled") displayStatus = "Expired";
 
       const dateStr = p.created_at || p.paid_at || "";
       let formattedDate = "Pending";
@@ -234,6 +234,7 @@ Deno.serve(async (req: Request) => {
       }
 
       const amount = Number(p.amount || 0);
+      const categoryMethod = (p.iqris_payment_methodby || p.payment_method || p.paid_via || "QRIS").toUpperCase();
 
       return {
         id: `#ORD-${String(p.invoice_id || p.invoiceId || "").slice(-4).toUpperCase()}`,
@@ -243,8 +244,8 @@ Deno.serve(async (req: Request) => {
         sku: `SKU-${String(p.invoice_id || "").slice(-6).toUpperCase()}`,
         image: null,
         date: formattedDate,
-        customer: p.customer_name || p.customer_email || "Customer",
-        category: "Subscription",
+        customer: "Customer",
+        category: categoryMethod,
         status: displayStatus,
         items: 1,
         total: amount.toLocaleString("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }),
