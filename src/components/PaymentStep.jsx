@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { supabase, FUNCTIONS_URL, supabaseAnonKey } from '../lib/supabase';
+import { parseQris } from '../lib/qris';
 
 const CHECKOUT_KEY = 'chk_62c780a4f4510faa53476b14abb4faefc8fa7f9bbe7e605d';
 
@@ -12,6 +13,9 @@ export default function PaymentStep({ service, customer, onSuccess, onBack, init
   const subscriptionRef = useRef(null);
 
   const hasQris = !!(paymentData?.qris_content || paymentData?.qris_url);
+  const qrisInfo = hasQris ? parseQris(paymentData.qris_content) : {};
+  const merchantName = qrisInfo['59'] || 'BAYAR.DEV';
+  const rawQrisAmount = qrisInfo['54']; // Tag 54 is Transaction Amount
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat('id-ID', {
@@ -191,13 +195,15 @@ export default function PaymentStep({ service, customer, onSuccess, onBack, init
 
   return (
     <div className="w-full max-w-xl mx-auto text-left">
-      <button
-        className="inline-flex items-center gap-1 text-xs font-bold text-zinc-450 hover:text-zinc-100 mb-6 transition-colors"
-        onClick={onBack}
-        type="button"
-      >
-        ← Kembali
-      </button>
+      {onBack && (
+        <button
+          className="inline-flex items-center gap-1 text-xs font-bold text-zinc-450 hover:text-zinc-100 mb-6 transition-colors"
+          onClick={onBack}
+          type="button"
+        >
+          ← Kembali
+        </button>
+      )}
 
       <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 md:p-8 shadow-xl">
         <div className="mb-6">
@@ -209,17 +215,21 @@ export default function PaymentStep({ service, customer, onSuccess, onBack, init
         <div className="bg-zinc-950 border border-zinc-850 p-4 rounded-xl space-y-2.5 mb-6 text-sm">
           <div className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-2">Ringkasan Pesanan</div>
           <div className="flex justify-between items-center text-zinc-400">
-            <span>{service.name}</span>
-            <span className="font-semibold text-zinc-200">{formatPrice(service.price)}</span>
+            <span>Payment ID</span>
+            <span className="font-semibold text-zinc-200">{paymentData?.invoice_id || '-'}</span>
           </div>
           <div className="flex justify-between items-center text-zinc-400">
-            <span>Nama Customer</span>
-            <span className="font-semibold text-zinc-200 truncate max-w-[150px]">{customer.name}</span>
+            <span>Merchant</span>
+            <span className="font-semibold text-zinc-200">{hasQris ? merchantName : 'BAYAR.DEV'}</span>
+          </div>
+          <div className="flex justify-between items-center text-zinc-400">
+            <span>Deskripsi</span>
+            <span className="font-semibold text-zinc-200 truncate max-w-[150px]">{service.name}</span>
           </div>
           <div className="h-px bg-zinc-850 my-1" />
           <div className="flex justify-between items-center font-bold text-zinc-100 text-base">
             <span>Total Bayar</span>
-            <span className="font-extrabold">{formatPrice(service.price)}</span>
+            <span className="font-extrabold">{rawQrisAmount ? formatPrice(Number(rawQrisAmount)) : formatPrice(service.price)}</span>
           </div>
         </div>
 

@@ -136,8 +136,8 @@ export default function RecentOrders({ orders: propOrders }) {
     }
   };
 
-  const paymentLink = selectedOrder && selectedOrder.invoiceId 
-    ? `${window.location.origin}/pay/${selectedOrder.invoiceId}` 
+  const paymentLink = selectedOrder && selectedOrder.paymentId 
+    ? `${window.location.origin}/pay/${selectedOrder.paymentId}` 
     : '';
 
   const handleCopy = () => {

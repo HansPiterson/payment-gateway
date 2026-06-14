@@ -228,6 +228,7 @@ Deno.serve(async (req: Request) => {
       return {
         id: `#ORD-${String(p.invoice_id || p.invoiceId || "").slice(-4).toUpperCase()}`,
         invoiceId: p.invoice_id || p.invoiceId || "",
+        paymentId: p.id,
         product: p.description || "Premium Plan",
         sku: `SKU-${String(p.invoice_id || "").slice(-6).toUpperCase()}`,
         image: null,

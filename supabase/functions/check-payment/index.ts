@@ -21,13 +21,13 @@ Deno.serve(async (req: Request) => {
   }
 
   try {
-    // Extract invoice_id from query params
+    // Extract id (UUID) from query params
     const url = new URL(req.url);
-    const invoiceId = url.searchParams.get("invoice_id");
+    const paymentId = url.searchParams.get("id");
 
-    if (!invoiceId) {
+    if (!paymentId) {
       return new Response(
-        JSON.stringify({ error: "invoice_id query parameter is required" }),
+        JSON.stringify({ error: "id query parameter is required" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
@@ -40,6 +40,22 @@ Deno.serve(async (req: Request) => {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseServiceRoleKey);
+
+    // Fetch the invoice_id associated with this UUID
+    const { data: existingPayment, error: fetchError } = await supabase
+      .from("payments")
+      .select("invoice_id, status, amount")
+      .eq("id", paymentId)
+      .maybeSingle();
+
+    if (fetchError || !existingPayment) {
+      return new Response(
+        JSON.stringify({ error: "Payment not found in local database" }),
+        { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
+
+    const invoiceId = existingPayment.invoice_id;
 
     // Call Bayar.gg Check Payment API
     const bayarResponse = await fetch(
@@ -68,12 +84,7 @@ Deno.serve(async (req: Request) => {
     const resData = bayarData.data || bayarData;
     const normalisedStatus = String(resData.status ?? "unknown").toLowerCase();
 
-    // Fetch existing payment status to detect payment state changes
-    const { data: existingPayment } = await supabase
-      .from("payments")
-      .select("status, amount")
-      .eq("invoice_id", invoiceId)
-      .maybeSingle();
+    // Use the existingPayment we fetched earlier to detect payment state changes
 
     // Sync the status back to our database
     const { data: payment, error: dbError } = await supabase

@@ -41,8 +41,8 @@ export default function PaymentLinkGenerator() {
         },
         body: JSON.stringify({
           amount: amountNum,
-          description: description.trim() || 'Pembayaran Kustom',
-          customer_name: 'Customer', // placeholder
+          description: description.trim() || 'Nominal Pembayaran',
+          customer_name: 'Deskripsi Pembayaran: (Tidak ada)', // placeholder default
           customer_email: 'customer@bayar.dev', // placeholder
         }),
       });
