@@ -98,8 +98,8 @@ export default function StatsCards({ stats }) {
             key={stat.label}
             className={`rounded-xl p-5 border transition-all hover:scale-[1.01] ${
               stat.isPrimary
-                ? 'bg-zinc-100 border-zinc-200 text-zinc-950 shadow-lg'
-                : 'bg-zinc-900 border-zinc-800 text-zinc-100'
+                ? 'bg-gradient-to-b from-zinc-200 to-white dark:from-zinc-800 dark:to-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-950 dark:text-zinc-100 shadow-lg'
+                : 'bg-card text-card-foreground border-border shadow-sm'
             }`}
           >
             <div className="flex items-center justify-between">

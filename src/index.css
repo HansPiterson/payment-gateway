@@ -1,105 +1,99 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
+    --background: 0 0% 98%;
+    --foreground: 0 0% 8%;
+
     --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
+    --card-foreground: 0 0% 8%;
+
     --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
-    --primary: 240 5.9% 10%;
+    --popover-foreground: 0 0% 8%;
+
+    --primary: 0 0% 8%;
     --primary-foreground: 0 0% 98%;
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
-    --accent: 240 4.8% 95.9%;
-    --accent-foreground: 240 5.9% 10%;
-    --destructive: 0 84.2% 60.2%;
+
+    --secondary: 0 0% 94%;
+    --secondary-foreground: 0 0% 20%;
+
+    --muted: 0 0% 92%;
+    --muted-foreground: 0 0% 45%;
+
+    --accent: 0 0% 94%;
+    --accent-foreground: 0 0% 8%;
+
+    --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 240 5.9% 10%;
+
+    --border: 0 0% 88%;
+    --input: 0 0% 88%;
+    --ring: 0 0% 8%;
+
     --radius: 0.75rem;
 
-    /* ZINC - LIGHT MODE (Inverted to create light mode automatically) */
-    --zinc-50: 9 9 11;
-    --zinc-100: 24 24 27;
-    --zinc-150: 30 30 35;
-    --zinc-200: 39 39 42;
-    --zinc-300: 63 63 70;
-    --zinc-350: 82 82 91;
-    --zinc-400: 113 113 122;
-    --zinc-450: 137 137 146;
-    --zinc-500: 161 161 170;
-    --zinc-550: 187 187 193;
-    --zinc-600: 212 212 216;
-    --zinc-700: 228 228 231;
-    --zinc-800: 244 244 245;
-    --zinc-805: 248 248 248;
-    --zinc-850: 250 250 250;
-    --zinc-855: 252 252 252;
-    --zinc-900: 255 255 255;
-    --zinc-950: 255 255 255;
+    /* Custom tokens */
+    --surface-elevated: 0 0% 100%;
+    --surface-sunken: 0 0% 94%;
+    --icon-default: 0 0% 20%;
+    --stat-bg: 0 0% 96%;
 
-    /* Chart Colors */
-    --chart-1: 12 76 126;
-    --chart-2: 173 58 86;
-    --chart-3: 197 109 11;
-    --chart-4: 43 119 117;
-    --chart-5: 22 136 53;
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
   .dark {
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 240 10% 5.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 240 10% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 240 5.9% 10%;
-    --secondary: 240 3.7% 15.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
-    --accent: 240 3.7% 15.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
+    --background: 0 0% 6%;
+    --foreground: 0 0% 95%;
+
+    --card: 0 0% 10%;
+    --card-foreground: 0 0% 95%;
+
+    --popover: 0 0% 10%;
+    --popover-foreground: 0 0% 95%;
+
+    --primary: 0 0% 95%;
+    --primary-foreground: 0 0% 8%;
+
+    --secondary: 0 0% 15%;
+    --secondary-foreground: 0 0% 90%;
+
+    --muted: 0 0% 18%;
+    --muted-foreground: 0 0% 60%;
+
+    --accent: 0 0% 18%;
+    --accent-foreground: 0 0% 95%;
+
+    --destructive: 0 62% 30%;
     --destructive-foreground: 0 0% 98%;
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 240 4.9% 83.9%;
 
-    /* ZINC - DARK MODE (Standard tailwind colors) */
-    --zinc-50: 250 250 250;
-    --zinc-100: 244 244 245;
-    --zinc-150: 236 236 240;
-    --zinc-200: 228 228 231;
-    --zinc-300: 212 212 216;
-    --zinc-350: 187 187 193;
-    --zinc-400: 161 161 170;
-    --zinc-450: 137 137 146;
-    --zinc-500: 113 113 122;
-    --zinc-550: 98 98 106;
-    --zinc-600: 82 82 91;
-    --zinc-700: 63 63 70;
-    --zinc-800: 39 39 42;
-    --zinc-805: 35 35 38;
-    --zinc-850: 30 30 35;
-    --zinc-855: 27 27 31;
-    --zinc-900: 24 24 27;
-    --zinc-950: 9 9 11;
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
+    --ring: 0 0% 80%;
 
-    /* Chart Colors */
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
+    --surface-elevated: 0 0% 12%;
+    --surface-sunken: 0 0% 8%;
+    --icon-default: 0 0% 80%;
+    --stat-bg: 0 0% 15%;
+
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
   }
 }
 
@@ -107,8 +101,43 @@
   * {
     @apply border-border;
   }
+
   body {
-    @apply bg-background text-foreground;
-    font-family: 'Poppins', sans-serif;
+    @apply bg-background text-foreground font-sans antialiased;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold tracking-tight;
+  }
+
+  /* Improve image loading */
+  img {
+    content-visibility: auto;
+  }
+}
+
+@layer utilities {
+  .transition-smooth {
+    @apply transition-all duration-300 ease-out;
+  }
+
+  /* GPU acceleration for animations */
+  .animate-fade-in {
+    animation: fadeIn 0.3s ease-out;
+    will-change: opacity, transform;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 }

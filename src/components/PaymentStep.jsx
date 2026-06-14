@@ -55,6 +55,8 @@ export default function PaymentStep({ service, customer, onSuccess, onBack, init
 
       const result = await response.json();
       const payData = result.data || result;
+      // Add a fallback created_at if missing
+      if (!payData.created_at) payData.created_at = new Date().toISOString();
       setPaymentData(payData);
       setState('ready');
 
@@ -88,6 +90,8 @@ export default function PaymentStep({ service, customer, onSuccess, onBack, init
           if (newStatus === 'paid' || newStatus === 'success') {
             setState('paid');
             setTimeout(() => onSuccess(payload.new), 1500);
+          } else if (newStatus === 'expired' || newStatus === 'cancelled') {
+            setState('expired');
           }
         }
       )
@@ -119,6 +123,8 @@ export default function PaymentStep({ service, customer, onSuccess, onBack, init
       if (payData.status === 'paid' || payData.status === 'success') {
         setState('paid');
         setTimeout(() => onSuccess(payData), 1500);
+      } else if (payData.status === 'expired' || payData.status === 'cancelled') {
+        setState('expired');
       }
     } catch (err) {
       console.error('Manual check error:', err);
@@ -126,6 +132,46 @@ export default function PaymentStep({ service, customer, onSuccess, onBack, init
       setCheckingManually(false);
     }
   };
+
+  const [timeLeft, setTimeLeft] = useState(null);
+
+  // Expiration and countdown logic
+  useEffect(() => {
+    if (state !== 'ready' || !paymentData?.created_at) return;
+
+    const calculateTimeLeft = () => {
+      const createdTime = new Date(paymentData.created_at.replace(" ", "T")).getTime();
+      const expireTime = createdTime + 24 * 60 * 60 * 1000; // 24 hours
+      const now = new Date().getTime();
+      const difference = expireTime - now;
+
+      if (difference <= 0) {
+        setState('expired');
+        setTimeLeft('00:00:00');
+        return false; // stopped
+      }
+
+      const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((difference / 1000 / 60) % 60);
+      const seconds = Math.floor((difference / 1000) % 60);
+
+      setTimeLeft(
+        `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
+      );
+      return true; // continue
+    };
+
+    // Run initially
+    const isActive = calculateTimeLeft();
+    if (!isActive) return;
+
+    const timer = setInterval(() => {
+      const active = calculateTimeLeft();
+      if (!active) clearInterval(timer);
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [state, paymentData]);
 
   // Load Bayar.gg pay.js embed when payment is ready
   useEffect(() => {
@@ -292,9 +338,14 @@ export default function PaymentStep({ service, customer, onSuccess, onBack, init
               </div>
             )}
 
-            <div className="flex items-center justify-center gap-2 py-3 px-4 rounded-lg bg-zinc-950 border border-zinc-855 text-zinc-400 text-xs font-semibold">
-              <div className="w-3.5 h-3.5 border-2 border-zinc-800 border-t-zinc-400 rounded-full animate-spin" />
-              Menunggu pembayaran Anda...
+            <div className="flex items-center justify-between gap-2 py-3 px-4 rounded-lg bg-zinc-950 border border-zinc-855 text-zinc-400 text-xs font-semibold">
+              <div className="flex items-center gap-2">
+                <div className="w-3.5 h-3.5 border-2 border-zinc-800 border-t-zinc-400 rounded-full animate-spin" />
+                Menunggu pembayaran Anda...
+              </div>
+              {timeLeft && (
+                <div className="font-mono text-zinc-300">Sisa Waktu: {timeLeft}</div>
+              )}
             </div>
 
             <button
@@ -317,6 +368,22 @@ export default function PaymentStep({ service, customer, onSuccess, onBack, init
               <polyline points="20 6 9 17 4 12" />
             </svg>
             <span className="text-lg font-black tracking-wide">PEMBAYARAN BERHASIL!</span>
+          </div>
+        )}
+
+        {state === 'expired' && (
+          <div className="text-center py-8">
+            <div className="w-14 h-14 rounded-full bg-zinc-950 border border-zinc-800 flex items-center justify-center text-zinc-500 mx-auto mb-4">
+              <svg className="w-6 h-6 stroke-current" fill="none" viewBox="0 0 24 24" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+              </svg>
+            </div>
+            <h3 className="text-lg font-bold text-zinc-100 mb-2">Pembayaran Kedaluwarsa</h3>
+            <p className="text-xs text-zinc-400 mb-6 max-w-xs mx-auto leading-relaxed">
+              Waktu pembayaran (24 jam) untuk tautan ini sudah habis, atau pembayaran telah dibatalkan. Silakan buat tautan pembayaran baru.
+            </p>
           </div>
         )}
       </div>

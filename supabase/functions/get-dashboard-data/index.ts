@@ -105,13 +105,23 @@ Deno.serve(async (req: Request) => {
         };
       });
 
-      const { error: upsertError } = await supabase
+      const { data: upsertedPayments, error: upsertError } = await supabase
         .from("payments")
-        .upsert(paymentsToUpsert, { onConflict: "invoice_id" });
+        .upsert(paymentsToUpsert, { onConflict: "invoice_id" })
+        .select("id, invoice_id");
 
       if (upsertError) {
         console.error("Error syncing payments to Supabase DB:", upsertError);
       } else {
+        if (upsertedPayments) {
+          const idMap = new Map(upsertedPayments.map((p: any) => [p.invoice_id, p.id]));
+          for (const p of rawPayments) {
+            const invId = p.invoice_id ?? p.invoiceId;
+            if (idMap.has(invId)) {
+              p.id = idMap.get(invId);
+            }
+          }
+        }
         console.log(`Successfully synced ${paymentsToUpsert.length} payments to Supabase DB`);
       }
     }
