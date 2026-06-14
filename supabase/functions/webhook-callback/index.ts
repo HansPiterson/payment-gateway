@@ -106,6 +106,38 @@ Deno.serve(async (req: Request) => {
           console.log(`Wallet balance increased by Rp ${paymentAmount}`);
         }
       }
+
+      // Send push notification via ntfy.sh
+      const ntfyTopic = Deno.env.get("NTFY_TOPIC");
+      if (ntfyTopic) {
+        const paymentAmount = Number(body.amount ?? payment.amount ?? 0);
+        const formattedAmount = new Intl.NumberFormat('id-ID', {
+          style: 'currency',
+          currency: 'IDR',
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 0
+        }).format(paymentAmount);
+
+        const description = payment.description || body.description || "-";
+        const paymentMethod = body.payment_method ?? body.paymentMethod ?? "QRIS";
+        
+        try {
+          await fetch(`https://ntfy.sh/${ntfyTopic}`, {
+            method: 'POST',
+            body: `Deskripsi: ${description}\nMetode: ${paymentMethod}\nInvoice: ${payment.invoice_id}`,
+            headers: {
+              'Title': `Pembayaran QRIS diterima ${formattedAmount}`,
+              'Tags': 'moneybag,white_check_mark',
+              'Priority': 'high'
+            }
+          });
+          console.log(`Push notification sent to ntfy topic: ${ntfyTopic}`);
+        } catch (ntfyError) {
+          console.error("Failed to send ntfy notification:", ntfyError);
+        }
+      } else {
+        console.log("NTFY_TOPIC is not set. Skipping push notification.");
+      }
     }
 
     console.log(

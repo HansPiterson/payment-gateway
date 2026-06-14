@@ -12,67 +12,67 @@ import DirectPayView from './components/DirectPayView';
 
 
 const DashboardSkeleton = () => (
-  <div className="w-full flex-grow flex flex-col space-y-6 md:space-y-8 animate-pulse text-zinc-500">
+  <div className="w-full flex-grow flex flex-col space-y-6 md:space-y-8 animate-pulse text-muted-foreground">
     {/* PageHeader Skeleton */}
     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-2">
       <div className="space-y-2 text-left">
-        <div className="h-7 w-48 bg-zinc-900 border border-zinc-850 rounded-lg" />
-        <div className="h-4 w-72 bg-zinc-900 border border-zinc-850 rounded-lg" />
+        <div className="h-7 w-48 bg-card border border-border rounded-lg" />
+        <div className="h-4 w-72 bg-card border border-border rounded-lg" />
       </div>
       <div className="flex gap-2">
-        <div className="h-9 w-28 bg-zinc-900 border border-zinc-850 rounded-lg" />
-        <div className="h-9 w-24 bg-zinc-900 border border-zinc-850 rounded-lg" />
+        <div className="h-9 w-28 bg-card border border-border rounded-lg" />
+        <div className="h-9 w-24 bg-card border border-border rounded-lg" />
       </div>
     </div>
 
     {/* Stats Cards Skeleton */}
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
       {[1, 2, 3, 4].map((i) => (
-        <div key={i} className="bg-zinc-900 border border-zinc-800 rounded-xl p-5 space-y-4">
+        <div key={i} className="bg-card border border-border rounded-xl p-5 space-y-4">
           <div className="flex justify-between items-center">
-            <div className="h-3 w-16 bg-zinc-800 rounded" />
-            <div className="w-7 h-7 bg-zinc-800 rounded-lg" />
+            <div className="h-3 w-16 bg-muted rounded" />
+            <div className="w-7 h-7 bg-muted rounded-lg" />
           </div>
-          <div className="h-8 w-28 bg-zinc-800 rounded" />
-          <div className="h-3 w-20 bg-zinc-800 rounded" />
+          <div className="h-8 w-28 bg-muted rounded" />
+          <div className="h-3 w-20 bg-muted rounded" />
         </div>
       ))}
     </div>
 
     {/* API summary skeleton */}
     <div className="space-y-3 text-left w-full">
-      <div className="h-4 w-40 bg-zinc-900 border border-zinc-850 rounded" />
+      <div className="h-4 w-40 bg-card border border-border rounded" />
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="bg-zinc-900 border border-zinc-800 rounded-xl p-4 space-y-2">
-            <div className="h-3.5 w-16 bg-zinc-800 rounded" />
-            <div className="h-5 w-10 bg-zinc-800 rounded" />
+          <div key={i} className="bg-card border border-border rounded-xl p-4 space-y-2">
+            <div className="h-3.5 w-16 bg-muted rounded" />
+            <div className="h-5 w-10 bg-muted rounded" />
           </div>
         ))}
       </div>
     </div>
 
     {/* RecentOrders Table Skeleton */}
-    <div className="bg-zinc-900 border border-zinc-800 rounded-xl py-6 space-y-4 flex-1">
+    <div className="bg-card border border-border rounded-xl py-6 space-y-4 flex-1">
       <div className="flex justify-between items-center px-6">
-        <div className="h-6 w-32 bg-zinc-800 rounded" />
-        <div className="h-8 w-44 bg-zinc-800 rounded-lg" />
+        <div className="h-6 w-32 bg-muted rounded" />
+        <div className="h-8 w-44 bg-muted rounded-lg" />
       </div>
-      <div className="h-px bg-zinc-850" />
+      <div className="h-px bg-border" />
       <div className="px-6 space-y-3.5 pt-2">
         {[1, 2, 3, 4, 5].map((i) => (
-          <div key={i} className="flex items-center justify-between py-2 border-b border-zinc-850/20">
+          <div key={i} className="flex items-center justify-between py-2 border-b border-border/50">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-zinc-800 rounded-lg animate-pulse" />
+              <div className="w-8 h-8 bg-muted rounded-lg animate-pulse" />
               <div className="space-y-2">
-                <div className="h-3.5 w-28 bg-zinc-800 rounded" />
-                <div className="h-2 w-16 bg-zinc-800 rounded" />
+                <div className="h-3.5 w-28 bg-muted rounded" />
+                <div className="h-2 w-16 bg-muted rounded" />
               </div>
             </div>
-            <div className="h-3.5 w-16 bg-zinc-800 rounded hidden sm:block" />
-            <div className="h-3.5 w-20 bg-zinc-800 rounded" />
-            <div className="h-6 w-20 bg-zinc-805 rounded-full" />
-            <div className="h-3.5 w-16 bg-zinc-800 rounded text-right" />
+            <div className="h-3.5 w-16 bg-muted rounded hidden sm:block" />
+            <div className="h-3.5 w-20 bg-muted rounded" />
+            <div className="h-6 w-20 bg-muted/80 rounded-full" />
+            <div className="h-3.5 w-16 bg-muted rounded text-right" />
           </div>
         ))}
       </div>
@@ -81,45 +81,45 @@ const DashboardSkeleton = () => (
 );
 
 const AnalyticsSkeleton = () => (
-  <div className="w-full flex-grow flex flex-col space-y-6 md:space-y-8 animate-pulse text-zinc-500">
+  <div className="w-full flex-grow flex flex-col space-y-6 md:space-y-8 animate-pulse text-muted-foreground">
     {/* PageHeader Skeleton */}
     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-2">
       <div className="space-y-2 text-left">
-        <div className="h-7 w-48 bg-zinc-900 border border-zinc-850 rounded-lg" />
-        <div className="h-4 w-72 bg-zinc-900 border border-zinc-850 rounded-lg" />
+        <div className="h-7 w-48 bg-card border border-border rounded-lg" />
+        <div className="h-4 w-72 bg-card border border-border rounded-lg" />
       </div>
-      <div className="h-9 w-24 bg-zinc-900 border border-zinc-850 rounded-lg" />
+      <div className="h-9 w-24 bg-card border border-border rounded-lg" />
     </div>
 
     {/* Charts Skeleton */}
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8 items-start">
-      <div className="lg:col-span-2 bg-zinc-900 border border-zinc-800 rounded-xl p-6 h-[380px] flex flex-col justify-between">
+      <div className="lg:col-span-2 bg-card border border-border rounded-xl p-6 h-[380px] flex flex-col justify-between">
         <div className="flex justify-between items-center">
-          <div className="h-5 w-40 bg-zinc-800 rounded" />
-          <div className="h-8 w-24 bg-zinc-800 rounded-lg" />
+          <div className="h-5 w-40 bg-muted rounded" />
+          <div className="h-8 w-24 bg-muted rounded-lg" />
         </div>
         <div className="flex items-end gap-3 h-52 mt-4 px-2">
           {[40, 25, 65, 35, 85, 55, 75, 60].map((h, i) => (
-            <div key={i} className="bg-zinc-800 rounded-t-lg flex-1" style={{ height: `${h}%` }} />
+            <div key={i} className="bg-muted rounded-t-lg flex-1" style={{ height: `${h}%` }} />
           ))}
         </div>
       </div>
-      <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 h-[380px] flex flex-col justify-between">
+      <div className="bg-card border border-border rounded-xl p-6 h-[380px] flex flex-col justify-between">
         <div className="flex justify-between items-center">
-          <div className="h-5 w-32 bg-zinc-800 rounded" />
-          <div className="w-5 h-5 bg-zinc-800 rounded-full" />
+          <div className="h-5 w-32 bg-muted rounded" />
+          <div className="w-5 h-5 bg-muted rounded-full" />
         </div>
-        <div className="relative w-36 h-36 rounded-full border-8 border-zinc-800 border-t-zinc-700 animate-spin mx-auto my-6 flex items-center justify-center">
-          <div className="h-4 w-12 bg-zinc-800 rounded" />
+        <div className="relative w-36 h-36 rounded-full border-8 border-muted border-t-card-foreground animate-spin mx-auto my-6 flex items-center justify-center">
+          <div className="h-4 w-12 bg-muted rounded" />
         </div>
-        <div className="grid grid-cols-2 gap-4 pt-4 border-t border-zinc-850">
+        <div className="grid grid-cols-2 gap-4 pt-4 border-t border-border">
           <div className="space-y-2 text-left">
-            <div className="h-3 w-16 bg-zinc-800 rounded" />
-            <div className="h-5 w-12 bg-zinc-800 rounded" />
+            <div className="h-3 w-16 bg-muted rounded" />
+            <div className="h-5 w-12 bg-muted rounded" />
           </div>
-          <div className="space-y-2 pl-4 border-l border-zinc-850 text-left">
-            <div className="h-3 w-16 bg-zinc-800 rounded" />
-            <div className="h-5 w-20 bg-zinc-800 rounded" />
+          <div className="space-y-2 pl-4 border-l border-border text-left">
+            <div className="h-3 w-16 bg-muted rounded" />
+            <div className="h-5 w-20 bg-muted rounded" />
           </div>
         </div>
       </div>
@@ -482,11 +482,11 @@ export default function App() {
                   role="switch"
                   aria-checked={isDarkMode}
                   onClick={toggleTheme}
-                  className={`peer inline-flex h-[24px] w-[44px] shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950 disabled:cursor-not-allowed disabled:opacity-50 ${isDarkMode ? 'bg-zinc-100' : 'bg-zinc-800'}`}
+                  className={`peer inline-flex h-[24px] w-[44px] shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50 ${isDarkMode ? 'bg-primary' : 'bg-muted-foreground/30'}`}
                 >
                   <span
                     data-state={isDarkMode ? 'checked' : 'unchecked'}
-                    className={`pointer-events-none block h-5 w-5 rounded-full bg-zinc-950 shadow-lg ring-0 transition-transform ${isDarkMode ? 'translate-x-5' : 'translate-x-0'}`}
+                    className={`pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform ${isDarkMode ? 'translate-x-5' : 'translate-x-0'}`}
                   />
                 </button>
               </div>

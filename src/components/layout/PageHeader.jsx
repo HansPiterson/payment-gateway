@@ -42,10 +42,7 @@ export default function PageHeader({
           <ArrowDown01Icon size={16} />
         </button>
 
-        <button className="inline-flex items-center gap-2 py-2 px-4 bg-zinc-900 border border-zinc-800 text-zinc-300 hover:bg-zinc-850 hover:text-zinc-100 rounded-lg transition-all text-sm">
-          <Upload04Icon size={16} />
-          Export
-        </button>
+
 
         <button className="inline-flex items-center gap-2 py-2 px-4 bg-zinc-900 border border-zinc-800 text-zinc-300 hover:bg-zinc-850 hover:text-zinc-100 rounded-lg transition-all text-sm">
           <FilterIcon size={16} />

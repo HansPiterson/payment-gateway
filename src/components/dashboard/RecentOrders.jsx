@@ -296,12 +296,12 @@ export default function RecentOrders({ orders: propOrders }) {
       {/* Desktop Native Dialog */}
       <dialog
         ref={dialogRef}
-        className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 w-full max-w-sm shadow-2xl text-zinc-100 backdrop:bg-zinc-950/80 backdrop:backdrop-blur-sm focus:outline-none outline-none animate-in fade-in zoom-in duration-200"
+        className="bg-card border border-border rounded-xl p-6 w-full max-w-sm shadow-2xl text-card-foreground backdrop:bg-background/80 backdrop:backdrop-blur-sm focus:outline-none outline-none animate-in fade-in zoom-in duration-200"
       >
         <div className="absolute top-4 right-4">
           <button 
             onClick={() => setSelectedOrder(null)}
-            className="p-1 text-zinc-500 hover:text-zinc-200 hover:bg-zinc-800 rounded-md transition-colors"
+            className="p-1 text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors"
           >
             <Cancel01Icon size={20} />
           </button>
@@ -313,10 +313,10 @@ export default function RecentOrders({ orders: propOrders }) {
       {!isDesktop && (
         <Drawer.Root open={!!selectedOrder && !isDesktop} onOpenChange={(open) => !open && setSelectedOrder(null)}>
           <Drawer.Portal>
-            <Drawer.Overlay className="fixed inset-0 bg-zinc-950/80 backdrop-blur-sm z-[100]" />
-            <Drawer.Content className="bg-zinc-900 flex flex-col rounded-t-[20px] h-auto mt-24 fixed bottom-0 left-0 right-0 outline-none z-[101] border-t border-zinc-800">
-              <div className="p-4 bg-zinc-900 rounded-t-[20px] flex-1">
-                <div className="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-zinc-700 mb-6" />
+            <Drawer.Overlay className="fixed inset-0 bg-background/80 backdrop-blur-sm z-[100]" />
+            <Drawer.Content className="bg-card text-card-foreground flex flex-col rounded-t-[20px] h-auto mt-24 fixed bottom-0 left-0 right-0 outline-none z-[101] border-t border-border">
+              <div className="p-4 bg-card rounded-t-[20px] flex-1">
+                <div className="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-muted-foreground/30 mb-6" />
                 <div className="max-w-md mx-auto">
                   {selectedOrder && <ActionContent />}
                 </div>
