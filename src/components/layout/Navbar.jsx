@@ -6,6 +6,10 @@ import {
   Cancel01Icon,
   ArrowLeft01Icon,
   ArrowRight01Icon,
+  Sun01Icon,
+  Moon01Icon,
+  Time02Icon,
+  PlusSignIcon,
 } from 'hugeicons-react';
 
 const navTabs = [
@@ -54,7 +58,7 @@ const navTabs = [
   },
 ];
 
-export default function Navbar({ activeTab = 'dashboard', onTabChange }) {
+export default function Navbar({ activeTab = 'dashboard', onTabChange, isDarkMode, toggleTheme }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
 
@@ -132,8 +136,15 @@ export default function Navbar({ activeTab = 'dashboard', onTabChange }) {
           })}
         </ul>
 
-        {/* Right Actions / Hamburger (Mobile Only) */}
-        <div className="flex md:hidden items-center gap-2">
+        {/* Right Actions / Hamburger (Tablet Only) */}
+        <div className="hidden sm:flex md:hidden items-center gap-2">
+          <button
+            className="p-2 text-zinc-400 hover:text-zinc-100 hover:bg-zinc-850 rounded-lg transition-colors"
+            onClick={toggleTheme}
+            aria-label="Toggle Theme"
+          >
+            {isDarkMode ? <Sun01Icon size={20} /> : <Moon01Icon size={20} />}
+          </button>
           <button
             className="p-2 text-zinc-400 hover:text-zinc-100 hover:bg-zinc-850 rounded-lg transition-colors"
             onClick={() => setMobileOpen(!mobileOpen)}
@@ -143,28 +154,43 @@ export default function Navbar({ activeTab = 'dashboard', onTabChange }) {
           </button>
         </div>
 
-        {/* Desktop User Profile (Bottom of Sidebar) */}
-        <div className={`hidden md:flex items-center gap-3 p-4 border-t border-zinc-850/50 ${isCollapsed ? 'justify-center' : 'justify-start'}`}>
-          <div className="w-9 h-9 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center text-xs font-bold text-zinc-200 flex-shrink-0">
-            AU
-          </div>
-          <div className={`flex flex-col text-left transition-all duration-300 ease-in-out whitespace-nowrap overflow-hidden
-            ${isCollapsed ? 'w-0 opacity-0' : 'w-auto opacity-100'}`}
+        {/* Desktop User Profile & Theme Toggle (Bottom of Sidebar) */}
+        <div className={`hidden md:flex flex-col gap-2 p-4 border-t border-zinc-850/50`}>
+          <button
+            className={`flex items-center gap-3 px-2 py-2 rounded-lg text-sm font-medium transition-all text-zinc-400 hover:text-zinc-150 hover:bg-zinc-850/50 ${isCollapsed ? 'justify-center' : 'justify-start'}`}
+            onClick={toggleTheme}
+            title={isCollapsed ? (isDarkMode ? 'Light Mode' : 'Dark Mode') : undefined}
           >
-            <span className="text-xs font-semibold text-zinc-200 leading-tight">Admin User</span>
-            <span className="text-[10px] text-zinc-500">admin@bayar.dev</span>
+            <span className="flex-shrink-0">
+              {isDarkMode ? <Sun01Icon size={18} /> : <Moon01Icon size={18} />}
+            </span>
+            <span className={`transition-all duration-300 ease-in-out whitespace-nowrap overflow-hidden ${isCollapsed ? 'w-0 opacity-0' : 'w-auto opacity-100'}`}>
+              {isDarkMode ? 'Light Mode' : 'Dark Mode'}
+            </span>
+          </button>
+
+          <div className={`flex items-center gap-3 mt-2 ${isCollapsed ? 'justify-center' : 'justify-start'}`}>
+            <div className="w-9 h-9 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center text-xs font-bold text-zinc-200 flex-shrink-0">
+              AU
+            </div>
+            <div className={`flex flex-col text-left transition-all duration-300 ease-in-out whitespace-nowrap overflow-hidden
+              ${isCollapsed ? 'w-0 opacity-0' : 'w-auto opacity-100'}`}
+            >
+              <span className="text-xs font-semibold text-zinc-200 leading-tight">Admin User</span>
+              <span className="text-[10px] text-zinc-500">admin@bayar.dev</span>
+            </div>
           </div>
         </div>
       </aside>
 
-      {/* Mobile Nav Drawer (Slides from Left with Smooth Animation) */}
+      {/* Tablet Nav Drawer (Slides from Right with Smooth Animation) */}
       {mobileOpen && (
         <>
           <div
             className="fixed inset-0 bg-zinc-950/80 backdrop-blur-sm z-40 md:hidden transition-opacity duration-300 animate-in fade-in"
             onClick={() => setMobileOpen(false)}
           />
-          <div className="fixed top-0 left-0 w-64 h-full bg-zinc-900 border-r border-zinc-800 z-50 md:hidden flex flex-col p-6 shadow-2xl transition-transform duration-300 ease-in-out animate-in slide-in-from-left">
+          <div className="fixed top-0 right-0 w-64 h-full bg-zinc-900 border-l border-zinc-800 z-50 md:hidden flex flex-col p-6 shadow-2xl transition-transform duration-300 ease-in-out animate-in slide-in-from-right">
             <div className="flex items-center justify-between mb-8">
               <div className="flex items-center gap-2">
                 <div className="w-7 h-7 rounded bg-zinc-100 flex items-center justify-center text-zinc-950 font-bold">
@@ -197,18 +223,77 @@ export default function Navbar({ activeTab = 'dashboard', onTabChange }) {
               ))}
             </ul>
 
-            <div className="mt-auto pt-6 border-t border-zinc-850/50 flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center text-xs font-bold text-zinc-200">
-                AU
-              </div>
-              <div className="flex flex-col text-left">
-                <span className="text-xs font-semibold text-zinc-200 leading-tight">Admin User</span>
-                <span className="text-[10px] text-zinc-500">admin@bayar.dev</span>
+            <div className="mt-auto pt-6 border-t border-zinc-850/50 flex flex-col gap-4">
+              <button
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all text-zinc-400 hover:text-zinc-100 hover:bg-zinc-850`}
+                onClick={toggleTheme}
+              >
+                <span>{isDarkMode ? <Sun01Icon size={20} /> : <Moon01Icon size={20} />}</span>
+                <span>{isDarkMode ? 'Light Mode' : 'Dark Mode'}</span>
+              </button>
+
+              <div className="flex items-center gap-3 px-2">
+                <div className="w-8 h-8 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center text-xs font-bold text-zinc-200">
+                  AU
+                </div>
+                <div className="flex flex-col text-left">
+                  <span className="text-xs font-semibold text-zinc-200 leading-tight">Admin User</span>
+                  <span className="text-[10px] text-zinc-500">admin@bayar.dev</span>
+                </div>
               </div>
             </div>
           </div>
         </>
       )}
+
+      {/* Mobile Bottom Dock (Slides up from bottom, visible only < sm) */}
+      <div className="fixed sm:hidden bottom-0 left-0 w-full bg-zinc-950/90 backdrop-blur-lg border-t border-zinc-850 z-50 flex items-center justify-between px-2 pt-2 pb-6 shadow-[0_-10px_40px_rgba(0,0,0,0.3)]">
+        <button
+          onClick={() => handleTabClick('dashboard')}
+          className={`flex flex-col items-center flex-1 gap-1 transition-colors ${activeTab === 'dashboard' ? 'text-zinc-100' : 'text-zinc-500 hover:text-zinc-300'}`}
+        >
+          {navTabs[0].Icon()}
+          <span className="text-[9px] font-medium tracking-wide">Dashboard</span>
+        </button>
+
+        <button
+          onClick={() => handleTabClick('analytics')}
+          className={`flex flex-col items-center flex-1 gap-1 transition-colors ${activeTab === 'analytics' ? 'text-zinc-100' : 'text-zinc-500 hover:text-zinc-300'}`}
+        >
+          {navTabs[1].Icon()}
+          <span className="text-[9px] font-medium tracking-wide">Analytic</span>
+        </button>
+
+        <div className="flex-shrink-0 relative -top-6 mx-1">
+          <button
+            onClick={() => handleTabClick('payments')}
+            className={`flex flex-col items-center justify-center gap-1.5 transition-transform active:scale-95 group`}
+          >
+            <div className={`w-14 h-14 rounded-full flex items-center justify-center shadow-2xl border-[6px] border-zinc-950 ${activeTab === 'payments' ? 'bg-zinc-200 text-zinc-950' : 'bg-zinc-100 text-zinc-900'}`}>
+              <PlusSignIcon size={24} className="stroke-[3px]" />
+            </div>
+            <span className={`text-[10px] font-bold whitespace-nowrap px-1 ${activeTab === 'payments' ? 'text-zinc-100' : 'text-zinc-400 group-hover:text-zinc-200'}`}>
+              Buat Link
+            </span>
+          </button>
+        </div>
+
+        <button
+          onClick={() => handleTabClick('history')}
+          className={`flex flex-col items-center flex-1 gap-1 transition-colors ${activeTab === 'history' ? 'text-zinc-100' : 'text-zinc-500 hover:text-zinc-300'}`}
+        >
+          <Time02Icon size={18} strokeWidth={2.5} />
+          <span className="text-[9px] font-medium tracking-wide">Riwayat</span>
+        </button>
+
+        <button
+          onClick={() => handleTabClick('settings')}
+          className={`flex flex-col items-center flex-1 gap-1 transition-colors ${activeTab === 'settings' ? 'text-zinc-100' : 'text-zinc-500 hover:text-zinc-300'}`}
+        >
+          {navTabs[3].Icon()}
+          <span className="text-[9px] font-medium tracking-wide">Settings</span>
+        </button>
+      </div>
     </>
   );
 }

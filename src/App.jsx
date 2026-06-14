@@ -145,6 +145,30 @@ export default function App() {
 
   const [payInvoiceId, setPayInvoiceId] = useState(null);
 
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme) {
+        return savedTheme === 'dark';
+      }
+      // default to dark mode for this app
+      return true;
+    }
+    return true;
+  });
+
+  useEffect(() => {
+    if (isDarkMode) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    }
+  }, [isDarkMode]);
+
+  const toggleTheme = () => setIsDarkMode(!isDarkMode);
+
   useEffect(() => {
     const path = window.location.pathname;
     if (path.startsWith('/pay/')) {
@@ -287,7 +311,12 @@ export default function App() {
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col md:flex-row font-sans">
       {activeTab !== 'pay-invoice' && (
-        <Navbar activeTab={activeTab} onTabChange={setActiveTab} />
+        <Navbar 
+          activeTab={activeTab} 
+          onTabChange={setActiveTab} 
+          isDarkMode={isDarkMode} 
+          toggleTheme={toggleTheme} 
+        />
       )}
 
       {/* Main Page Content Wrapper */}
@@ -426,14 +455,64 @@ export default function App() {
         )}
 
         {activeTab === 'settings' && (
-          <main className="flex-1 w-full max-w-7xl mx-auto px-4 md:px-8 py-6 md:py-8 flex flex-col items-start text-left">
-            <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+          <main className="flex-1 w-full max-w-4xl mx-auto px-4 md:px-8 py-6 md:py-8 flex flex-col items-start text-left pb-24 sm:pb-8">
+            <div className="animate-in fade-in slide-in-from-bottom-2 duration-300 w-full mb-8">
               <h1 className="text-2xl md:text-3xl font-extrabold text-zinc-100 tracking-tight">
                 Settings
               </h1>
               <p className="text-xs text-zinc-400 mt-1.5">
-                Halaman ini sedang dalam pengembangan.
+                Kelola preferensi akun dan tampilan aplikasi Anda.
               </p>
+            </div>
+
+            <div className="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <h2 className="text-sm font-bold text-zinc-100 mb-6">Tampilan (Appearance)</h2>
+              
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-sm font-semibold text-zinc-200">Mode Gelap (Dark Mode)</h3>
+                  <p className="text-xs text-zinc-400 mt-1">
+                    Ubah tema aplikasi antara mode gelap dan terang.
+                  </p>
+                </div>
+                
+                {/* Custom Shadcn-like Switch */}
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={isDarkMode}
+                  onClick={toggleTheme}
+                  className={`peer inline-flex h-[24px] w-[44px] shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950 disabled:cursor-not-allowed disabled:opacity-50 ${isDarkMode ? 'bg-zinc-100' : 'bg-zinc-800'}`}
+                >
+                  <span
+                    data-state={isDarkMode ? 'checked' : 'unchecked'}
+                    className={`pointer-events-none block h-5 w-5 rounded-full bg-zinc-950 shadow-lg ring-0 transition-transform ${isDarkMode ? 'translate-x-5' : 'translate-x-0'}`}
+                  />
+                </button>
+              </div>
+            </div>
+          </main>
+        )}
+
+        {activeTab === 'history' && (
+          <main className="flex-1 w-full max-w-7xl mx-auto px-4 md:px-8 py-6 md:py-8 flex flex-col items-start text-left pb-24 sm:pb-8">
+            <div className="animate-in fade-in slide-in-from-bottom-2 duration-300 w-full mb-6">
+              <h1 className="text-2xl md:text-3xl font-extrabold text-zinc-100 tracking-tight">
+                Riwayat Transaksi
+              </h1>
+              <p className="text-xs text-zinc-400 mt-1.5">
+                Daftar lengkap riwayat pembayaran dan status.
+              </p>
+            </div>
+            
+            <div className="w-full animate-in fade-in slide-in-from-bottom-4 duration-500">
+              {dashboardData ? (
+                <RecentOrders orders={dashboardData.recentOrders} />
+              ) : (
+                <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-8 text-center text-zinc-400 text-sm">
+                  Memuat data riwayat...
+                </div>
+              )}
             </div>
           </main>
         )}
