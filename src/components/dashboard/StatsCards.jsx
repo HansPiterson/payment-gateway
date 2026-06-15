@@ -96,32 +96,32 @@ export default function StatsCards({ stats }) {
         return (
           <div
             key={stat.label}
-            className={`rounded-xl p-5 border transition-all hover:scale-[1.01] ${
+            className={`rounded-[1.5rem] p-6 transition-ios hover:scale-[1.02] active:scale-[0.98] ${
               stat.isPrimary
-                ? 'bg-gradient-to-b from-zinc-200 to-white dark:from-zinc-800 dark:to-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-950 dark:text-zinc-100 shadow-lg'
-                : 'bg-card text-card-foreground border-border shadow-sm'
+                ? 'bg-gradient-to-br from-primary to-blue-400 text-primary-foreground shadow-[0_8px_30px_rgba(0,122,255,0.2)] border border-white/20'
+                : 'glass-panel text-foreground'
             }`}
           >
             <div className="flex items-center justify-between">
-              <span className={`text-[10px] font-extrabold uppercase tracking-wider ${
-                stat.isPrimary ? 'text-zinc-500' : 'text-zinc-400'
+              <span className={`text-[11px] font-bold uppercase tracking-wider ${
+                stat.isPrimary ? 'text-primary-foreground/80' : 'text-muted-foreground'
               }`}>
                 {stat.label}
               </span>
-              <div className={`p-1.5 rounded-lg ${
-                stat.isPrimary ? 'bg-zinc-200 text-zinc-950' : 'bg-zinc-800 text-zinc-300'
+              <div className={`p-2 rounded-xl shadow-sm ${
+                stat.isPrimary ? 'bg-white/20 text-white backdrop-blur-sm' : 'bg-secondary text-foreground'
               }`}>
-                <stat.Icon size={18} />
+                <stat.Icon size={20} />
               </div>
             </div>
 
-            <div className="flex items-baseline justify-between mt-4">
-              <span className="text-xl md:text-2xl font-black tracking-tight">{stat.value}</span>
+            <div className="flex items-baseline justify-between mt-5">
+              <span className="text-2xl md:text-3xl font-black tracking-tight">{stat.value}</span>
               {stat.change !== null && stat.change !== 0 && (
-                <span className={`text-[10px] font-black px-2 py-0.5 rounded-full flex items-center gap-0.5 ${
+                <span className={`text-[11px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm ${
                   isUp
-                    ? 'bg-zinc-200 text-zinc-950'
-                    : 'bg-zinc-950 text-zinc-400 border border-zinc-800'
+                    ? (stat.isPrimary ? 'bg-white/20 text-white' : 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400')
+                    : (stat.isPrimary ? 'bg-white/20 text-white' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400')
                 }`}>
                   {isUp ? <ArrowUp /> : <ArrowDown />}
                   {Math.abs(stat.change).toFixed(1)}%
@@ -129,8 +129,10 @@ export default function StatsCards({ stats }) {
               )}
             </div>
 
-            <span className={`text-[10px] mt-2 block font-medium text-zinc-500`}>
-              {stat.label === 'Balance' || stat.label === 'Total Revenue' ? stat.lastMonth : `Last month: ${stat.lastMonth}`}
+            <span className={`text-[12px] mt-2 block font-medium ${
+              stat.isPrimary ? 'text-primary-foreground/70' : 'text-muted-foreground'
+            }`}>
+              {stat.label === 'Balance' || stat.label === 'Total Revenue' ? stat.lastMonth : `Bulan lalu: ${stat.lastMonth}`}
             </span>
           </div>
         );
