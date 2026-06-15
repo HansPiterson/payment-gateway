@@ -140,7 +140,16 @@ export default function PaymentStep({ service, customer, onSuccess, onBack, init
     if (state !== 'ready' || !paymentData?.created_at) return;
 
     const calculateTimeLeft = () => {
-      const createdTime = new Date(paymentData.created_at.replace(" ", "T")).getTime();
+      let dateStr = paymentData.created_at;
+      // Normalisasi format date ke UTC jika backend kehilangan offset (Z)
+      if (typeof dateStr === 'string') {
+        dateStr = dateStr.replace(" ", "T");
+        if (!dateStr.endsWith('Z') && !dateStr.includes('+') && !dateStr.match(/-\d{2}:\d{2}$/)) {
+          dateStr += 'Z';
+        }
+      }
+
+      const createdTime = new Date(dateStr).getTime();
       const expireTime = createdTime + 24 * 60 * 60 * 1000; // 24 hours
       const now = new Date().getTime();
       const difference = expireTime - now;

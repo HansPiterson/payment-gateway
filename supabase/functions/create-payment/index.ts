@@ -133,6 +133,7 @@ Deno.serve(async (req: Request) => {
           payment_url: payment.payment_url,
           qris_url: payment.qris_url,
           qris_content: payment.qris_content,
+          created_at: payment.created_at,
         },
       }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
