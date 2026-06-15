@@ -249,75 +249,63 @@ export default function PaymentStep({ service, customer, onSuccess, onBack, init
   }, [initialPaymentData, createPayment, subscribeToPayment]);
 
   return (
-    <div className="w-full max-w-[440px] mx-auto text-left">
+    <div className="w-full max-w-xl mx-auto text-left">
       {onBack && (
         <button
-          className="inline-flex items-center gap-1.5 text-[14px] font-semibold text-primary hover:text-primary/80 mb-4 transition-ios active:scale-95"
+          className="inline-flex items-center gap-1 text-xs font-bold text-zinc-450 hover:text-zinc-100 mb-6 transition-colors"
           onClick={onBack}
           type="button"
         >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="15 18 9 12 15 6" />
-          </svg>
-          Kembali
+          ← Kembali
         </button>
       )}
 
-      <div className="glass-panel rounded-[2rem] p-6 shadow-xl relative overflow-hidden">
-        <div className="mb-8 text-center mt-2">
-          <div className="w-14 h-14 bg-primary/10 border border-primary/20 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="text-primary stroke-[2.5px] stroke-linecap-round stroke-linejoin-round">
-              <rect x="2" y="5" width="20" height="14" rx="2" />
-              <line x1="2" y1="10" x2="22" y2="10" />
-            </svg>
-          </div>
-          <h2 className="text-2xl font-bold text-foreground tracking-tight">Pembayaran</h2>
-          <p className="text-[13px] text-muted-foreground mt-1.5">Scan QRIS untuk menyelesaikan pembayaran</p>
+      <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 md:p-8 shadow-xl">
+        <div className="mb-6">
+          <h2 className="text-xl font-bold text-zinc-100">Pembayaran</h2>
+          <p className="text-xs text-zinc-450 mt-1">Scan QRIS untuk menyelesaikan pembayaran</p>
         </div>
 
-        {/* Order Summary (Apple Pay Sheet Style) */}
-        <div className="bg-secondary/40 border border-border/50 rounded-2xl overflow-hidden mb-6">
-          <div className="px-4 py-3 border-b border-border/50 flex justify-between items-center bg-secondary/20">
-            <span className="text-[12px] font-medium text-muted-foreground">MERCHANT</span>
-            <span className="text-[13px] font-bold text-foreground">{hasQris ? merchantName : 'BAYAR.DEV'}</span>
+        {/* Order Summary */}
+        <div className="bg-zinc-950 border border-zinc-850 p-4 rounded-xl space-y-2.5 mb-6 text-sm">
+          <div className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-2">Ringkasan Pesanan</div>
+          <div className="flex justify-between items-center text-zinc-400">
+            <span>Payment ID</span>
+            <span className="font-semibold text-zinc-200">{paymentData?.invoice_id || '-'}</span>
           </div>
-          <div className="px-4 py-3 border-b border-border/50 flex justify-between items-center">
-            <span className="text-[12px] font-medium text-muted-foreground">DESKRIPSI</span>
-            <span className="text-[13px] font-semibold text-foreground truncate max-w-[180px] text-right">{service.name}</span>
+          <div className="flex justify-between items-center text-zinc-400">
+            <span>Merchant</span>
+            <span className="font-semibold text-zinc-200">{hasQris ? merchantName : 'BAYAR.DEV'}</span>
           </div>
-          <div className="px-4 py-3 border-b border-border/50 flex justify-between items-center">
-            <span className="text-[12px] font-medium text-muted-foreground">PAYMENT ID</span>
-            <span className="text-[13px] font-medium text-foreground opacity-80">{paymentData?.invoice_id || '-'}</span>
+          <div className="flex justify-between items-center text-zinc-400">
+            <span>Deskripsi</span>
+            <span className="font-semibold text-zinc-200 truncate max-w-[150px]">{service.name}</span>
           </div>
-          <div className="px-4 py-4 flex justify-between items-center bg-secondary/10">
-            <span className="text-[14px] font-bold text-foreground">Total Bayar</span>
-            <span className="text-[20px] font-black text-foreground tracking-tight">
-              {rawQrisAmount ? formatPrice(Number(rawQrisAmount)) : formatPrice(service.price)}
-            </span>
+          <div className="h-px bg-zinc-850 my-1" />
+          <div className="flex justify-between items-center font-bold text-zinc-100 text-base">
+            <span>Total Bayar</span>
+            <span className="font-extrabold">{rawQrisAmount ? formatPrice(Number(rawQrisAmount)) : formatPrice(service.price)}</span>
           </div>
         </div>
 
         {/* Payment States */}
         {state === 'creating' && (
-          <div className="flex flex-col items-center justify-center py-12 text-center animate-fade-in">
-            <div className="w-8 h-8 border-3 border-muted border-t-foreground rounded-full animate-spin mb-4" />
-            <span className="text-[14px] text-muted-foreground font-medium">Menyiapkan pembayaran...</span>
+          <div className="flex flex-col items-center justify-center py-16 text-center">
+            <div className="w-8 h-8 border-3 border-zinc-800 border-t-zinc-200 rounded-full animate-spin mb-4" />
+            <span className="text-sm text-zinc-400 font-semibold">Membuat invoice pembayaran...</span>
           </div>
         )}
 
         {state === 'error' && (
-          <div className="text-center py-8 animate-fade-in">
-            <div className="w-14 h-14 rounded-full bg-destructive/10 border border-destructive/20 flex items-center justify-center text-destructive mx-auto mb-4">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="18" y1="6" x2="6" y2="18" />
-                <line x1="6" y1="6" x2="18" y2="18" />
-              </svg>
+          <div className="text-center py-8">
+            <div className="w-12 h-12 rounded-full bg-zinc-950 border border-zinc-800 flex items-center justify-center text-zinc-400 text-xl font-bold mx-auto mb-4">
+              ✕
             </div>
-            <p className="text-[13px] text-muted-foreground mb-6 max-w-[260px] mx-auto leading-relaxed">
+            <p className="text-xs text-zinc-400 mb-6 max-w-xs mx-auto leading-relaxed">
               {error}
             </p>
             <button
-              className="w-full py-3.5 px-4 bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-[1.25rem] transition-ios text-[15px] shadow-sm active:scale-[0.98]"
+              className="w-full py-3 px-4 bg-zinc-100 hover:bg-zinc-200 text-zinc-950 font-bold rounded-lg transition-colors text-sm shadow-sm max-w-[200px] mx-auto block"
               onClick={createPayment}
             >
               Coba Lagi
@@ -326,15 +314,15 @@ export default function PaymentStep({ service, customer, onSuccess, onBack, init
         )}
 
         {state === 'ready' && (
-          <div className="space-y-6 animate-fade-in">
+          <div className="space-y-6">
             {hasQris ? (
-              <div className="flex flex-col items-center justify-center p-6 bg-white border border-border/50 rounded-[1.5rem] shadow-sm">
+              <div className="flex flex-col items-center justify-center p-6 bg-zinc-950 border border-zinc-850 rounded-xl animate-in fade-in duration-300">
                 {/* QR Code Container */}
-                <div className="p-2 mb-3 flex items-center justify-center w-[200px] h-[200px] overflow-hidden">
+                <div className="p-4 bg-white rounded-2xl shadow-xl mb-4 flex items-center justify-center w-[220px] h-[220px] overflow-hidden">
                   <img
                     src={
                       paymentData.qris_content
-                        ? `https://api.qrserver.com/v1/create-qr-code/?size=200x200&margin=0&color=000000&bgcolor=FFFFFF&data=${encodeURIComponent(paymentData.qris_content)}`
+                        ? `https://api.qrserver.com/v1/create-qr-code/?size=200x200&margin=0&data=${encodeURIComponent(paymentData.qris_content)}`
                         : paymentData.qris_url
                     }
                     alt="QRIS Code"
@@ -344,54 +332,56 @@ export default function PaymentStep({ service, customer, onSuccess, onBack, init
                 </div>
                 
                 {/* QRIS branding header */}
-                <div className="flex items-center justify-center gap-1.5 w-full mt-2">
-                  <span className="text-red-600 font-extrabold text-[15px] tracking-widest">QRIS</span>
+                <div className="flex items-center gap-1.5 mb-2 select-none">
+                  <span className="text-rose-600 font-extrabold text-sm tracking-wider">QRIS</span>
                   <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider">GPN</span>
                 </div>
+                
+                <p className="text-xs text-zinc-400 text-center font-medium max-w-[200px] leading-relaxed">
+                  Pindai kode QR di atas menggunakan GoPay, OVO, Dana, LinkAja, ShopeePay, atau Mobile Banking Anda.
+                </p>
               </div>
             ) : (
-              <div className="border border-border/50 rounded-[1.5rem] overflow-hidden bg-background p-2">
+              <div className="border border-zinc-850 rounded-xl overflow-hidden bg-zinc-950 p-2">
                 <div ref={embedContainerRef} className="w-full" />
               </div>
             )}
 
-            <div className="flex items-center justify-between gap-3 py-3.5 px-4 rounded-xl bg-secondary/50 border border-border text-[13px] font-medium text-foreground">
-              <div className="flex items-center gap-2.5">
-                <div className="w-3.5 h-3.5 border-2 border-muted-foreground/30 border-t-primary rounded-full animate-spin" />
-                <span className="text-muted-foreground">Menunggu pembayaran...</span>
+            <div className="flex items-center justify-between gap-2 py-3 px-4 rounded-lg bg-zinc-950 border border-zinc-855 text-zinc-400 text-xs font-semibold">
+              <div className="flex items-center gap-2">
+                <div className="w-3.5 h-3.5 border-2 border-zinc-800 border-t-zinc-400 rounded-full animate-spin" />
+                Menunggu pembayaran Anda...
               </div>
               {timeLeft && (
-                <div className="font-mono text-foreground font-bold bg-background px-2 py-1 rounded-md shadow-sm border border-border/50">
-                  {timeLeft}
-                </div>
+                <div className="font-mono text-zinc-300">Sisa Waktu: {timeLeft}</div>
               )}
             </div>
+
+
           </div>
         )}
 
         {state === 'paid' && (
-          <div className="flex flex-col items-center justify-center py-10 bg-green-500/10 border border-green-500/20 text-green-600 dark:text-green-400 rounded-2xl shadow-sm animate-in zoom-in-95 duration-300">
-            <div className="w-16 h-16 bg-green-500 text-white rounded-full flex items-center justify-center mb-4 shadow-[0_4px_14px_rgba(34,197,94,0.4)]">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="20 6 9 17 4 12" />
-              </svg>
-            </div>
-            <span className="text-xl font-black tracking-tight">PEMBAYARAN BERHASIL!</span>
+          <div className="flex flex-col items-center justify-center py-10 bg-zinc-100 text-zinc-950 rounded-xl font-bold shadow-md animate-pulse">
+            <svg className="w-10 h-10 mb-2 stroke-zinc-950" fill="none" viewBox="0 0 24 24" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+            <span className="text-lg font-black tracking-wide">PEMBAYARAN BERHASIL!</span>
           </div>
         )}
 
         {state === 'expired' && (
-          <div className="text-center py-8 animate-fade-in">
-            <div className="w-16 h-16 rounded-full bg-secondary border border-border flex items-center justify-center text-muted-foreground mx-auto mb-5 shadow-sm">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="10" />
-                <line x1="12" y1="8" x2="12" y2="12" />
-                <line x1="12" y1="16" x2="12.01" y2="16" />
+          <div className="text-center py-8">
+            <div className="w-14 h-14 rounded-full bg-zinc-950 border border-zinc-800 flex items-center justify-center text-zinc-500 mx-auto mb-4">
+              <svg className="w-6 h-6 stroke-current" fill="none" viewBox="0 0 24 24" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
               </svg>
             </div>
-            <h3 className="text-xl font-bold text-foreground mb-2">Waktu Habis</h3>
-            <p className="text-[13px] text-muted-foreground mb-6 max-w-[280px] mx-auto leading-relaxed">
-              Waktu pembayaran untuk tautan ini sudah habis, atau pembayaran dibatalkan.
+            <h3 className="text-lg font-bold text-zinc-100 mb-2">Pembayaran Kedaluwarsa</h3>
+            <p className="text-xs text-zinc-400 mb-6 max-w-xs mx-auto leading-relaxed">
+              Waktu pembayaran (24 jam) untuk tautan ini sudah habis, atau pembayaran telah dibatalkan. Silakan buat tautan pembayaran baru.
             </p>
           </div>
         )}
