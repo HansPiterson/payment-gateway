@@ -9,8 +9,11 @@ import {
   Sun01Icon,
   Moon01Icon,
   Time02Icon,
+  Time02Icon,
   PlusSignIcon,
+  Logout01Icon,
 } from 'hugeicons-react';
+import { supabase } from '../../lib/supabase';
 
 const navTabs = [
   { 
@@ -58,9 +61,13 @@ const navTabs = [
   },
 ];
 
-export default function Navbar({ activeTab = 'dashboard', onTabChange, isDarkMode, toggleTheme }) {
+export default function Navbar({ activeTab = 'dashboard', onTabChange, isDarkMode, toggleTheme, session }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+  };
 
   const handleTabClick = (key) => {
     onTabChange?.(key);
@@ -176,10 +183,23 @@ export default function Navbar({ activeTab = 'dashboard', onTabChange, isDarkMod
             <div className={`flex flex-col text-left transition-all duration-300 ease-in-out whitespace-nowrap overflow-hidden
               ${isCollapsed ? 'w-0 opacity-0' : 'w-auto opacity-100'}`}
             >
-              <span className="text-xs font-semibold text-zinc-200 leading-tight">Admin User</span>
-              <span className="text-[10px] text-zinc-500">admin@bayar.dev</span>
+              <span className="text-xs font-semibold text-zinc-200 leading-tight">Admin Dashboard</span>
+              <span className="text-[10px] text-zinc-500">{session?.user?.email || 'admin@bayar.dev'}</span>
             </div>
           </div>
+          
+          <button
+            className={`flex items-center gap-3 px-2 py-2 mt-1 rounded-lg text-sm font-medium transition-all text-red-400 hover:text-red-300 hover:bg-red-950/30 ${isCollapsed ? 'justify-center' : 'justify-start'}`}
+            onClick={handleLogout}
+            title={isCollapsed ? 'Logout' : undefined}
+          >
+            <span className="flex-shrink-0">
+              <Logout01Icon size={18} />
+            </span>
+            <span className={`transition-all duration-300 ease-in-out whitespace-nowrap overflow-hidden ${isCollapsed ? 'w-0 opacity-0' : 'w-auto opacity-100'}`}>
+              Keluar
+            </span>
+          </button>
         </div>
       </aside>
 
@@ -237,17 +257,25 @@ export default function Navbar({ activeTab = 'dashboard', onTabChange, isDarkMod
                   AU
                 </div>
                 <div className="flex flex-col text-left">
-                  <span className="text-xs font-semibold text-zinc-200 leading-tight">Admin User</span>
-                  <span className="text-[10px] text-zinc-500">admin@bayar.dev</span>
+                  <span className="text-xs font-semibold text-zinc-200 leading-tight">Admin Dashboard</span>
+                  <span className="text-[10px] text-zinc-500">{session?.user?.email || 'admin@bayar.dev'}</span>
                 </div>
               </div>
+
+              <button
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all text-red-400 hover:text-red-300 hover:bg-red-950/30`}
+                onClick={handleLogout}
+              >
+                <span><Logout01Icon size={20} /></span>
+                <span>Keluar</span>
+              </button>
             </div>
           </div>
         </>
       )}
 
       {/* Mobile Bottom Dock (Slides up from bottom, visible only < sm) */}
-      <div className="fixed sm:hidden bottom-0 left-0 w-full bg-zinc-950/90 backdrop-blur-lg border-t border-zinc-850 z-50 flex items-center justify-between px-2 pt-2 pb-6 shadow-[0_-10px_40px_rgba(0,0,0,0.3)]">
+      <div className="fixed sm:hidden bottom-0 left-0 w-full bg-card border-t border-border z-50 flex items-center justify-between px-2 pt-2 pb-6 shadow-[0_-10px_40px_rgba(0,0,0,0.3)]">
         <button
           onClick={() => handleTabClick('dashboard')}
           className={`flex flex-col items-center flex-1 gap-1 transition-colors ${activeTab === 'dashboard' ? 'text-zinc-100' : 'text-zinc-500 hover:text-zinc-300'}`}

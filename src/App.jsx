@@ -9,6 +9,8 @@ import { FUNCTIONS_URL, supabaseAnonKey } from './lib/supabase';
 
 import PaymentLinkGenerator from './components/PaymentLinkGenerator';
 import DirectPayView from './components/DirectPayView';
+import Login from './components/Login';
+import { supabase } from './lib/supabase';
 
 
 const DashboardSkeleton = () => (
@@ -144,6 +146,9 @@ export default function App() {
   const dialogRef = useRef(null);
 
   const [payInvoiceId, setPayInvoiceId] = useState(null);
+  
+  const [session, setSession] = useState(null);
+  const [authLoading, setAuthLoading] = useState(true);
 
   const [isDarkMode, setIsDarkMode] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -178,6 +183,21 @@ export default function App() {
         setActiveTab('pay-invoice');
       }
     }
+  }, []);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setAuthLoading(false);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   useEffect(() => {
@@ -308,6 +328,20 @@ export default function App() {
     }
   };
 
+  // Show auth loading state briefly
+  if (authLoading && activeTab !== 'pay-invoice') {
+    return (
+      <div className="min-h-screen bg-zinc-950 flex items-center justify-center">
+        <div className="w-8 h-8 border-3 border-zinc-800 border-t-zinc-200 rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  // Require login for dashboard routes
+  if (!session && activeTab !== 'pay-invoice') {
+    return <Login />;
+  }
+
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col md:flex-row font-sans">
       {activeTab !== 'pay-invoice' && (
@@ -315,7 +349,8 @@ export default function App() {
           activeTab={activeTab} 
           onTabChange={setActiveTab} 
           isDarkMode={isDarkMode} 
-          toggleTheme={toggleTheme} 
+          toggleTheme={toggleTheme}
+          session={session}
         />
       )}
 
