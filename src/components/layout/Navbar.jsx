@@ -9,7 +9,6 @@ import {
   Sun01Icon,
   Moon01Icon,
   Time02Icon,
-  Time02Icon,
   PlusSignIcon,
   Logout01Icon,
 } from 'hugeicons-react';
