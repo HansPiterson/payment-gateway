@@ -284,7 +284,7 @@ export default function App() {
       {/* Main Page Content Wrapper */}
       <div className={`flex-1 flex flex-col min-w-0 ${(activeTab === 'pay-invoice' || activeTab === 'donate-public' || activeTab === 'donate-ended') ? 'p-0' : 'pt-16 md:pt-0'} overflow-x-hidden`}>
         {activeTab === 'dashboard' && (
-          <main className="flex-1 w-full max-w-7xl mx-auto px-4 md:px-8 py-6 md:py-8 flex flex-col">
+          <main className="flex-1 w-full max-w-7xl mx-auto px-4 md:px-8 py-6 md:py-8 pb-28 md:pb-8 flex flex-col">
             {loading ? (
               <DashboardSkeleton />
             ) : error ? (
@@ -310,7 +310,7 @@ export default function App() {
                   />
                 </div>
                 <div className="space-y-6 md:space-y-8 flex flex-col w-full animate-in fade-in slide-in-from-bottom-4 duration-500">
-                  <StatsCards stats={dashboardData.stats} />
+                  <StatsCards stats={dashboardData.stats} onBalanceClick={() => setActiveTab('withdraw')} />
 
                   <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <div className="lg:col-span-1">
@@ -360,7 +360,7 @@ export default function App() {
         )}
 
         {activeTab === 'withdraw' && (
-          <main className="flex-1 w-full max-w-5xl mx-auto px-4 py-8 flex flex-col items-center justify-start animate-in fade-in duration-300">
+          <main className="flex-1 w-full max-w-5xl mx-auto px-4 py-8 pb-28 md:pb-8 flex flex-col items-center justify-start animate-in fade-in duration-300">
             {loading ? (
                <div className="text-zinc-500 animate-pulse mt-12">Memuat informasi saldo...</div>
             ) : error ? (
@@ -376,7 +376,7 @@ export default function App() {
         )}
 
         {activeTab === 'payments' && (
-          <main className="flex-1 w-full max-w-3xl mx-auto px-4 py-8 flex flex-col items-center justify-start animate-in fade-in duration-300">
+          <main className="flex-1 w-full max-w-3xl mx-auto px-4 py-8 pb-28 md:pb-8 flex flex-col items-center justify-start animate-in fade-in duration-300">
             <header className="mb-8 text-center">
               <h1 className="text-2xl md:text-3xl font-extrabold text-zinc-100 tracking-tight">
                 Payment Link
@@ -391,7 +391,7 @@ export default function App() {
         )}
 
         {activeTab === 'donations' && (
-          <main className="flex-1 w-full max-w-5xl mx-auto px-4 py-8 flex flex-col items-center justify-start animate-in fade-in duration-300">
+          <main className="flex-1 w-full max-w-5xl mx-auto px-4 py-8 pb-28 md:pb-8 flex flex-col items-center justify-start animate-in fade-in duration-300">
             <CampaignsList 
               onNewCampaign={() => {
                 window.history.pushState({}, '', '/donate/create-new');
@@ -406,7 +406,7 @@ export default function App() {
         )}
 
         {activeTab === 'campaign-details' && (
-          <main className="flex-1 w-full max-w-5xl mx-auto px-4 py-8 flex flex-col items-center justify-start animate-in fade-in duration-300">
+          <main className="flex-1 w-full max-w-5xl mx-auto px-4 py-8 pb-28 md:pb-8 flex flex-col items-center justify-start animate-in fade-in duration-300">
             <CampaignDetails 
               campaignId={adminCampaignId} 
               onBack={() => setActiveTab('donations')} 
@@ -415,7 +415,7 @@ export default function App() {
         )}
 
         {activeTab === 'create-campaign' && (
-          <main className="flex-1 w-full max-w-5xl mx-auto px-4 py-8 flex flex-col items-center justify-start animate-in fade-in duration-300">
+          <main className="flex-1 w-full max-w-5xl mx-auto px-4 py-8 pb-28 md:pb-8 flex flex-col items-center justify-start animate-in fade-in duration-300">
             <CreateCampaign 
               onBack={() => {
                 window.history.pushState({}, '', '/');
@@ -454,7 +454,7 @@ export default function App() {
         )}
 
         {activeTab === 'analytics' && (
-          <main className="flex-1 w-full max-w-7xl mx-auto px-4 md:px-8 py-6 md:py-8 flex flex-col">
+          <main className="flex-1 w-full max-w-7xl mx-auto px-4 md:px-8 py-6 md:py-8 pb-28 md:pb-8 flex flex-col">
             {loading ? (
               <AnalyticsSkeleton />
             ) : error ? (
@@ -494,7 +494,7 @@ export default function App() {
         )}
 
         {activeTab === 'settings' && (
-          <main className="flex-1 w-full max-w-4xl mx-auto px-4 md:px-8 py-6 md:py-8 flex flex-col items-start text-left pb-24 sm:pb-8">
+          <main className="flex-1 w-full max-w-4xl mx-auto px-4 md:px-8 py-6 md:py-8 pb-28 md:pb-8 flex flex-col items-start text-left">
             <div className="animate-in fade-in slide-in-from-bottom-2 duration-300 w-full mb-8">
               <h1 className="text-2xl md:text-3xl font-extrabold text-zinc-100 tracking-tight">
                 Settings
@@ -534,7 +534,7 @@ export default function App() {
         )}
 
         {activeTab === 'history' && (
-          <main className="flex-1 w-full max-w-7xl mx-auto px-4 md:px-8 py-6 md:py-8 flex flex-col items-start text-left pb-24 sm:pb-8">
+          <main className="flex-1 w-full max-w-7xl mx-auto px-4 md:px-8 py-6 md:py-8 pb-28 md:pb-8 flex flex-col items-start text-left">
             <div className="animate-in fade-in slide-in-from-bottom-2 duration-300 w-full mb-6">
               <h1 className="text-2xl md:text-3xl font-extrabold text-zinc-100 tracking-tight">
                 Riwayat Transaksi

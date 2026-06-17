@@ -130,7 +130,7 @@ export default function DonateView({ campaignId }) {
   if (!campaign) return null;
 
   return (
-    <div className="w-full max-w-xl mx-auto text-left py-8 md:py-12">
+    <div className="w-full max-w-xl mx-auto text-left py-8 pb-28 md:py-12 md:pb-12">
       {step === 'form' && (
         <div className="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden shadow-2xl">
           {campaign.banner_url && (

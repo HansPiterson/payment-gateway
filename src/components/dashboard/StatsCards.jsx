@@ -51,7 +51,7 @@ const defaultStatsData = [
   },
 ];
 
-export default function StatsCards({ stats }) {
+export default function StatsCards({ stats, onBalanceClick }) {
   const statsData = stats ? [
     {
       label: 'Balance',
@@ -93,10 +93,12 @@ export default function StatsCards({ stats }) {
         const isUp = stat.change !== null && stat.change > 0;
         const isDown = stat.change !== null && stat.change < 0;
 
+        const isBalanceCard = stat.label === 'Balance';
         return (
           <div
             key={stat.label}
-            className={`rounded-xl p-5 border transition-all hover:scale-[1.01] ${
+            onClick={isBalanceCard ? onBalanceClick : undefined}
+            className={`rounded-xl p-5 border transition-all hover:scale-[1.01] ${isBalanceCard && onBalanceClick ? 'cursor-pointer' : ''} ${
               stat.isPrimary
                 ? 'bg-gradient-to-b from-zinc-200 to-white dark:from-zinc-800 dark:to-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-950 dark:text-zinc-100 shadow-lg'
                 : 'bg-card text-card-foreground border-border shadow-sm'

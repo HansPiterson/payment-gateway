@@ -15,15 +15,7 @@ export default function PageHeader({
       </div>
 
       <div className="flex flex-wrap items-center gap-2 md:gap-3">
-        {onWithdraw && (
-          <button
-            className="inline-flex items-center gap-2 py-2 px-4 bg-zinc-100 text-zinc-950 hover:bg-zinc-200 font-bold rounded-lg transition-colors text-sm shadow-sm"
-            onClick={onWithdraw}
-          >
-            <Coins01Icon size={16} />
-            Tarik Saldo
-          </button>
-        )}
+
 
         {onRefresh && (
           <button

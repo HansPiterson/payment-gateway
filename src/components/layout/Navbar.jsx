@@ -13,6 +13,7 @@ import {
   Logout01Icon,
 } from 'hugeicons-react';
 import { supabase } from '../../lib/supabase';
+import { Drawer } from 'vaul';
 
 const navTabs = [
   { 
@@ -301,7 +302,7 @@ export default function Navbar({ activeTab = 'dashboard', onTabChange, isDarkMod
       )}
 
       {/* Mobile Bottom Dock (Slides up from bottom, visible only < sm) */}
-      <div className="fixed sm:hidden bottom-0 left-0 w-full bg-card border-t border-border z-50 flex items-center justify-between px-2 pt-2 pb-6 shadow-[0_-10px_40px_rgba(0,0,0,0.3)]">
+      <div className="fixed sm:hidden bottom-0 left-0 w-full bg-zinc-950 border-t border-zinc-900 z-[55] flex items-center justify-between px-2 pt-2 pb-6 shadow-[0_-10px_40px_rgba(0,0,0,0.5)]">
         <button
           onClick={() => handleTabClick('dashboard')}
           className={`flex flex-col items-center flex-1 gap-1 transition-colors ${activeTab === 'dashboard' ? 'text-zinc-100' : 'text-zinc-500 hover:text-zinc-300'}`}
@@ -344,59 +345,58 @@ export default function Navbar({ activeTab = 'dashboard', onTabChange, isDarkMod
           onClick={() => handleTabClick('settings')}
           className={`flex flex-col items-center flex-1 gap-1 transition-colors ${activeTab === 'settings' ? 'text-zinc-100' : 'text-zinc-500 hover:text-zinc-300'}`}
         >
-          {navTabs[3].Icon()}
+          {navTabs.find(t => t.key === 'settings').Icon()}
           <span className="text-[9px] font-medium tracking-wide">Settings</span>
         </button>
       </div>
 
-      {/* Mobile Create Link Drawer */}
-      {isCreateDrawerOpen && (
-        <>
-          <div
-            className="fixed inset-0 bg-zinc-950/60 backdrop-blur-sm z-[60] sm:hidden transition-opacity duration-300 animate-in fade-in"
-            onClick={() => setIsCreateDrawerOpen(false)}
-          />
-          <div className="fixed bottom-0 left-0 w-full bg-zinc-900 border-t border-zinc-800 rounded-t-3xl z-[70] sm:hidden p-6 pb-12 transition-transform duration-300 ease-out animate-in slide-in-from-bottom">
-            <div className="w-12 h-1.5 bg-zinc-800 rounded-full mx-auto mb-6" />
-            <h3 className="text-lg font-bold text-zinc-100 mb-6 px-2">Buat Link Baru</h3>
-            <div className="flex flex-col gap-3">
-              <button
-                onClick={() => handleCreateOption('payments')}
-                className="w-full flex items-center justify-between p-4 bg-zinc-950 border border-zinc-850 hover:border-zinc-700 rounded-2xl transition-colors text-left"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-blue-500/10 text-blue-400 flex items-center justify-center">
-                    <PlusSignIcon size={20} />
+      {/* Mobile Create Link Drawer (vaul) */}
+      <Drawer.Root open={isCreateDrawerOpen} onOpenChange={setIsCreateDrawerOpen}>
+        <Drawer.Portal>
+          <Drawer.Overlay className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] sm:hidden" />
+          <Drawer.Content className="bg-zinc-900 flex flex-col rounded-t-[20px] h-auto fixed bottom-0 left-0 right-0 z-[70] sm:hidden border-t border-zinc-800">
+            <div className="p-6 pb-12 bg-zinc-900 rounded-t-[20px] flex-1">
+              <div className="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-zinc-800 mb-6" />
+              <Drawer.Title className="text-lg font-bold text-zinc-100 mb-6 px-2">Buat Link Baru</Drawer.Title>
+              <div className="flex flex-col gap-3">
+                <button
+                  onClick={() => handleCreateOption('payments')}
+                  className="w-full flex items-center justify-between p-4 bg-zinc-950 border border-zinc-850 hover:border-zinc-700 rounded-2xl transition-colors text-left"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-blue-500/10 text-blue-400 flex items-center justify-center">
+                      <PlusSignIcon size={20} />
+                    </div>
+                    <div>
+                      <div className="text-sm font-bold text-zinc-100">Buat Link Pembayaran</div>
+                      <div className="text-[10px] text-zinc-400 mt-0.5">Terima pembayaran QRIS instan</div>
+                    </div>
                   </div>
-                  <div>
-                    <div className="text-sm font-bold text-zinc-100">Buat Link Pembayaran</div>
-                    <div className="text-[10px] text-zinc-400 mt-0.5">Terima pembayaran QRIS instan</div>
+                  <ArrowRight01Icon size={16} className="text-zinc-500" />
+                </button>
+                
+                <button
+                  onClick={() => handleCreateOption('donations')}
+                  className="w-full flex items-center justify-between p-4 bg-zinc-950 border border-zinc-850 hover:border-zinc-700 rounded-2xl transition-colors text-left"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-rose-500/10 text-rose-400 flex items-center justify-center">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                      </svg>
+                    </div>
+                    <div>
+                      <div className="text-sm font-bold text-zinc-100">Buat Link Donasi</div>
+                      <div className="text-[10px] text-zinc-400 mt-0.5">Galang dana dengan kampanye</div>
+                    </div>
                   </div>
-                </div>
-                <ArrowRight01Icon size={16} className="text-zinc-500" />
-              </button>
-              
-              <button
-                onClick={() => handleCreateOption('donations')}
-                className="w-full flex items-center justify-between p-4 bg-zinc-950 border border-zinc-850 hover:border-zinc-700 rounded-2xl transition-colors text-left"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-rose-500/10 text-rose-400 flex items-center justify-center">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <div className="text-sm font-bold text-zinc-100">Buat Link Donasi</div>
-                    <div className="text-[10px] text-zinc-400 mt-0.5">Galang dana dengan kampanye</div>
-                  </div>
-                </div>
-                <ArrowRight01Icon size={16} className="text-zinc-500" />
-              </button>
+                  <ArrowRight01Icon size={16} className="text-zinc-500" />
+                </button>
+              </div>
             </div>
-          </div>
-        </>
-      )}
+          </Drawer.Content>
+        </Drawer.Portal>
+      </Drawer.Root>
     </>
   );
 }
