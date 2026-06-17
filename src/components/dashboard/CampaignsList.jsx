@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
 
-export default function CampaignsList({ onNewCampaign }) {
+export default function CampaignsList({ onNewCampaign, onViewDetails }) {
   const [campaigns, setCampaigns] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -18,8 +18,26 @@ export default function CampaignsList({ onNewCampaign }) {
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
-      setCampaigns(data || []);
+      const { data: paymentsData } = await supabase
+        .from('payments')
+        .select('campaign_id, amount')
+        .in('status', ['paid', 'success'])
+        .not('campaign_id', 'is', null);
+
+      const collectedMap = {};
+      if (paymentsData) {
+        paymentsData.forEach(p => {
+          if (!collectedMap[p.campaign_id]) collectedMap[p.campaign_id] = 0;
+          collectedMap[p.campaign_id] += p.amount;
+        });
+      }
+
+      const campaignsWithCollected = (data || []).map(camp => ({
+        ...camp,
+        collected: collectedMap[camp.id] || 0
+      }));
+
+      setCampaigns(campaignsWithCollected);
     } catch (err) {
       console.error(err);
       setError(err.message);
@@ -69,7 +87,7 @@ export default function CampaignsList({ onNewCampaign }) {
                 <tr>
                   <th className="px-6 py-4 font-semibold">Judul Donasi</th>
                   <th className="px-6 py-4 font-semibold">Kategori</th>
-                  <th className="px-6 py-4 font-semibold">Target</th>
+                  <th className="px-6 py-4 font-semibold">Terkumpul / Target</th>
                   <th className="px-6 py-4 font-semibold">Aksi</th>
                 </tr>
               </thead>
@@ -86,15 +104,24 @@ export default function CampaignsList({ onNewCampaign }) {
                       </span>
                     </td>
                     <td className="px-6 py-4 text-zinc-300 font-mono">
-                      {camp.target_amount ? `Rp ${camp.target_amount.toLocaleString('id-ID')}` : '-'}
+                      <div className="font-bold text-zinc-100">Rp {camp.collected.toLocaleString('id-ID')}</div>
+                      <div className="text-[10px] text-zinc-500 mt-1">Target: {camp.target_amount ? `Rp ${camp.target_amount.toLocaleString('id-ID')}` : '-'}</div>
                     </td>
                     <td className="px-6 py-4">
-                      <button
-                        onClick={() => copyToClipboard(camp.id)}
-                        className="py-1.5 px-3 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded-lg text-xs font-semibold transition-colors"
-                      >
-                        Salin Link
-                      </button>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => onViewDetails(camp.id)}
+                          className="py-1.5 px-3 bg-zinc-100 hover:bg-zinc-200 text-zinc-950 rounded-lg text-xs font-semibold transition-colors shadow-sm"
+                        >
+                          Lihat Donatur
+                        </button>
+                        <button
+                          onClick={() => copyToClipboard(camp.id)}
+                          className="py-1.5 px-3 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded-lg text-xs font-semibold transition-colors"
+                        >
+                          Salin Link
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}

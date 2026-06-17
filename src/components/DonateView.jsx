@@ -6,6 +6,7 @@ import SuccessPage from './SuccessPage';
 export default function DonateView({ campaignId }) {
   const [loading, setLoading] = useState(true);
   const [campaign, setCampaign] = useState(null);
+  const [collectedAmount, setCollectedAmount] = useState(0);
   const [error, setError] = useState(null);
   const [step, setStep] = useState('form'); // form | payment | success
 
@@ -33,6 +34,18 @@ export default function DonateView({ campaignId }) {
         setCampaign(data);
         if (data.donation_type === 'fixed' && data.fixed_amounts?.length > 0) {
           setAmount(data.fixed_amounts[0].toString());
+        }
+
+        // Fetch collected amount
+        const { data: paymentsData } = await supabase
+          .from('payments')
+          .select('amount')
+          .eq('campaign_id', campaignId)
+          .in('status', ['paid', 'success']);
+        
+        if (paymentsData) {
+          const total = paymentsData.reduce((acc, curr) => acc + curr.amount, 0);
+          setCollectedAmount(total);
         }
       } catch (err) {
         console.error(err);
@@ -71,9 +84,21 @@ export default function DonateView({ campaignId }) {
   };
 
   const customerMock = {
-    name: isAnonymous ? 'Hamba Allah' : donorName,
+    name: donorName,
     email: donorEmail,
     phone: '',
+  };
+
+  const handleAnonymousChange = (e) => {
+    const isAnon = e.target.checked;
+    setIsAnonymous(isAnon);
+    if (isAnon) {
+      setDonorName('Anonymous');
+      setDonorEmail('anonymous@unknown.mail');
+    } else {
+      setDonorName('');
+      setDonorEmail('');
+    }
   };
 
   // When payment is successful
@@ -136,11 +161,23 @@ export default function DonateView({ campaignId }) {
 
             {campaign.target_amount && (
               <div className="mb-8 p-4 rounded-xl bg-zinc-950 border border-zinc-850">
-                <div className="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-1">Target Donasi</div>
-                <div className="text-xl font-black text-zinc-100">Rp {campaign.target_amount.toLocaleString('id-ID')}</div>
-                <div className="w-full h-2 bg-zinc-800 rounded-full mt-3 overflow-hidden">
-                  {/* Progress bar logic goes here, for now it's static */}
-                  <div className="h-full bg-zinc-100 w-[15%]" />
+                <div className="flex justify-between items-end mb-1">
+                  <div className="text-xs font-bold text-zinc-400 uppercase tracking-wider">Terkumpul</div>
+                  <div className="text-xs font-bold text-zinc-500 uppercase tracking-wider">Target: Rp {campaign.target_amount.toLocaleString('id-ID')}</div>
+                </div>
+                <div className="text-xl font-black text-zinc-100">
+                  Rp {collectedAmount.toLocaleString('id-ID')}
+                </div>
+                
+                {/* Shadcn UI Style Progress Bar */}
+                <div className="relative w-full h-2 bg-zinc-800 rounded-full mt-3 overflow-hidden">
+                  <div 
+                    className="absolute top-0 left-0 h-full bg-zinc-100 transition-all duration-500 ease-out rounded-full" 
+                    style={{ width: `${Math.min((collectedAmount / campaign.target_amount) * 100, 100)}%` }}
+                  />
+                </div>
+                <div className="text-[10px] font-medium text-zinc-500 mt-2 text-right">
+                  {Math.min(Math.round((collectedAmount / campaign.target_amount) * 100), 100)}% tercapai
                 </div>
               </div>
             )}
@@ -192,18 +229,20 @@ export default function DonateView({ campaignId }) {
                   <input
                     type="text"
                     required
+                    disabled={isAnonymous}
                     value={donorName}
                     onChange={(e) => setDonorName(e.target.value)}
                     placeholder="Nama Lengkap"
-                    className="w-full py-3 px-4 rounded-xl bg-zinc-950 text-zinc-100 border border-zinc-800 focus:border-zinc-500 transition-colors text-sm"
+                    className="w-full py-3 px-4 rounded-xl bg-zinc-950 text-zinc-100 border border-zinc-800 focus:border-zinc-500 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                   />
                   <input
                     type="email"
                     required
+                    disabled={isAnonymous}
                     value={donorEmail}
                     onChange={(e) => setDonorEmail(e.target.value)}
                     placeholder="Alamat Email"
-                    className="w-full py-3 px-4 rounded-xl bg-zinc-950 text-zinc-100 border border-zinc-800 focus:border-zinc-500 transition-colors text-sm"
+                    className="w-full py-3 px-4 rounded-xl bg-zinc-950 text-zinc-100 border border-zinc-800 focus:border-zinc-500 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                   />
                 </div>
 
@@ -211,7 +250,7 @@ export default function DonateView({ campaignId }) {
                   <input
                     type="checkbox"
                     checked={isAnonymous}
-                    onChange={(e) => setIsAnonymous(e.target.checked)}
+                    onChange={handleAnonymousChange}
                     className="w-4 h-4 accent-zinc-400 rounded bg-zinc-900 border-zinc-800"
                   />
                   <span className="text-sm text-zinc-400 font-medium">Sembunyikan nama saya (Anonim)</span>

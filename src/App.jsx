@@ -12,6 +12,7 @@ import DirectPayView from './components/DirectPayView';
 import Login from './components/Login';
 import CampaignsList from './components/dashboard/CampaignsList';
 import CreateCampaign from './components/dashboard/CreateCampaign';
+import CampaignDetails from './components/dashboard/CampaignDetails';
 import DonateView from './components/DonateView';
 import { supabase } from './lib/supabase';
 
@@ -150,6 +151,7 @@ export default function App() {
 
   const [payInvoiceId, setPayInvoiceId] = useState(null);
   const [donateCampaignId, setDonateCampaignId] = useState(null);
+  const [adminCampaignId, setAdminCampaignId] = useState(null);
   
   const [session, setSession] = useState(null);
   const [authLoading, setAuthLoading] = useState(true);
@@ -455,10 +457,25 @@ export default function App() {
 
         {activeTab === 'donations' && (
           <main className="flex-1 w-full max-w-5xl mx-auto px-4 py-8 flex flex-col items-center justify-start animate-in fade-in duration-300">
-            <CampaignsList onNewCampaign={() => {
-              window.history.pushState({}, '', '/donate/create-new');
-              setActiveTab('create-campaign');
-            }} />
+            <CampaignsList 
+              onNewCampaign={() => {
+                window.history.pushState({}, '', '/donate/create-new');
+                setActiveTab('create-campaign');
+              }} 
+              onViewDetails={(id) => {
+                setAdminCampaignId(id);
+                setActiveTab('campaign-details');
+              }}
+            />
+          </main>
+        )}
+
+        {activeTab === 'campaign-details' && (
+          <main className="flex-1 w-full max-w-5xl mx-auto px-4 py-8 flex flex-col items-center justify-start animate-in fade-in duration-300">
+            <CampaignDetails 
+              campaignId={adminCampaignId} 
+              onBack={() => setActiveTab('donations')} 
+            />
           </main>
         )}
 
