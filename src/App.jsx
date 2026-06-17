@@ -13,6 +13,7 @@ import Login from './components/Login';
 import CampaignsList from './components/dashboard/CampaignsList';
 import CreateCampaign from './components/dashboard/CreateCampaign';
 import CampaignDetails from './components/dashboard/CampaignDetails';
+import DonationStatsCard from './components/dashboard/DonationStatsCard';
 import DonateView from './components/DonateView';
 import { supabase } from './lib/supabase';
 
@@ -399,36 +400,42 @@ export default function App() {
                 <div className="space-y-6 md:space-y-8 flex flex-col w-full animate-in fade-in slide-in-from-bottom-4 duration-500">
                   <StatsCards stats={dashboardData.stats} />
 
-                  {/* Pemantauan Transaksi (API Bayar.gg) */}
-                  <div className="w-full text-left">
-                    <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-3 flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-zinc-400 animate-pulse" />
-                      Pemantauan API Bayar.gg
-                    </span>
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                      <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-4 flex flex-col text-left">
-                        <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Total Transaksi</span>
-                        <span className="text-lg font-black text-zinc-150 mt-1">
-                          {dashboardData.apiSummary?.totalPayments ?? 0}
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div className="lg:col-span-1">
+                      <DonationStatsCard onClick={() => setActiveTab('donations')} />
+                    </div>
+                    <div className="lg:col-span-2">
+                      <div className="w-full text-left bg-zinc-900 border border-zinc-800 rounded-xl p-5 h-full">
+                        <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                          <span className="w-1.5 h-1.5 rounded-full bg-zinc-400 animate-pulse" />
+                          Pemantauan API Bayar.gg
                         </span>
-                      </div>
-                      <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-4 flex flex-col text-left">
-                        <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Sukses</span>
-                        <span className="text-lg font-black text-zinc-150 mt-1">
-                          {dashboardData.apiSummary?.paid ?? 0}
-                        </span>
-                      </div>
-                      <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-4 flex flex-col text-left">
-                        <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Pending</span>
-                        <span className="text-lg font-black text-zinc-150 mt-1">
-                          {dashboardData.apiSummary?.pending ?? 0}
-                        </span>
-                      </div>
-                      <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-4 flex flex-col text-left">
-                        <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Pendapatan Kotor</span>
-                        <span className="text-lg font-black text-zinc-150 mt-1">
-                          {dashboardData.apiSummary?.totalRevenue ?? 'Rp 0'}
-                        </span>
+                        <div className="grid grid-cols-2 gap-4 h-[calc(100%-2rem)]">
+                          <div className="bg-zinc-950 border border-zinc-850 rounded-lg p-3 flex flex-col justify-center text-left">
+                            <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Total Transaksi</span>
+                            <span className="text-lg font-black text-zinc-150 mt-1">
+                              {dashboardData.apiSummary?.totalPayments ?? 0}
+                            </span>
+                          </div>
+                          <div className="bg-zinc-950 border border-zinc-850 rounded-lg p-3 flex flex-col justify-center text-left">
+                            <span className="text-[10px] font-bold text-green-500 uppercase tracking-wider">Sukses</span>
+                            <span className="text-lg font-black text-green-400 mt-1">
+                              {dashboardData.apiSummary?.paid ?? 0}
+                            </span>
+                          </div>
+                          <div className="bg-zinc-950 border border-zinc-850 rounded-lg p-3 flex flex-col justify-center text-left">
+                            <span className="text-[10px] font-bold text-yellow-500 uppercase tracking-wider">Pending</span>
+                            <span className="text-lg font-black text-yellow-400 mt-1">
+                              {dashboardData.apiSummary?.pending ?? 0}
+                            </span>
+                          </div>
+                          <div className="bg-zinc-950 border border-zinc-850 rounded-lg p-3 flex flex-col justify-center text-left">
+                            <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Pendapatan Kotor</span>
+                            <span className="text-lg font-black text-zinc-150 mt-1">
+                              {dashboardData.apiSummary?.totalRevenue ?? 'Rp 0'}
+                            </span>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>

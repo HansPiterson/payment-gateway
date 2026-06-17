@@ -47,9 +47,7 @@ export default function Login() {
         {/* Logo Header */}
         <div className="flex flex-col items-center mb-10">
           <div className="w-14 h-14 rounded-2xl bg-zinc-100 flex items-center justify-center text-zinc-950 shadow-xl mb-6">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-            </svg>
+            <img src="https://res.cloudinary.com/dryrjot5c/image/upload/f_auto,q_auto/extension_icon_21_wuobgt" alt="Logo" className="w-8 h-8 object-contain" />
           </div>
           <h1 className="text-2xl font-extrabold text-zinc-100 tracking-tight">Login Dashboard</h1>
           <p className="text-sm text-zinc-400 mt-2 font-medium">Masuk untuk mengelola BAYAR.dev</p>

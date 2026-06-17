@@ -199,13 +199,20 @@ export default function DonateView({ campaignId }) {
                         key={amt}
                         type="button"
                         onClick={() => setAmount(amt.toString())}
-                        className={`py-3 px-4 rounded-xl border text-sm font-bold transition-all ${
+                        className={`py-3 px-4 rounded-xl border text-sm font-bold transition-all flex items-center justify-between cursor-pointer ${
                           amount === amt.toString() 
-                            ? 'bg-zinc-100 text-zinc-950 border-zinc-100 shadow-sm' 
-                            : 'bg-zinc-950 text-zinc-400 border-zinc-800 hover:border-zinc-600'
+                            ? 'bg-zinc-100 text-zinc-950 border-zinc-100 shadow-md ring-2 ring-zinc-100 ring-offset-2 ring-offset-zinc-950' 
+                            : 'bg-zinc-950 text-zinc-400 border-zinc-800 hover:border-zinc-600 hover:bg-zinc-900'
                         }`}
                       >
-                        Rp {amt.toLocaleString('id-ID')}
+                        <span>Rp {amt.toLocaleString('id-ID')}</span>
+                        {amount === amt.toString() && (
+                          <div className="w-5 h-5 rounded-full bg-zinc-950 flex items-center justify-center text-zinc-100">
+                            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={4}>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                            </svg>
+                          </div>
+                        )}
                       </button>
                     ))}
                   </div>
