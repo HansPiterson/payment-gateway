@@ -16,6 +16,7 @@ import CampaignDetails from './components/dashboard/CampaignDetails';
 import DonationStatsCard from './components/dashboard/DonationStatsCard';
 import DonateView from './components/DonateView';
 import { supabase } from './lib/supabase';
+import { Toaster } from './components/ui/Toaster';
 
 
 const DashboardSkeleton = () => (
@@ -685,6 +686,8 @@ export default function App() {
           </div>
         </form>
       </dialog>
+
+      <Toaster />
     </div>
   );
 }

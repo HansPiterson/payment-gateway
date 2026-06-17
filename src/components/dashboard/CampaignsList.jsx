@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
+import { toast } from '../ui/use-toast';
 
 export default function CampaignsList({ onNewCampaign, onViewDetails }) {
   const [campaigns, setCampaigns] = useState([]);
@@ -49,7 +50,11 @@ export default function CampaignsList({ onNewCampaign, onViewDetails }) {
   const copyToClipboard = (id) => {
     const url = `${window.location.origin}/donate/${id}`;
     navigator.clipboard.writeText(url);
-    alert('Link Donasi disalin: ' + url);
+    toast({
+      title: 'Link Disalin!',
+      description: 'Link donasi telah disalin ke clipboard.',
+      variant: 'success'
+    });
   };
 
   if (loading) {

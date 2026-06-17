@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { FUNCTIONS_URL, supabaseAnonKey } from '../lib/supabase';
+import { toast } from './ui/use-toast';
 
 export default function PaymentLinkGenerator() {
   const [rawAmount, setRawAmount] = useState('');
@@ -69,6 +70,11 @@ export default function PaymentLinkGenerator() {
     if (!generatedLink) return;
     navigator.clipboard.writeText(generatedLink);
     setCopied(true);
+    toast({
+      title: 'Tersalin',
+      description: 'Link pembayaran telah disalin ke clipboard.',
+      variant: 'success'
+    });
     setTimeout(() => setCopied(false), 2000);
   };
 
