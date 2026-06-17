@@ -17,6 +17,7 @@ import DonationStatsCard from './components/dashboard/DonationStatsCard';
 import DonateView from './components/DonateView';
 import DonateEndedView from './components/DonateEndedView';
 import NotFound from './components/NotFound';
+import WithdrawView from './components/WithdrawView';
 import { supabase } from './lib/supabase';
 import { Toaster } from './components/ui/Toaster';
 
@@ -143,16 +144,6 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-
-  // Withdraw States
-  const [isWithdrawOpen, setIsWithdrawOpen] = useState(false);
-  const [withdrawAmount, setWithdrawAmount] = useState('');
-  const [withdrawLoading, setWithdrawLoading] = useState(false);
-  const [withdrawError, setWithdrawError] = useState(null);
-  const [withdrawSuccess, setWithdrawSuccess] = useState(null);
-
-  const dialogRef = useRef(null);
-
   const [payInvoiceId, setPayInvoiceId] = useState(null);
   const [donateCampaignId, setDonateCampaignId] = useState(null);
   const [adminCampaignId, setAdminCampaignId] = useState(null);
@@ -224,52 +215,10 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    if (activeTab === 'dashboard' || activeTab === 'analytics') {
+    if (activeTab === 'dashboard' || activeTab === 'analytics' || activeTab === 'withdraw') {
       fetchDashboardData();
     }
   }, [activeTab]);
-
-  // Handle native <dialog> state
-  useEffect(() => {
-    const dialog = dialogRef.current;
-    if (!dialog) return;
-
-    if (isWithdrawOpen) {
-      // Open dialog modal
-      dialog.showModal();
-
-      // Click event fallback for light-dismiss (outside dialog content area)
-      const handleClick = (event) => {
-        if (event.target !== dialog) return;
-        const rect = dialog.getBoundingClientRect();
-        const isDialogContent = (
-          rect.top <= event.clientY &&
-          event.clientY <= rect.top + rect.height &&
-          rect.left <= event.clientX &&
-          event.clientX <= rect.left + rect.width
-        );
-        if (!isDialogContent) {
-          setIsWithdrawOpen(false);
-        }
-      };
-
-      // Listen for Esc key cancel requests
-      const handleCancel = (event) => {
-        event.preventDefault();
-        setIsWithdrawOpen(false);
-      };
-
-      dialog.addEventListener('click', handleClick);
-      dialog.addEventListener('cancel', handleCancel);
-
-      return () => {
-        dialog.removeEventListener('click', handleClick);
-        dialog.removeEventListener('cancel', handleCancel);
-      };
-    } else {
-      dialog.close();
-    }
-  }, [isWithdrawOpen]);
 
   const fetchDashboardData = async () => {
     setLoading(true);
@@ -299,55 +248,6 @@ export default function App() {
       setError(err.message);
     } finally {
       setLoading(false);
-    }
-  };
-
-
-  const handleWithdrawSubmit = async (e) => {
-    e.preventDefault();
-    setWithdrawLoading(true);
-    setWithdrawError(null);
-    setWithdrawSuccess(null);
-
-    const amount = Number(withdrawAmount);
-    if (isNaN(amount) || amount <= 0) {
-      setWithdrawError('Jumlah penarikan tidak valid.');
-      setWithdrawLoading(false);
-      return;
-    }
-
-    try {
-      const response = await fetch(`${FUNCTIONS_URL}/create-withdrawal`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${supabaseAnonKey}`,
-          'apikey': supabaseAnonKey,
-        },
-        body: JSON.stringify({ amount }),
-      });
-
-      const res = await response.json();
-      if (!response.ok) {
-        throw new Error(res.error || 'Gagal memproses penarikan.');
-      }
-
-      if (res.success) {
-        setWithdrawSuccess(res.data.message || 'Berhasil menarik saldo.');
-        setWithdrawAmount('');
-        // Refresh dashboard data
-        fetchDashboardData();
-        // Close modal after delay
-        setTimeout(() => {
-          setIsWithdrawOpen(false);
-          setWithdrawSuccess(null);
-        }, 1800);
-      }
-    } catch (err) {
-      console.error(err);
-      setWithdrawError(err.message);
-    } finally {
-      setWithdrawLoading(false);
     }
   };
 
@@ -406,7 +306,7 @@ export default function App() {
                   <PageHeader 
                     onRefresh={fetchDashboardData} 
                     isLoading={loading} 
-                    onWithdraw={() => setIsWithdrawOpen(true)}
+                    onWithdraw={() => setActiveTab('withdraw')}
                   />
                 </div>
                 <div className="space-y-6 md:space-y-8 flex flex-col w-full animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -456,6 +356,22 @@ export default function App() {
                 </div>
               </>
             ) : null}
+          </main>
+        )}
+
+        {activeTab === 'withdraw' && (
+          <main className="flex-1 w-full max-w-5xl mx-auto px-4 py-8 flex flex-col items-center justify-start animate-in fade-in duration-300">
+            {loading ? (
+               <div className="text-zinc-500 animate-pulse mt-12">Memuat informasi saldo...</div>
+            ) : error ? (
+               <div className="text-red-400 mt-12 text-sm">{error}</div>
+            ) : (
+               <WithdrawView 
+                 balance={dashboardData?.stats?.balance?.value || "Rp 0"} 
+                 session={session} 
+                 onWithdrawSuccess={fetchDashboardData}
+               />
+            )}
           </main>
         )}
 
@@ -640,71 +556,6 @@ export default function App() {
           </main>
         )}
       </div>
-
-      {/* Modern native <dialog> for Withdrawal */}
-      <dialog
-        ref={dialogRef}
-        closedby="any"
-        className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 md:p-8 max-w-sm w-full shadow-2xl text-zinc-100 backdrop:bg-zinc-950/80 backdrop:backdrop-blur-sm focus:outline-none outline-none animate-in fade-in zoom-in duration-200"
-        aria-labelledby="modal-title"
-      >
-        <div className="flex justify-between items-center mb-6">
-          <h3 id="modal-title" className="text-lg font-bold text-zinc-100">Tarik Saldo</h3>
-          <button
-            className="text-zinc-500 hover:text-zinc-300 font-bold text-lg focus:outline-none transition-colors"
-            onClick={() => setIsWithdrawOpen(false)}
-          >
-            ✕
-          </button>
-        </div>
-
-        <form onSubmit={handleWithdrawSubmit} className="space-y-5">
-          {withdrawSuccess && (
-            <div className="bg-zinc-950 border border-zinc-800 text-zinc-200 px-4 py-3 rounded-lg text-xs font-semibold leading-relaxed">
-              {withdrawSuccess}
-            </div>
-          )}
-          {withdrawError && (
-            <div className="bg-zinc-950 border border-zinc-850 text-zinc-400 px-4 py-3 rounded-lg text-xs font-semibold leading-relaxed">
-              {withdrawError}
-            </div>
-          )}
-          
-          <div className="text-left">
-            <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block mb-2" htmlFor="withdraw-amount">
-              Jumlah Penarikan (Rupiah)
-            </label>
-            <input
-              type="number"
-              id="withdraw-amount"
-              className="w-full py-2.5 px-4 rounded-lg bg-zinc-950 text-zinc-150 border border-zinc-850 outline-none text-sm transition-all focus:border-zinc-400 focus:ring-1 focus:ring-zinc-400 disabled:opacity-50"
-              placeholder="Contoh: 1000"
-              value={withdrawAmount}
-              onChange={(e) => setWithdrawAmount(e.target.value)}
-              required
-              disabled={withdrawLoading || withdrawSuccess}
-            />
-          </div>
-
-          <div className="flex justify-end gap-3 pt-2">
-            <button
-              type="button"
-              className="py-2.5 px-4 bg-zinc-950 border border-zinc-850 hover:bg-zinc-900 text-zinc-300 font-semibold rounded-lg text-xs transition-colors"
-              onClick={() => setIsWithdrawOpen(false)}
-              disabled={withdrawLoading}
-            >
-              Batal
-            </button>
-            <button
-              type="submit"
-              className="py-2.5 px-4 bg-zinc-100 hover:bg-zinc-200 text-zinc-950 font-bold rounded-lg text-xs transition-colors disabled:opacity-50 shadow-sm"
-              disabled={withdrawLoading || withdrawSuccess}
-            >
-              {withdrawLoading ? 'Memproses...' : 'Tarik Saldo'}
-            </button>
-          </div>
-        </form>
-      </dialog>
 
       <Toaster />
     </div>
