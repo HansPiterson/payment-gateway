@@ -107,7 +107,7 @@ export default function Navbar({ activeTab = 'dashboard', onTabChange, isDarkMod
     <>
       {/* Sidebar for Desktop / Header for Mobile */}
       <aside 
-        className={`fixed md:sticky top-0 left-0 bg-white/80 backdrop-blur-md border-zinc-200/50 md:bg-zinc-900 md:border-zinc-800 md:backdrop-blur-none z-40 transition-all duration-300 ease-in-out flex flex-row md:flex-col justify-between md:justify-start items-center md:items-stretch
+        className={`fixed md:sticky top-0 left-0 bg-white/80 dark:bg-zinc-950/80 border-zinc-200/50 dark:border-zinc-900/50 md:bg-zinc-50 dark:md:bg-zinc-900 md:border-zinc-200 dark:md:border-zinc-800 backdrop-blur-md md:backdrop-blur-none z-40 transition-all duration-300 ease-in-out flex flex-row md:flex-col justify-between md:justify-start items-center md:items-stretch
           w-full h-16 border-b px-4 md:px-0 md:h-screen md:border-b-0 md:border-r 
           ${isCollapsed ? 'md:w-20' : 'md:w-64'}`}
       >
@@ -121,12 +121,12 @@ export default function Navbar({ activeTab = 'dashboard', onTabChange, isDarkMod
         </button>
 
         {/* Brand / Logo */}
-        <div className={`flex items-center gap-3 md:py-8 md:px-5 border-b-0 md:border-b md:border-border md:h-24 ${isCollapsed ? 'md:justify-center' : 'md:justify-start'}`}>
+        <div className={`flex items-center gap-3 md:py-8 md:px-5 border-b-0 md:border-b md:border-zinc-200 dark:md:border-zinc-800 md:h-24 ${isCollapsed ? 'md:justify-center' : 'md:justify-start'}`}>
           <a href="/" className="flex items-center gap-3 hover:opacity-90 transition-opacity">
-            <div className="w-8 h-8 rounded-lg bg-zinc-900 md:bg-zinc-100 flex items-center justify-center text-zinc-100 md:text-zinc-950 flex-shrink-0">
+            <div className="w-8 h-8 rounded-lg bg-zinc-900 dark:bg-zinc-100 flex items-center justify-center text-zinc-150 dark:text-zinc-950 flex-shrink-0">
               <img src="https://res.cloudinary.com/dryrjot5c/image/upload/f_auto,q_auto/extension_icon_21_wuobgt" alt="Logo" className="w-5 h-5 object-contain" />
             </div>
-            <span className={`text-lg font-bold text-zinc-900 md:text-zinc-100 tracking-tight transition-all duration-300 ease-in-out whitespace-nowrap overflow-hidden
+            <span className={`text-lg font-bold text-zinc-900 dark:text-zinc-100 tracking-tight transition-all duration-300 ease-in-out whitespace-nowrap overflow-hidden
               ${isCollapsed ? 'w-0 opacity-0 hidden md:block' : 'w-auto opacity-100'}`}
             >
               BAYAR.dev
@@ -143,13 +143,13 @@ export default function Navbar({ activeTab = 'dashboard', onTabChange, isDarkMod
                 <button
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all group relative ${
                     isActive
-                      ? 'bg-zinc-100 text-zinc-950 shadow-sm font-semibold'
-                      : 'text-zinc-400 hover:text-zinc-150 hover:bg-zinc-850/50'
+                      ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-950 shadow-sm font-semibold'
+                      : 'text-zinc-500 hover:text-zinc-900 hover:bg-zinc-200/50 dark:text-zinc-400 dark:hover:text-zinc-200 dark:hover:bg-zinc-800/50'
                   }`}
                   onClick={() => handleTabClick(tab.key)}
                   title={isCollapsed ? tab.label : undefined}
                 >
-                  <span className={`flex-shrink-0 ${isActive ? 'text-zinc-950' : 'text-zinc-400 group-hover:text-zinc-200'}`}>
+                  <span className={`flex-shrink-0 ${isActive ? 'text-white dark:text-zinc-950' : 'text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-200'}`}>
                     <tab.Icon />
                   </span>
                   <span className={`transition-all duration-300 ease-in-out whitespace-nowrap overflow-hidden
@@ -160,7 +160,7 @@ export default function Navbar({ activeTab = 'dashboard', onTabChange, isDarkMod
 
                   {/* Tooltip on Collapsed */}
                   {isCollapsed && (
-                    <div className="absolute left-full ml-4 px-2.5 py-1.5 bg-zinc-950 border border-zinc-800 text-zinc-200 text-xs rounded-md shadow-xl opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-200 whitespace-nowrap z-50">
+                    <div className="absolute left-full ml-4 px-2.5 py-1.5 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 text-zinc-800 dark:text-zinc-200 text-xs rounded-md shadow-xl opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-200 whitespace-nowrap z-50">
                       {tab.label}
                     </div>
                   )}
@@ -173,14 +173,14 @@ export default function Navbar({ activeTab = 'dashboard', onTabChange, isDarkMod
         {/* Right Actions / Hamburger (Tablet Only) */}
         <div className="hidden sm:flex md:hidden items-center gap-2">
           <button
-            className="p-2 text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100/50 rounded-lg transition-colors"
+            className="p-2 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-150 hover:bg-zinc-100/50 dark:hover:bg-zinc-800/50 rounded-lg transition-colors"
             onClick={toggleTheme}
             aria-label="Toggle Theme"
           >
             {isDarkMode ? <Sun01Icon size={20} /> : <Moon01Icon size={20} />}
           </button>
           <button
-            className="p-2 text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100/50 rounded-lg transition-colors"
+            className="p-2 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-150 hover:bg-zinc-100/50 dark:hover:bg-zinc-800/50 rounded-lg transition-colors"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="Menu"
           >
@@ -189,9 +189,9 @@ export default function Navbar({ activeTab = 'dashboard', onTabChange, isDarkMod
         </div>
 
         {/* Desktop User Profile & Theme Toggle (Bottom of Sidebar) */}
-        <div className={`hidden md:flex flex-col gap-2 p-4 border-t border-zinc-850/50`}>
+        <div className={`hidden md:flex flex-col gap-2 p-4 border-t border-zinc-200 dark:border-zinc-800/50`}>
           <button
-            className={`flex items-center gap-3 px-2 py-2 rounded-lg text-sm font-medium transition-all text-zinc-400 hover:text-zinc-150 hover:bg-zinc-850/50 ${isCollapsed ? 'justify-center' : 'justify-start'}`}
+            className={`flex items-center gap-3 px-2 py-2 rounded-lg text-sm font-medium transition-all text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100/50 dark:text-zinc-400 dark:hover:text-zinc-150 dark:hover:bg-zinc-800/50 ${isCollapsed ? 'justify-center' : 'justify-start'}`}
             onClick={toggleTheme}
             title={isCollapsed ? (isDarkMode ? 'Light Mode' : 'Dark Mode') : undefined}
           >
@@ -204,19 +204,19 @@ export default function Navbar({ activeTab = 'dashboard', onTabChange, isDarkMod
           </button>
 
           <div className={`flex items-center gap-3 mt-2 ${isCollapsed ? 'justify-center' : 'justify-start'}`}>
-            <div className="w-9 h-9 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center text-xs font-bold text-zinc-200 flex-shrink-0">
+            <div className="w-9 h-9 rounded-full bg-zinc-200 dark:bg-zinc-805 border border-zinc-300 dark:border-zinc-700 flex items-center justify-center text-xs font-bold text-zinc-700 dark:text-zinc-200 flex-shrink-0">
               AU
             </div>
             <div className={`flex flex-col text-left transition-all duration-300 ease-in-out whitespace-nowrap overflow-hidden
               ${isCollapsed ? 'w-0 opacity-0' : 'w-auto opacity-100'}`}
             >
-              <span className="text-xs font-semibold text-zinc-200 leading-tight">Admin Dashboard</span>
-              <span className="text-[10px] text-zinc-500">{session?.user?.email || 'admin@bayar.dev'}</span>
+              <span className="text-xs font-semibold text-zinc-800 dark:text-zinc-200 leading-tight">Admin Dashboard</span>
+              <span className="text-[10px] text-zinc-500 dark:text-zinc-400">{session?.user?.email || 'admin@bayar.dev'}</span>
             </div>
           </div>
           
           <button
-            className={`flex items-center gap-3 px-2 py-2 mt-1 rounded-lg text-sm font-medium transition-all text-red-400 hover:text-red-300 hover:bg-red-950/30 ${isCollapsed ? 'justify-center' : 'justify-start'}`}
+            className={`flex items-center gap-3 px-2 py-2 mt-1 rounded-lg text-sm font-medium transition-all text-red-650 hover:text-red-700 hover:bg-red-50/50 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-950/30 ${isCollapsed ? 'justify-center' : 'justify-start'}`}
             onClick={handleLogout}
             title={isCollapsed ? 'Logout' : undefined}
           >
@@ -237,16 +237,16 @@ export default function Navbar({ activeTab = 'dashboard', onTabChange, isDarkMod
             className="fixed inset-0 bg-zinc-950/80 backdrop-blur-sm z-40 md:hidden transition-opacity duration-300 animate-in fade-in"
             onClick={() => setMobileOpen(false)}
           />
-          <div className="fixed top-0 right-0 w-64 h-full bg-zinc-900 border-l border-zinc-800 z-50 md:hidden flex flex-col p-6 shadow-2xl transition-transform duration-300 ease-in-out animate-in slide-in-from-right">
+          <div className="fixed top-0 right-0 w-64 h-full bg-white dark:bg-zinc-900 border-l border-zinc-200 dark:border-zinc-800 z-50 md:hidden flex flex-col p-6 shadow-2xl transition-transform duration-300 ease-in-out animate-in slide-in-from-right">
             <div className="flex items-center justify-between mb-8">
               <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded bg-zinc-100 flex items-center justify-center text-zinc-950 font-bold">
+                <div className="w-7 h-7 rounded bg-zinc-900 dark:bg-zinc-100 flex items-center justify-center text-zinc-150 dark:text-zinc-950 font-bold">
                   <img src="https://res.cloudinary.com/dryrjot5c/image/upload/f_auto,q_auto/extension_icon_21_wuobgt" alt="Logo" className="w-4 h-4 object-contain" />
                 </div>
-                <span className="text-lg font-bold text-zinc-100">BAYAR.dev</span>
+                <span className="text-lg font-bold text-zinc-900 dark:text-zinc-100">BAYAR.dev</span>
               </div>
               <button
-                className="p-2 text-zinc-400 hover:text-zinc-100 hover:bg-zinc-850 rounded-lg transition-colors"
+                className="p-2 text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 dark:text-zinc-450 dark:hover:text-zinc-100 dark:hover:bg-zinc-850 rounded-lg transition-colors"
                 onClick={() => setMobileOpen(false)}
               >
                 <Cancel01Icon size={18} />
@@ -258,8 +258,8 @@ export default function Navbar({ activeTab = 'dashboard', onTabChange, isDarkMod
                   <button
                     className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all ${
                       activeTab === tab.key
-                        ? 'bg-zinc-100 text-zinc-950 font-semibold'
-                        : 'text-zinc-400 hover:text-zinc-100 hover:bg-zinc-850'
+                        ? 'bg-zinc-900 text-white dark:bg-zinc-105 dark:text-zinc-950 font-semibold shadow-sm'
+                        : 'text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:text-zinc-100 dark:hover:bg-zinc-850'
                     }`}
                     onClick={() => handleTabClick(tab.key)}
                   >
@@ -270,9 +270,9 @@ export default function Navbar({ activeTab = 'dashboard', onTabChange, isDarkMod
               ))}
             </ul>
 
-            <div className="mt-auto pt-6 border-t border-zinc-850/50 flex flex-col gap-4">
+            <div className="mt-auto pt-6 border-t border-zinc-200 dark:border-zinc-850/50 flex flex-col gap-4">
               <button
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all text-muted-foreground hover:text-foreground hover:bg-muted`}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100/50 dark:text-zinc-400 dark:hover:text-zinc-100 dark:hover:bg-zinc-800/50`}
                 onClick={toggleTheme}
               >
                 <span>{isDarkMode ? <Sun01Icon size={20} /> : <Moon01Icon size={20} />}</span>
@@ -280,17 +280,17 @@ export default function Navbar({ activeTab = 'dashboard', onTabChange, isDarkMod
               </button>
 
               <div className="flex items-center gap-3 px-2">
-                <div className="w-8 h-8 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center text-xs font-bold text-zinc-200">
+                <div className="w-8 h-8 rounded-full bg-zinc-200 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 flex items-center justify-center text-xs font-bold text-zinc-700 dark:text-zinc-200">
                   AU
                 </div>
                 <div className="flex flex-col text-left">
-                  <span className="text-xs font-semibold text-zinc-200 leading-tight">Admin Dashboard</span>
-                  <span className="text-[10px] text-zinc-500">{session?.user?.email || 'admin@bayar.dev'}</span>
+                  <span className="text-xs font-semibold text-zinc-850 dark:text-zinc-200 leading-tight">Admin Dashboard</span>
+                  <span className="text-[10px] text-zinc-500 dark:text-zinc-400">{session?.user?.email || 'admin@bayar.dev'}</span>
                 </div>
               </div>
 
               <button
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all text-red-400 hover:text-red-300 hover:bg-red-950/30`}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all text-red-650 hover:text-red-700 hover:bg-red-50/50 dark:text-red-450 dark:hover:text-red-350 dark:hover:bg-red-950/30`}
                 onClick={handleLogout}
               >
                 <span><Logout01Icon size={20} /></span>
@@ -302,10 +302,10 @@ export default function Navbar({ activeTab = 'dashboard', onTabChange, isDarkMod
       )}
 
       {/* Mobile Bottom Dock (Slides up from bottom, visible only < sm) */}
-      <div className="fixed sm:hidden bottom-0 left-0 w-full bg-white/80 backdrop-blur-md border-t border-zinc-200/50 z-[55] flex items-center justify-between px-2 pt-2 pb-6 shadow-[0_-10px_30px_rgba(0,0,0,0.06)]">
+      <div className="fixed sm:hidden bottom-0 left-0 w-full bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md border-t border-zinc-200/50 dark:border-zinc-900/50 z-[55] flex items-center justify-between px-2 pt-2 pb-6 shadow-[0_-10px_30px_rgba(0,0,0,0.04)] dark:shadow-[0_-10px_40px_rgba(0,0,0,0.3)]">
         <button
           onClick={() => handleTabClick('dashboard')}
-          className={`flex flex-col items-center flex-1 gap-1 transition-colors ${activeTab === 'dashboard' ? 'text-zinc-900 font-bold' : 'text-zinc-500 hover:text-zinc-800'}`}
+          className={`flex flex-col items-center flex-1 gap-1 transition-colors ${activeTab === 'dashboard' ? 'text-zinc-900 dark:text-zinc-100 font-bold' : 'text-zinc-500 dark:text-zinc-450 hover:text-zinc-800 dark:hover:text-zinc-200'}`}
         >
           {navTabs[0].Icon()}
           <span className="text-[9px] font-semibold tracking-wide">Dashboard</span>
@@ -313,7 +313,7 @@ export default function Navbar({ activeTab = 'dashboard', onTabChange, isDarkMod
 
         <button
           onClick={() => handleTabClick('analytics')}
-          className={`flex flex-col items-center flex-1 gap-1 transition-colors ${activeTab === 'analytics' ? 'text-zinc-900 font-bold' : 'text-zinc-500 hover:text-zinc-800'}`}
+          className={`flex flex-col items-center flex-1 gap-1 transition-colors ${activeTab === 'analytics' ? 'text-zinc-900 dark:text-zinc-100 font-bold' : 'text-zinc-500 dark:text-zinc-450 hover:text-zinc-800 dark:hover:text-zinc-200'}`}
         >
           {navTabs[1].Icon()}
           <span className="text-[9px] font-semibold tracking-wide">Analytic</span>
@@ -324,10 +324,10 @@ export default function Navbar({ activeTab = 'dashboard', onTabChange, isDarkMod
             onClick={() => setIsCreateDrawerOpen(true)}
             className={`flex flex-col items-center justify-center gap-1.5 transition-transform active:scale-95 group`}
           >
-            <div className={`w-14 h-14 rounded-full flex items-center justify-center shadow-lg border-[6px] border-white bg-zinc-900 text-white`}>
+            <div className={`w-14 h-14 rounded-full flex items-center justify-center shadow-lg border-[6px] border-white dark:border-zinc-950 bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-950`}>
               <PlusSignIcon size={24} className="stroke-[3px]" />
             </div>
-            <span className={`text-[10px] font-bold whitespace-nowrap px-1 ${activeTab === 'payments' ? 'text-zinc-900' : 'text-zinc-500'}`}>
+            <span className={`text-[10px] font-bold whitespace-nowrap px-1 ${activeTab === 'payments' ? 'text-zinc-900 dark:text-zinc-100' : 'text-zinc-500 dark:text-zinc-400'}`}>
               Buat Link
             </span>
           </button>
@@ -335,7 +335,7 @@ export default function Navbar({ activeTab = 'dashboard', onTabChange, isDarkMod
 
         <button
           onClick={() => handleTabClick('history')}
-          className={`flex flex-col items-center flex-1 gap-1 transition-colors ${activeTab === 'history' ? 'text-zinc-900 font-bold' : 'text-zinc-500 hover:text-zinc-800'}`}
+          className={`flex flex-col items-center flex-1 gap-1 transition-colors ${activeTab === 'history' ? 'text-zinc-900 dark:text-zinc-100 font-bold' : 'text-zinc-500 dark:text-zinc-450 hover:text-zinc-800 dark:hover:text-zinc-200'}`}
         >
           <Time02Icon size={18} strokeWidth={2.5} />
           <span className="text-[9px] font-semibold tracking-wide">Riwayat</span>
@@ -343,7 +343,7 @@ export default function Navbar({ activeTab = 'dashboard', onTabChange, isDarkMod
 
         <button
           onClick={() => handleTabClick('settings')}
-          className={`flex flex-col items-center flex-1 gap-1 transition-colors ${activeTab === 'settings' ? 'text-zinc-900 font-bold' : 'text-zinc-500 hover:text-zinc-800'}`}
+          className={`flex flex-col items-center flex-1 gap-1 transition-colors ${activeTab === 'settings' ? 'text-zinc-900 dark:text-zinc-100 font-bold' : 'text-zinc-500 dark:text-zinc-450 hover:text-zinc-800 dark:hover:text-zinc-200'}`}
         >
           {navTabs.find(t => t.key === 'settings').Icon()}
           <span className="text-[9px] font-semibold tracking-wide">Settings</span>
@@ -354,30 +354,30 @@ export default function Navbar({ activeTab = 'dashboard', onTabChange, isDarkMod
       <Drawer.Root open={isCreateDrawerOpen} onOpenChange={setIsCreateDrawerOpen}>
         <Drawer.Portal>
           <Drawer.Overlay className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] sm:hidden" />
-          <Drawer.Content className="bg-zinc-900 flex flex-col rounded-t-[20px] h-auto fixed bottom-0 left-0 right-0 z-[70] sm:hidden border-t border-zinc-800">
-            <div className="p-6 pb-12 bg-zinc-900 rounded-t-[20px] flex-1">
-              <div className="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-zinc-800 mb-6" />
-              <Drawer.Title className="text-lg font-bold text-zinc-100 mb-6 px-2">Buat Link Baru</Drawer.Title>
+          <Drawer.Content className="bg-white dark:bg-zinc-900 flex flex-col rounded-t-[20px] h-auto fixed bottom-0 left-0 right-0 z-[70] sm:hidden border-t border-zinc-200 dark:border-zinc-800">
+            <div className="p-6 pb-12 bg-white dark:bg-zinc-900 rounded-t-[20px] flex-1">
+              <div className="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-zinc-200 dark:bg-zinc-800 mb-6" />
+              <Drawer.Title className="text-lg font-bold text-zinc-900 dark:text-zinc-100 mb-6 px-2">Buat Link Baru</Drawer.Title>
               <div className="flex flex-col gap-3">
                 <button
                   onClick={() => handleCreateOption('payments')}
-                  className="w-full flex items-center justify-between p-4 bg-zinc-950 border border-zinc-850 hover:border-zinc-700 rounded-2xl transition-colors text-left"
+                  className="w-full flex items-center justify-between p-4 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-850 hover:border-zinc-400 dark:hover:border-zinc-700 rounded-2xl transition-colors text-left"
                 >
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-blue-500/10 text-blue-400 flex items-center justify-center">
                       <PlusSignIcon size={20} />
                     </div>
                     <div>
-                      <div className="text-sm font-bold text-zinc-100">Buat Link Pembayaran</div>
-                      <div className="text-[10px] text-zinc-400 mt-0.5">Terima pembayaran QRIS instan</div>
+                      <div className="text-sm font-bold text-zinc-800 dark:text-zinc-100">Buat Link Pembayaran</div>
+                      <div className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-0.5">Terima pembayaran QRIS instan</div>
                     </div>
                   </div>
-                  <ArrowRight01Icon size={16} className="text-zinc-500" />
+                  <ArrowRight01Icon size={16} className="text-zinc-400 dark:text-zinc-500" />
                 </button>
                 
                 <button
                   onClick={() => handleCreateOption('donations')}
-                  className="w-full flex items-center justify-between p-4 bg-zinc-950 border border-zinc-850 hover:border-zinc-700 rounded-2xl transition-colors text-left"
+                  className="w-full flex items-center justify-between p-4 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-850 hover:border-zinc-400 dark:hover:border-zinc-700 rounded-2xl transition-colors text-left"
                 >
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-rose-500/10 text-rose-400 flex items-center justify-center">
@@ -386,11 +386,11 @@ export default function Navbar({ activeTab = 'dashboard', onTabChange, isDarkMod
                       </svg>
                     </div>
                     <div>
-                      <div className="text-sm font-bold text-zinc-100">Buat Link Donasi</div>
-                      <div className="text-[10px] text-zinc-400 mt-0.5">Galang dana dengan kampanye</div>
+                      <div className="text-sm font-bold text-zinc-800 dark:text-zinc-100">Buat Link Donasi</div>
+                      <div className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-0.5">Galang dana dengan kampanye</div>
                     </div>
                   </div>
-                  <ArrowRight01Icon size={16} className="text-zinc-500" />
+                  <ArrowRight01Icon size={16} className="text-zinc-400 dark:text-zinc-500" />
                 </button>
               </div>
             </div>

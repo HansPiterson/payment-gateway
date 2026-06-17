@@ -194,6 +194,10 @@ export default function App() {
         setDonateCampaignId(parts[1]);
         setActiveTab('donate-public');
       }
+    } else if (path === '/register') {
+      setActiveTab('register');
+    } else if (path === '/login') {
+      setActiveTab('login');
     } else if (path !== '/' && path !== '') {
       setActiveTab('not-found');
     }
@@ -262,7 +266,13 @@ export default function App() {
 
   // Require login for dashboard routes
   if (!session && activeTab !== 'pay-invoice' && activeTab !== 'donate-public' && activeTab !== 'donate-ended' && activeTab !== 'not-found') {
-    return <Login />;
+    return (
+      <Login 
+        initialMode={activeTab === 'register' ? 'register' : 'login'} 
+        isDarkMode={isDarkMode} 
+        toggleTheme={toggleTheme} 
+      />
+    );
   }
 
   if (activeTab === 'not-found') {
