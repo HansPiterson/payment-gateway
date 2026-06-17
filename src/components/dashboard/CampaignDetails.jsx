@@ -1,11 +1,33 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { supabase } from '../../lib/supabase';
+import { toast } from '../ui/use-toast';
+import { Drawer } from 'vaul';
 
 export default function CampaignDetails({ campaignId, onBack }) {
   const [loading, setLoading] = useState(true);
   const [campaign, setCampaign] = useState(null);
   const [payments, setPayments] = useState([]);
   const [error, setError] = useState(null);
+  const [isClosing, setIsClosing] = useState(false);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(false);
+  const dialogRef = useRef(null);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(min-width: 768px)");
+    setIsDesktop(mediaQuery.matches);
+    const handler = (e) => setIsDesktop(e.matches);
+    mediaQuery.addEventListener("change", handler);
+    return () => mediaQuery.removeEventListener("change", handler);
+  }, []);
+
+  useEffect(() => {
+    if (isDesktop && isConfirmOpen && dialogRef.current) {
+      dialogRef.current.showModal();
+    } else if (isDesktop && !isConfirmOpen && dialogRef.current) {
+      dialogRef.current.close();
+    }
+  }, [isDesktop, isConfirmOpen]);
 
   useEffect(() => {
     const fetchDetails = async () => {
@@ -41,6 +63,35 @@ export default function CampaignDetails({ campaignId, onBack }) {
     if (campaignId) fetchDetails();
   }, [campaignId]);
 
+  const handleCloseDonation = async () => {
+    setIsClosing(true);
+    try {
+      const { error: updateError } = await supabase
+        .from('campaigns')
+        .update({ is_active: false })
+        .eq('id', campaignId);
+
+      if (updateError) throw updateError;
+      
+      setCampaign(prev => ({ ...prev, is_active: false }));
+      setIsConfirmOpen(false);
+      toast({
+        title: 'Donasi Ditutup',
+        description: 'Kampanye donasi berhasil diakhiri.',
+        variant: 'success'
+      });
+    } catch (err) {
+      console.error(err);
+      toast({
+        title: 'Gagal Menutup Donasi',
+        description: err.message,
+        variant: 'error'
+      });
+    } finally {
+      setIsClosing(false);
+    }
+  };
+
   if (loading) {
     return <div className="text-zinc-400 py-12 text-center animate-pulse">Memuat Detail Donasi...</div>;
   }
@@ -57,12 +108,94 @@ export default function CampaignDetails({ campaignId, onBack }) {
 
   return (
     <div className="w-full space-y-6 text-left">
-      <button
-        onClick={onBack}
-        className="inline-flex items-center gap-2 text-sm font-semibold text-zinc-400 hover:text-zinc-100 transition-colors"
-      >
-        ← Kembali ke Daftar
-      </button>
+      <div className="flex items-center justify-between">
+        <button
+          onClick={onBack}
+          className="inline-flex items-center gap-2 text-sm font-semibold text-zinc-400 hover:text-zinc-100 transition-colors"
+        >
+          ← Kembali ke Daftar
+        </button>
+        {campaign.is_active && (
+          <button
+            onClick={() => setIsConfirmOpen(true)}
+            className="py-1.5 px-4 bg-red-950/40 text-red-400 hover:bg-red-900/60 hover:text-red-300 border border-red-900/50 rounded-lg text-xs font-bold transition-all shadow-sm"
+          >
+            Tutup Donasi
+          </button>
+        )}
+        {!campaign.is_active && (
+          <div className="py-1.5 px-3 bg-zinc-900 text-zinc-500 border border-zinc-800 rounded-lg text-xs font-bold">
+            Sudah Berakhir
+          </div>
+        )}
+      </div>
+
+      {/* Confirmation Modals */}
+      {isDesktop ? (
+        <dialog
+          ref={dialogRef}
+          onClose={() => setIsConfirmOpen(false)}
+          className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 max-w-sm w-full shadow-2xl text-zinc-100 backdrop:bg-zinc-950/80 backdrop:backdrop-blur-sm focus:outline-none animate-in fade-in zoom-in duration-200"
+        >
+          <div className="mb-6">
+            <h3 className="text-lg font-bold text-zinc-100 mb-2">Donasi Selesai?</h3>
+            <p className="text-xs text-zinc-400 leading-relaxed">
+              Donasi akan ditutup dan pengguna yang mengakses link akan diarahkan ke halaman akhir. Riwayat daftar donatur tetap dapat dilihat di dashboard.
+            </p>
+          </div>
+          <div className="flex justify-end gap-3">
+            <button
+              onClick={() => setIsConfirmOpen(false)}
+              disabled={isClosing}
+              className="py-2.5 px-4 bg-zinc-950 border border-zinc-850 hover:bg-zinc-900 text-zinc-300 font-semibold rounded-lg text-xs transition-colors"
+            >
+              Batal
+            </button>
+            <button
+              onClick={handleCloseDonation}
+              disabled={isClosing}
+              className="py-2.5 px-4 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg text-xs transition-colors shadow-sm disabled:opacity-50"
+            >
+              {isClosing ? 'Menutup...' : 'Ya, Tutup Donasi'}
+            </button>
+          </div>
+        </dialog>
+      ) : (
+        <Drawer.Root open={isConfirmOpen} onOpenChange={setIsConfirmOpen}>
+          <Drawer.Portal>
+            <Drawer.Overlay className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50" />
+            <Drawer.Content className="bg-zinc-900 flex flex-col rounded-t-[20px] h-[320px] mt-24 fixed bottom-0 left-0 right-0 z-50 border-t border-zinc-800">
+              <div className="p-4 bg-zinc-900 rounded-t-[20px] flex-1">
+                <div className="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-zinc-800 mb-6" />
+                <div className="px-2 text-center space-y-3">
+                  <Drawer.Title className="font-bold text-xl text-zinc-100">
+                    Donasi Selesai?
+                  </Drawer.Title>
+                  <Drawer.Description className="text-sm text-zinc-400 mb-6 px-4">
+                    Donasi akan ditutup dan link akan otomatis diarahkan ke halaman akhir. Riwayat donatur tetap tersimpan.
+                  </Drawer.Description>
+                  <div className="flex flex-col gap-3 mt-8">
+                    <button
+                      onClick={handleCloseDonation}
+                      disabled={isClosing}
+                      className="w-full py-4 bg-red-600 text-white font-bold rounded-xl active:scale-[0.98] transition-all disabled:opacity-50"
+                    >
+                      {isClosing ? 'Menutup...' : 'Ya, Tutup Donasi'}
+                    </button>
+                    <button
+                      onClick={() => setIsConfirmOpen(false)}
+                      disabled={isClosing}
+                      className="w-full py-4 bg-zinc-950 border border-zinc-800 text-zinc-300 font-bold rounded-xl active:scale-[0.98] transition-all"
+                    >
+                      Batal
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </Drawer.Content>
+          </Drawer.Portal>
+        </Drawer.Root>
+      )}
 
       {/* Header & Overview */}
       <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6">

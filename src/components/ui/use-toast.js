@@ -46,6 +46,10 @@ export function toast({ title, description, variant = 'default' }) {
   }, 3000);
 }
 
+export function dismissToast(id) {
+  dispatch({ type: 'REMOVE_TOAST', toastId: id });
+}
+
 export function useToast() {
   const [state, setState] = useState(memoryState);
 
@@ -59,5 +63,6 @@ export function useToast() {
   return {
     ...state,
     toast,
+    dismissToast,
   };
 }

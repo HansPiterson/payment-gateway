@@ -29,7 +29,11 @@ export default function DonateView({ campaignId }) {
           .single();
 
         if (error) throw error;
-        if (!data || !data.is_active) throw new Error('Donasi tidak ditemukan atau sudah ditutup.');
+        if (!data) throw new Error('Donasi tidak ditemukan.');
+        if (!data.is_active) {
+          window.location.href = `/donate/end/${campaignId}`;
+          return;
+        }
         
         setCampaign(data);
         if (data.donation_type === 'fixed' && data.fixed_amounts?.length > 0) {
