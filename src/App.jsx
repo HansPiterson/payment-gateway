@@ -10,6 +10,9 @@ import { FUNCTIONS_URL, supabaseAnonKey } from './lib/supabase';
 import PaymentLinkGenerator from './components/PaymentLinkGenerator';
 import DirectPayView from './components/DirectPayView';
 import Login from './components/Login';
+import CampaignsList from './components/dashboard/CampaignsList';
+import CreateCampaign from './components/dashboard/CreateCampaign';
+import DonateView from './components/DonateView';
 import { supabase } from './lib/supabase';
 
 
@@ -146,6 +149,7 @@ export default function App() {
   const dialogRef = useRef(null);
 
   const [payInvoiceId, setPayInvoiceId] = useState(null);
+  const [donateCampaignId, setDonateCampaignId] = useState(null);
   
   const [session, setSession] = useState(null);
   const [authLoading, setAuthLoading] = useState(true);
@@ -181,6 +185,14 @@ export default function App() {
       if (id) {
         setPayInvoiceId(id);
         setActiveTab('pay-invoice');
+      }
+    } else if (path.startsWith('/donate/')) {
+      const id = path.replace('/donate/', '');
+      if (id && id !== 'create-new') {
+        setDonateCampaignId(id);
+        setActiveTab('donate-public');
+      } else if (id === 'create-new') {
+        setActiveTab('create-campaign');
       }
     }
   }, []);
@@ -329,7 +341,7 @@ export default function App() {
   };
 
   // Show auth loading state briefly
-  if (authLoading && activeTab !== 'pay-invoice') {
+  if (authLoading && activeTab !== 'pay-invoice' && activeTab !== 'donate-public') {
     return (
       <div className="min-h-screen bg-zinc-950 flex items-center justify-center">
         <div className="w-8 h-8 border-3 border-zinc-800 border-t-zinc-200 rounded-full animate-spin" />
@@ -338,13 +350,13 @@ export default function App() {
   }
 
   // Require login for dashboard routes
-  if (!session && activeTab !== 'pay-invoice') {
+  if (!session && activeTab !== 'pay-invoice' && activeTab !== 'donate-public') {
     return <Login />;
   }
 
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col md:flex-row font-sans">
-      {activeTab !== 'pay-invoice' && (
+      {activeTab !== 'pay-invoice' && activeTab !== 'donate-public' && (
         <Navbar 
           activeTab={activeTab} 
           onTabChange={setActiveTab} 
@@ -355,7 +367,7 @@ export default function App() {
       )}
 
       {/* Main Page Content Wrapper */}
-      <div className={`flex-1 flex flex-col min-w-0 ${activeTab === 'pay-invoice' ? 'p-0' : 'pt-16 md:pt-0'} overflow-x-hidden`}>
+      <div className={`flex-1 flex flex-col min-w-0 ${(activeTab === 'pay-invoice' || activeTab === 'donate-public') ? 'p-0' : 'pt-16 md:pt-0'} overflow-x-hidden`}>
         {activeTab === 'dashboard' && (
           <main className="flex-1 w-full max-w-7xl mx-auto px-4 md:px-8 py-6 md:py-8 flex flex-col">
             {loading ? (
@@ -441,10 +453,42 @@ export default function App() {
           </main>
         )}
 
+        {activeTab === 'donations' && (
+          <main className="flex-1 w-full max-w-5xl mx-auto px-4 py-8 flex flex-col items-center justify-start animate-in fade-in duration-300">
+            <CampaignsList onNewCampaign={() => {
+              window.history.pushState({}, '', '/donate/create-new');
+              setActiveTab('create-campaign');
+            }} />
+          </main>
+        )}
+
+        {activeTab === 'create-campaign' && (
+          <main className="flex-1 w-full max-w-5xl mx-auto px-4 py-8 flex flex-col items-center justify-start animate-in fade-in duration-300">
+            <CreateCampaign 
+              onBack={() => {
+                window.history.pushState({}, '', '/');
+                setActiveTab('donations');
+              }}
+              onSuccess={() => {
+                window.history.pushState({}, '', '/');
+                setActiveTab('donations');
+              }}
+            />
+          </main>
+        )}
+
         {activeTab === 'pay-invoice' && (
           <main className="flex-grow flex items-center justify-center p-4 min-h-screen bg-zinc-950">
             <div className="w-full max-w-xl animate-in fade-in slide-in-from-bottom-3 duration-450">
               <DirectPayView payInvoiceId={payInvoiceId} />
+            </div>
+          </main>
+        )}
+
+        {activeTab === 'donate-public' && (
+          <main className="flex-grow flex items-center justify-center p-0 min-h-screen bg-zinc-950">
+            <div className="w-full h-full min-h-screen animate-in fade-in slide-in-from-bottom-3 duration-450">
+              <DonateView campaignId={donateCampaignId} />
             </div>
           </main>
         )}

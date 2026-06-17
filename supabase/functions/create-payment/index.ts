@@ -23,7 +23,7 @@ Deno.serve(async (req: Request) => {
   try {
     // Parse and validate request body
     const body = await req.json();
-    const { amount, description, customer_name, customer_email, customer_phone } = body;
+    const { amount, description, customer_name, customer_email, customer_phone, campaign_id, is_anonymous, message } = body;
 
     const errors: string[] = [];
     if (!amount || typeof amount !== "number" || amount <= 0) {
@@ -113,6 +113,9 @@ Deno.serve(async (req: Request) => {
         payment_url: resData.payment_url ?? resData.paymentUrl ?? null,
         qris_url: resData.qris_url ?? resData.qrisUrl ?? null,
         qris_content: resData.qris_content ?? resData.qrisContent ?? resData.qris_string ?? resData.qrisString ?? null,
+        campaign_id: campaign_id || null,
+        is_anonymous: is_anonymous || false,
+        message: message || null,
       })
       .select()
       .single();
