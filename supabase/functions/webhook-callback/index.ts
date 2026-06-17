@@ -138,6 +138,52 @@ Deno.serve(async (req: Request) => {
       } else {
         console.log("NTFY_TOPIC is not set. Skipping push notification.");
       }
+
+      // Forward webhook to Telegram bot if metadata contains telegram_user_id
+      const metadata = (payment as any).metadata || {};
+      if (metadata.telegram_user_id) {
+        const botWebhookUrl = Deno.env.get("TELEGRAM_BOT_WEBHOOK_URL");
+        if (botWebhookUrl) {
+          const webhookSecret = Deno.env.get("TELEGRAM_BOT_WEBHOOK_SECRET");
+          
+          try {
+            const botPayload = {
+              event: "payment.success",
+              telegram_user_id: metadata.telegram_user_id,
+              credits: metadata.credits || 0,
+              amount: payment.amount,
+              invoice_id: payment.invoice_id,
+              payment_id: payment.id,
+              status: "success",
+              timestamp: new Date().toISOString()
+            };
+
+            const headers: Record<string, string> = {
+              "Content-Type": "application/json",
+            };
+            if (webhookSecret) {
+              headers["x-api-key"] = webhookSecret;
+            }
+
+            const botResponse = await fetch(botWebhookUrl, {
+              method: "POST",
+              headers,
+              body: JSON.stringify(botPayload),
+            });
+
+            if (!botResponse.ok) {
+              const botErrText = await botResponse.text();
+              console.error(`Telegram bot webhook returned error ${botResponse.status}:`, botErrText);
+            } else {
+              console.log(`Successfully forwarded payment success webhook to Telegram bot: ${botWebhookUrl}`);
+            }
+          } catch (webhookErr) {
+            console.error("Failed to forward webhook to Telegram bot:", webhookErr);
+          }
+        } else {
+          console.log("TELEGRAM_BOT_WEBHOOK_URL is not configured. Skipping webhook forwarding to bot.");
+        }
+      }
     }
 
     console.log(

@@ -22,7 +22,7 @@ Deno.serve(async (req: Request) => {
 
   try {
     const body = await req.json();
-    const { amount, description, customer_name, customer_email, customer_phone, campaign_id, is_anonymous, message, origin: bodyOrigin } = body;
+    const { amount, description, customer_name, customer_email, customer_phone, campaign_id, is_anonymous, message, origin: bodyOrigin, telegram_user_id, credits, metadata: bodyMetadata } = body;
 
     // Optional API Secret Key Authentication (for external services like Telegram bots)
     const customSecret = Deno.env.get("API_SECRET_KEY");
@@ -110,6 +110,13 @@ Deno.serve(async (req: Request) => {
     // Initialise Supabase client with service role (bypasses RLS)
     const supabase = createClient(supabaseUrl, supabaseServiceRoleKey);
 
+    // Compile metadata for bot/custom tracking
+    const finalMetadata = {
+      ...(bodyMetadata || {}),
+      telegram_user_id: telegram_user_id || undefined,
+      credits: credits || undefined,
+    };
+
     // Insert payment record
     const { data: payment, error: dbError } = await supabase
       .from("payments")
@@ -128,6 +135,7 @@ Deno.serve(async (req: Request) => {
         campaign_id: campaign_id || null,
         is_anonymous: is_anonymous || false,
         message: message || null,
+        metadata: finalMetadata,
       })
       .select()
       .single();
