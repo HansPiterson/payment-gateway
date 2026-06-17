@@ -150,7 +150,7 @@ Deno.serve(async (req: Request) => {
       }
     }
     if (!appOrigin) {
-      appOrigin = "https://bayar.dev"; // default fallback
+      appOrigin = "https://bayar-gateway.vercel.app"; // default fallback
     }
 
     const checkoutUrl = `${appOrigin}/pay/${payment.id}`;
