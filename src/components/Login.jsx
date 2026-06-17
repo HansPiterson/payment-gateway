@@ -97,7 +97,7 @@ export default function Login({ initialMode = 'login', isDarkMode, toggleTheme }
           </div>
 
           {/* Navigation links - Desktop only */}
-          <nav className="hidden md:flex items-center gap-8 text-sm font-semibold text-zinc-500 dark:text-zinc-450">
+          <nav className="hidden md:flex items-center gap-8 text-sm font-semibold text-zinc-500 dark:text-zinc-400">
             <a href="#features" className="hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">Fitur</a>
             <a href="#pricing" className="hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">Harga</a>
             <a href="#docs" className="hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">Dokumentasi</a>
@@ -115,14 +115,14 @@ export default function Login({ initialMode = 'login', isDarkMode, toggleTheme }
             {mode === 'login' ? (
               <button 
                 onClick={() => handleModeChange('register')}
-                className="hidden sm:inline-flex py-2 px-4 bg-zinc-900 text-white dark:bg-zinc-150 dark:text-zinc-950 hover:bg-zinc-800 dark:hover:bg-zinc-200 font-bold rounded-xl text-xs transition-all shadow-sm"
+                className="hidden sm:inline-flex py-2 px-4 bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-950 hover:bg-zinc-800 dark:hover:bg-zinc-200 font-bold rounded-xl text-xs transition-all shadow-sm"
               >
                 Daftar Akun
               </button>
             ) : (
               <button 
                 onClick={() => handleModeChange('login')}
-                className="hidden sm:inline-flex py-2 px-4 bg-zinc-900 text-white dark:bg-zinc-150 dark:text-zinc-950 hover:bg-zinc-800 dark:hover:bg-zinc-200 font-bold rounded-xl text-xs transition-all shadow-sm"
+                className="hidden sm:inline-flex py-2 px-4 bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-950 hover:bg-zinc-800 dark:hover:bg-zinc-200 font-bold rounded-xl text-xs transition-all shadow-sm"
               >
                 Masuk Dasbor
               </button>
@@ -192,7 +192,7 @@ export default function Login({ initialMode = 'login', isDarkMode, toggleTheme }
             </button>
             <button
               onClick={() => alert('Fitur dokumentasi akan segera dikembangkan.')}
-              className="py-3.5 px-6 bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-800 hover:border-zinc-350 dark:hover:border-zinc-700 font-bold rounded-xl text-sm transition-all flex items-center gap-2 cursor-pointer"
+              className="py-3.5 px-6 bg-white hover:bg-zinc-100 dark:bg-zinc-900 dark:hover:bg-zinc-800/80 text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-800 hover:border-zinc-350 dark:hover:border-zinc-700 font-bold rounded-xl text-sm transition-all flex items-center gap-2 cursor-pointer"
             >
               <BookOpen01Icon size={16} />
               <span>Dokumentasi</span>
@@ -234,7 +234,7 @@ export default function Login({ initialMode = 'login', isDarkMode, toggleTheme }
 
             <form onSubmit={handleAuth} className="space-y-5">
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-zinc-500 dark:text-zinc-450 uppercase tracking-wider ml-1" htmlFor="email">
+                <label className="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider ml-1" htmlFor="email">
                   Alamat Email
                 </label>
                 <div className="relative">
@@ -247,7 +247,7 @@ export default function Login({ initialMode = 'login', isDarkMode, toggleTheme }
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-850 text-zinc-900 dark:text-zinc-100 text-sm rounded-xl py-3.5 pl-11 pr-4 focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-600 focus:ring-1 focus:ring-zinc-400 dark:focus:ring-zinc-600 transition-all placeholder:text-zinc-400"
+                    className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 text-sm rounded-xl py-3.5 pl-11 pr-4 focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-600 focus:ring-1 focus:ring-zinc-400 dark:focus:ring-zinc-600 transition-all placeholder:text-zinc-400"
                     placeholder="email@perusahaan.com"
                     required
                     disabled={loading}
@@ -257,7 +257,7 @@ export default function Login({ initialMode = 'login', isDarkMode, toggleTheme }
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-zinc-500 dark:text-zinc-450 uppercase tracking-wider ml-1" htmlFor="password">
+                <label className="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider ml-1" htmlFor="password">
                   Kata Sandi
                 </label>
                 <div className="relative">
@@ -269,7 +269,7 @@ export default function Login({ initialMode = 'login', isDarkMode, toggleTheme }
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-850 text-zinc-900 dark:text-zinc-100 text-sm rounded-xl py-3.5 pl-11 pr-4 focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-600 focus:ring-1 focus:ring-zinc-400 dark:focus:ring-zinc-600 transition-all placeholder:text-zinc-400"
+                    className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 text-sm rounded-xl py-3.5 pl-11 pr-4 focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-600 focus:ring-1 focus:ring-zinc-400 dark:focus:ring-zinc-600 transition-all placeholder:text-zinc-400"
                     placeholder="••••••••"
                     required
                     disabled={loading}
@@ -281,7 +281,7 @@ export default function Login({ initialMode = 'login', isDarkMode, toggleTheme }
               <button
                 type="submit"
                 disabled={loading || !email || !password}
-                className="w-full mt-6 py-4 bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-950 font-bold rounded-xl transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 group cursor-pointer"
+                className="w-full mt-6 py-4 bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:text-zinc-950 dark:hover:bg-zinc-200 font-bold rounded-xl transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 group cursor-pointer"
               >
                 {loading ? (
                   <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
