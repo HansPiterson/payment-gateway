@@ -234,7 +234,9 @@ Deno.serve(async (req: Request) => {
       }
 
       const amount = Number(p.amount || 0);
-      const categoryMethod = (p.iqris_payment_methodby || p.payment_method || p.paid_via || "QRIS").toUpperCase();
+      const paymentMethodStr = (p.iqris_payment_methodby || p.payment_method || p.paid_via || "QRIS").toUpperCase();
+      const isDonation = !!p.campaign_id || (p.description && p.description.startsWith('Donasi'));
+      const txCategory = isDonation ? "DONASI" : "BAYAR";
 
       return {
         id: `#ORD-${String(p.invoice_id || p.invoiceId || "").slice(-4).toUpperCase()}`,
@@ -244,8 +246,8 @@ Deno.serve(async (req: Request) => {
         sku: `SKU-${String(p.invoice_id || "").slice(-6).toUpperCase()}`,
         image: null,
         date: formattedDate,
-        customer: "Customer",
-        category: categoryMethod,
+        customer: paymentMethodStr,
+        category: txCategory,
         status: displayStatus,
         items: 1,
         total: amount.toLocaleString("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }),

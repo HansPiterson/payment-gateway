@@ -220,7 +220,7 @@ export default function RecentOrders({ orders: propOrders }) {
               <th className="py-3.5 px-4 text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Product</th>
               <th className="py-3.5 px-4 text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Order Id</th>
               <th className="py-3.5 px-4 text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Date</th>
-              <th className="py-3.5 px-4 text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Customer</th>
+              <th className="py-3.5 px-4 text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Payment</th>
               <th className="py-3.5 px-4 text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Category</th>
               <th className="py-3.5 px-4 text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Status</th>
               <th className="py-3.5 px-4 text-[10px] font-bold text-zinc-400 uppercase tracking-wider text-center">Items</th>
