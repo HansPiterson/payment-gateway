@@ -21,9 +21,23 @@ Deno.serve(async (req: Request) => {
   }
 
   try {
-    // Parse and validate request body
     const body = await req.json();
-    const { amount, description, customer_name, customer_email, customer_phone, campaign_id, is_anonymous, message } = body;
+    const { amount, description, customer_name, customer_email, customer_phone, campaign_id, is_anonymous, message, origin: bodyOrigin } = body;
+
+    // Optional API Secret Key Authentication (for external services like Telegram bots)
+    const customSecret = Deno.env.get("API_SECRET_KEY");
+    if (customSecret) {
+      const clientSecret = req.headers.get("x-api-key") || body.api_key;
+      if (clientSecret !== customSecret) {
+        const authHeader = req.headers.get("authorization");
+        if (!authHeader) {
+          return new Response(
+            JSON.stringify({ error: "Unauthorized: Invalid or missing API key" }),
+            { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+          );
+        }
+      }
+    }
 
     const errors: string[] = [];
     if (!amount || typeof amount !== "number" || amount <= 0) {
@@ -32,12 +46,6 @@ Deno.serve(async (req: Request) => {
     if (!description || typeof description !== "string") {
       errors.push("description is required");
     }
-    if (!customer_name || typeof customer_name !== "string") {
-      errors.push("customer_name is required");
-    }
-    if (!customer_email || typeof customer_email !== "string") {
-      errors.push("customer_email is required");
-    }
 
     if (errors.length > 0) {
       return new Response(
@@ -45,6 +53,10 @@ Deno.serve(async (req: Request) => {
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
+
+    // Set defaults for customer fields if not supplied by the bot
+    const finalCustomerName = customer_name || "Telegram Customer";
+    const finalCustomerEmail = customer_email || "customer@bayar.dev";
 
     // Retrieve secrets and env vars
     const bayarApiKey = Deno.env.get("BAYAR_GG_API_KEY");
@@ -70,8 +82,8 @@ Deno.serve(async (req: Request) => {
         body: JSON.stringify({
           amount,
           description,
-          customer_name,
-          customer_email,
+          customer_name: finalCustomerName,
+          customer_email: finalCustomerEmail,
           customer_phone: customer_phone || "",
           payment_method: "qris",
           callback_url: callbackUrl,
@@ -105,8 +117,8 @@ Deno.serve(async (req: Request) => {
         invoice_id: resData.invoice_id ?? resData.invoiceId ?? null,
         amount,
         description,
-        customer_name,
-        customer_email,
+        customer_name: finalCustomerName,
+        customer_email: finalCustomerEmail,
         customer_phone: customer_phone || null,
         status: "pending",
         payment_method: "qris",
@@ -125,6 +137,24 @@ Deno.serve(async (req: Request) => {
       throw dbError;
     }
 
+    // Resolve the web application checkout URL
+    let appOrigin = bodyOrigin || Deno.env.get("APP_URL");
+    if (!appOrigin) {
+      const referer = req.headers.get("referer");
+      if (referer) {
+        try {
+          appOrigin = new URL(referer).origin;
+        } catch (_) {
+          // ignore parsing errors
+        }
+      }
+    }
+    if (!appOrigin) {
+      appOrigin = "https://bayar.dev"; // default fallback
+    }
+
+    const checkoutUrl = `${appOrigin}/pay/${payment.id}`;
+
     return new Response(
       JSON.stringify({
         success: true,
@@ -133,6 +163,7 @@ Deno.serve(async (req: Request) => {
           invoice_id: payment.invoice_id,
           amount: payment.amount,
           status: payment.status,
+          checkout_url: checkoutUrl,
           payment_url: payment.payment_url,
           qris_url: payment.qris_url,
           qris_content: payment.qris_content,
