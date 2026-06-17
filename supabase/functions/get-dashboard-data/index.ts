@@ -71,20 +71,25 @@ Deno.serve(async (req: Request) => {
 
     // --- DATABASE SYNC LOGIC ---
     // Save/Sync retrieved payments to local Supabase database
+    const existingMap = new Map();
     if (rawPayments.length > 0) {
       const invoiceIds = rawPayments.map((p: any) => p.invoice_id ?? p.invoiceId).filter(Boolean);
       
-      // Fetch existing payments first to preserve checkout URLs (payment_url and qris_url)
+      // Fetch existing payments first to preserve checkout URLs and payment methods
       const { data: existingPayments, error: selectError } = await supabase
         .from("payments")
-        .select("invoice_id, payment_url, qris_url")
+        .select("invoice_id, payment_url, qris_url, payment_method")
         .in("invoice_id", invoiceIds);
 
       if (selectError) {
         console.error("Error fetching existing payments for sync:", selectError);
       }
 
-      const existingMap = new Map(existingPayments?.map(ep => [ep.invoice_id, ep]) || []);
+      if (existingPayments) {
+        for (const ep of existingPayments) {
+          existingMap.set(ep.invoice_id, ep);
+        }
+      }
 
       const paymentsToUpsert = rawPayments.map((p: any) => {
         const invId = p.invoice_id ?? p.invoiceId;
@@ -97,7 +102,7 @@ Deno.serve(async (req: Request) => {
           customer_email: p.customer_email || "customer@bayar.dev",
           customer_phone: p.customer_phone || null,
           status: String(p.status || "pending").toLowerCase(),
-          payment_method: p.payment_method || p.paid_via || "qris",
+          payment_method: existing?.payment_method || p.iqris_payment_methodby || p.payment_method || p.paid_via || "qris",
           payment_url: existing?.payment_url || null,
           qris_url: existing?.qris_url || null,
           created_at: p.created_at ? new Date(p.created_at.replace(" ", "T")) : new Date(),
@@ -234,7 +239,8 @@ Deno.serve(async (req: Request) => {
       }
 
       const amount = Number(p.amount || 0);
-      const paymentMethodStr = (p.iqris_payment_methodby || p.payment_method || p.paid_via || "QRIS").toUpperCase();
+      const dbPayment = existingMap.get(p.invoice_id ?? p.invoiceId);
+      const paymentMethodStr = (dbPayment?.payment_method || p.iqris_payment_methodby || p.payment_method || p.paid_via || "QRIS").toUpperCase();
       const isDonation = !!p.campaign_id || (p.description && p.description.startsWith('Donasi'));
       const txCategory = isDonation ? "DONASI" : "BAYAR";
 

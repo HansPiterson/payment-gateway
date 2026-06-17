@@ -62,6 +62,38 @@ export default function DonateView({ campaignId }) {
     if (campaignId) fetchCampaign();
   }, [campaignId]);
 
+  // Load cached payment on mount
+  useEffect(() => {
+    if (!campaignId) return;
+    
+    const cached = localStorage.getItem(`donation_payment_${campaignId}`);
+    if (cached) {
+      try {
+        const parsed = JSON.parse(cached);
+        const createdTime = parsed.paymentData?.created_at 
+          ? new Date(parsed.paymentData.created_at.replace(" ", "T")).getTime()
+          : parsed.timestamp || 0;
+        const now = new Date().getTime();
+        const isExpired = now - createdTime > 24 * 60 * 60 * 1000; // 24 hours
+
+        if (!isExpired) {
+          setAmount(parsed.amount || '');
+          setDonorName(parsed.donorName || '');
+          setDonorEmail(parsed.donorEmail || '');
+          setMessage(parsed.message || '');
+          setIsAnonymous(parsed.isAnonymous || false);
+          setPaymentData(parsed.paymentData);
+          setStep('payment');
+        } else {
+          localStorage.removeItem(`donation_payment_${campaignId}`);
+        }
+      } catch (e) {
+        console.error("Error parsing cached donation payment:", e);
+        localStorage.removeItem(`donation_payment_${campaignId}`);
+      }
+    }
+  }, [campaignId]);
+
   const handleDonateSubmit = async (e) => {
     e.preventDefault();
     setError(null);
@@ -105,10 +137,33 @@ export default function DonateView({ campaignId }) {
     }
   };
 
+  // When payment invoice is created, cache it
+  const handlePaymentCreated = (payData) => {
+    setPaymentData(payData);
+    const cacheData = {
+      amount,
+      donorName,
+      donorEmail,
+      message,
+      isAnonymous,
+      paymentData: payData,
+      timestamp: new Date().getTime()
+    };
+    localStorage.setItem(`donation_payment_${campaignId}`, JSON.stringify(cacheData));
+  };
+
+  // When payment is cancelled/backed out manually
+  const handlePaymentBack = () => {
+    localStorage.removeItem(`donation_payment_${campaignId}`);
+    setPaymentData(null);
+    setStep('form');
+  };
+
   // When payment is successful
   const handlePaymentSuccess = (paymentRes) => {
     setPaymentData(paymentRes);
     setStep('success');
+    localStorage.removeItem(`donation_payment_${campaignId}`);
   };
 
   if (loading) {
@@ -292,7 +347,9 @@ export default function DonateView({ campaignId }) {
           service={serviceMock}
           customer={customerMock}
           onSuccess={handlePaymentSuccess}
-          onBack={() => setStep('form')}
+          onPaymentCreated={handlePaymentCreated}
+          onBack={handlePaymentBack}
+          initialPaymentData={paymentData}
           donationData={{
             campaign_id: campaignId,
             is_anonymous: isAnonymous,

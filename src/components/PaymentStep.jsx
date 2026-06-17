@@ -4,7 +4,7 @@ import { parseQris } from '../lib/qris';
 
 const CHECKOUT_KEY = 'chk_62c780a4f4510faa53476b14abb4faefc8fa7f9bbe7e605d';
 
-export default function PaymentStep({ service, customer, onSuccess, onBack, initialPaymentData, donationData }) {
+export default function PaymentStep({ service, customer, onSuccess, onPaymentCreated, onBack, initialPaymentData, donationData }) {
   const [state, setState] = useState('creating'); // creating | ready | paid | error
   const [paymentData, setPaymentData] = useState(null);
   const [error, setError] = useState('');
@@ -62,6 +62,9 @@ export default function PaymentStep({ service, customer, onSuccess, onBack, init
       if (!payData.created_at) payData.created_at = new Date().toISOString();
       setPaymentData(payData);
       setState('ready');
+
+      // Notify parent to cache the newly created payment
+      onPaymentCreated?.(payData);
 
       // Subscribe to realtime updates
       subscribeToPayment(payData.invoice_id);
