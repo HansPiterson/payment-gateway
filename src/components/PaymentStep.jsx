@@ -237,13 +237,19 @@ export default function PaymentStep({ service, customer, onSuccess, onPaymentCre
     };
   }, [state, paymentData, onSuccess]);
 
+  const apiCalledRef = useRef(false);
+
   // Create payment on mount
   useEffect(() => {
     if (initialPaymentData) {
       setPaymentData(initialPaymentData);
       setState('ready');
       subscribeToPayment(initialPaymentData.invoice_id);
-    } else {
+      return;
+    }
+
+    if (!apiCalledRef.current) {
+      apiCalledRef.current = true;
       createPayment();
     }
 

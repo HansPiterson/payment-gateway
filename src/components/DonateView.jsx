@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { supabase } from '../lib/supabase';
 import PaymentStep from './PaymentStep';
 import SuccessPage from './SuccessPage';
@@ -114,16 +114,16 @@ export default function DonateView({ campaignId }) {
     setStep('payment');
   };
 
-  const serviceMock = {
+  const serviceMock = useMemo(() => ({
     name: `Donasi: ${campaign?.title}`,
     price: parseInt(amount, 10),
-  };
+  }), [campaign?.title, amount]);
 
-  const customerMock = {
+  const customerMock = useMemo(() => ({
     name: donorName,
     email: donorEmail,
     phone: '',
-  };
+  }), [donorName, donorEmail]);
 
   const handleAnonymousChange = (e) => {
     const isAnon = e.target.checked;
