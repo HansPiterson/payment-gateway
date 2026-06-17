@@ -81,6 +81,17 @@ const navTabs = [
 export default function Navbar({ activeTab = 'dashboard', onTabChange, isDarkMode, toggleTheme, session }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCreateDrawerOpen, setIsCreateDrawerOpen] = useState(false);
+
+  const handleCreateOption = (type) => {
+    if (type === 'donations') {
+       window.history.pushState({}, '', '/donate/create-new');
+       onTabChange?.('create-campaign');
+    } else {
+       onTabChange?.('payments');
+    }
+    setIsCreateDrawerOpen(false);
+  };
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -309,7 +320,7 @@ export default function Navbar({ activeTab = 'dashboard', onTabChange, isDarkMod
 
         <div className="flex-shrink-0 relative -top-6 mx-1">
           <button
-            onClick={() => handleTabClick('payments')}
+            onClick={() => setIsCreateDrawerOpen(true)}
             className={`flex flex-col items-center justify-center gap-1.5 transition-transform active:scale-95 group`}
           >
             <div className={`w-14 h-14 rounded-full flex items-center justify-center shadow-2xl border-[6px] border-zinc-950 ${activeTab === 'payments' ? 'bg-zinc-200 text-zinc-950' : 'bg-zinc-100 text-zinc-900'}`}>
@@ -337,6 +348,55 @@ export default function Navbar({ activeTab = 'dashboard', onTabChange, isDarkMod
           <span className="text-[9px] font-medium tracking-wide">Settings</span>
         </button>
       </div>
+
+      {/* Mobile Create Link Drawer */}
+      {isCreateDrawerOpen && (
+        <>
+          <div
+            className="fixed inset-0 bg-zinc-950/60 backdrop-blur-sm z-[60] sm:hidden transition-opacity duration-300 animate-in fade-in"
+            onClick={() => setIsCreateDrawerOpen(false)}
+          />
+          <div className="fixed bottom-0 left-0 w-full bg-zinc-900 border-t border-zinc-800 rounded-t-3xl z-[70] sm:hidden p-6 pb-12 transition-transform duration-300 ease-out animate-in slide-in-from-bottom">
+            <div className="w-12 h-1.5 bg-zinc-800 rounded-full mx-auto mb-6" />
+            <h3 className="text-lg font-bold text-zinc-100 mb-6 px-2">Buat Link Baru</h3>
+            <div className="flex flex-col gap-3">
+              <button
+                onClick={() => handleCreateOption('payments')}
+                className="w-full flex items-center justify-between p-4 bg-zinc-950 border border-zinc-850 hover:border-zinc-700 rounded-2xl transition-colors text-left"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-blue-500/10 text-blue-400 flex items-center justify-center">
+                    <PlusSignIcon size={20} />
+                  </div>
+                  <div>
+                    <div className="text-sm font-bold text-zinc-100">Buat Link Pembayaran</div>
+                    <div className="text-[10px] text-zinc-400 mt-0.5">Terima pembayaran QRIS instan</div>
+                  </div>
+                </div>
+                <ArrowRight01Icon size={16} className="text-zinc-500" />
+              </button>
+              
+              <button
+                onClick={() => handleCreateOption('donations')}
+                className="w-full flex items-center justify-between p-4 bg-zinc-950 border border-zinc-850 hover:border-zinc-700 rounded-2xl transition-colors text-left"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-rose-500/10 text-rose-400 flex items-center justify-center">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <div className="text-sm font-bold text-zinc-100">Buat Link Donasi</div>
+                    <div className="text-[10px] text-zinc-400 mt-0.5">Galang dana dengan kampanye</div>
+                  </div>
+                </div>
+                <ArrowRight01Icon size={16} className="text-zinc-500" />
+              </button>
+            </div>
+          </div>
+        </>
+      )}
     </>
   );
 }

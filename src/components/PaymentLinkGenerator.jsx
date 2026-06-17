@@ -86,17 +86,11 @@ export default function PaymentLinkGenerator() {
   };
 
   return (
-    <div className="w-full max-w-md mx-auto text-left">
-      <div className="bg-zinc-900/50 backdrop-blur-md border border-zinc-800 rounded-2xl p-6 md:p-8 shadow-2xl relative overflow-hidden">
-        {/* Subtle glow decorative element */}
-        <div className="absolute top-0 left-1/4 right-1/4 h-px bg-gradient-to-r from-transparent via-zinc-700 to-transparent" />
+    <div className="w-full max-w-md mx-auto text-left px-4 md:px-0">
+      <div className="relative overflow-hidden pt-4 pb-8">
         
         {!generatedLink ? (
           <>
-            <div className="mb-8 text-center">
-              <h2 className="text-lg font-bold text-zinc-100 tracking-tight">Buat Link Pembayaran</h2>
-              <p className="text-[11px] text-zinc-400 mt-1">Masukkan nominal dan deskripsi opsional untuk membuat QRIS instan.</p>
-            </div>
 
             <form onSubmit={handleSubmit} className="space-y-8 flex flex-col">
               {error && (

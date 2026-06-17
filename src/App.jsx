@@ -379,9 +379,9 @@ export default function App() {
           <main className="flex-1 w-full max-w-3xl mx-auto px-4 py-8 flex flex-col items-center justify-start animate-in fade-in duration-300">
             <header className="mb-8 text-center">
               <h1 className="text-2xl md:text-3xl font-extrabold text-zinc-100 tracking-tight">
-                Payments
+                Payment Link
               </h1>
-              <p className="text-xs text-zinc-400 mt-1.5">Kelola dan buat tautan pembayaran QRIS dengan cepat</p>
+              <p className="text-xs text-zinc-400 mt-1.5">Buat tautan pembayaran QRIS dengan cepat.</p>
             </header>
 
             <div className="w-full animate-in fade-in slide-in-from-bottom-3 duration-450">
