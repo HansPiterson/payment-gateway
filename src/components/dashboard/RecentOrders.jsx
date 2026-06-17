@@ -245,11 +245,17 @@ export default function RecentOrders({ orders: propOrders }) {
                 </td>
                 <td className="py-4 px-4">
                   <div className="flex items-center gap-3">
-                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs uppercase flex-shrink-0 ${
-                      avatarBgClasses[i % avatarBgClasses.length]
-                    }`}>
-                      {(order.product || 'P').charAt(0)}
-                    </div>
+                    {order.category === 'DONASI' ? (
+                      <img src="https://res.cloudinary.com/dryrjot5c/image/upload/v1781674748/extension_icon_22_xlmnng.png" alt="Donasi" className="w-8 h-8 rounded-lg object-cover" />
+                    ) : order.category === 'BAYAR' ? (
+                      <img src="https://res.cloudinary.com/dryrjot5c/image/upload/v1781674748/extension_icon_23_bdvsop.png" alt="Bayar" className="w-8 h-8 rounded-lg object-cover" />
+                    ) : (
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs uppercase flex-shrink-0 ${
+                        avatarBgClasses[i % avatarBgClasses.length]
+                      }`}>
+                        {(order.product || 'P').charAt(0)}
+                      </div>
+                    )}
                     <div>
                       <div className="text-xs font-bold text-zinc-150 leading-tight">{order.product || 'Unknown Product'}</div>
                       <div className="text-[10px] text-zinc-500 mt-0.5">{order.sku || '-'}</div>

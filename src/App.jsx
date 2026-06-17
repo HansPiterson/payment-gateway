@@ -16,6 +16,7 @@ import CampaignDetails from './components/dashboard/CampaignDetails';
 import DonationStatsCard from './components/dashboard/DonationStatsCard';
 import DonateView from './components/DonateView';
 import DonateEndedView from './components/DonateEndedView';
+import NotFound from './components/NotFound';
 import { supabase } from './lib/supabase';
 import { Toaster } from './components/ui/Toaster';
 
@@ -202,6 +203,8 @@ export default function App() {
         setDonateCampaignId(parts[1]);
         setActiveTab('donate-public');
       }
+    } else if (path !== '/' && path !== '') {
+      setActiveTab('not-found');
     }
   }, []);
 
@@ -349,7 +352,7 @@ export default function App() {
   };
 
   // Show auth loading state briefly
-  if (authLoading && activeTab !== 'pay-invoice' && activeTab !== 'donate-public' && activeTab !== 'donate-ended') {
+  if (authLoading && activeTab !== 'pay-invoice' && activeTab !== 'donate-public' && activeTab !== 'donate-ended' && activeTab !== 'not-found') {
     return (
       <div className="min-h-screen bg-zinc-950 flex items-center justify-center">
         <div className="w-8 h-8 border-3 border-zinc-800 border-t-zinc-200 rounded-full animate-spin" />
@@ -358,8 +361,12 @@ export default function App() {
   }
 
   // Require login for dashboard routes
-  if (!session && activeTab !== 'pay-invoice' && activeTab !== 'donate-public' && activeTab !== 'donate-ended') {
+  if (!session && activeTab !== 'pay-invoice' && activeTab !== 'donate-public' && activeTab !== 'donate-ended' && activeTab !== 'not-found') {
     return <Login />;
+  }
+
+  if (activeTab === 'not-found') {
+    return <NotFound />;
   }
 
   return (
