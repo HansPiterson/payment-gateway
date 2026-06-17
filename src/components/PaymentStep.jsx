@@ -41,7 +41,7 @@ export default function PaymentStep({ service, customer, onSuccess, onBack, init
         },
         body: JSON.stringify({
           amount: service.price,
-          description: `${service.name} — BAYAR.dev`,
+          description: service.name,
           customer_name: customer.name,
           customer_email: customer.email,
           customer_phone: customer.phone,
