@@ -28,7 +28,7 @@ const SegmentedRing = ({ progress = 70.8 }) => {
         key={i}
         d={describeArc(CENTER, CENTER, RADIUS, startAngle, endAngle)}
         fill="none"
-        stroke={isFilled ? 'url(#ringGradient)' : '#18181b'}
+        stroke={isFilled ? 'url(#ringGradient)' : 'hsl(var(--muted))'}
         strokeWidth="10"
         strokeLinecap="round"
       />
@@ -39,15 +39,15 @@ const SegmentedRing = ({ progress = 70.8 }) => {
     <svg width="180" height="180" viewBox="0 0 200 200" className="mx-auto block">
       <defs>
         <linearGradient id="ringGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#f4f4f5" />
-          <stop offset="100%" stopColor="#3f3f46" />
+          <stop offset="0%" stopColor="hsl(var(--foreground))" />
+          <stop offset="100%" stopColor="hsl(var(--muted-foreground))" />
         </linearGradient>
       </defs>
       {segments}
-      <text x={CENTER} y={CENTER - 6} textAnchor="middle" fill="#f4f4f5" fontSize="28" fontWeight="800" fontFamily="Poppins, sans-serif">
+      <text x={CENTER} y={CENTER - 6} textAnchor="middle" fill="hsl(var(--foreground))" fontSize="28" fontWeight="800" fontFamily="Poppins, sans-serif">
         {progress}%
       </text>
-      <text x={CENTER} y={CENTER + 16} textAnchor="middle" fill="#71717a" fontSize="11" fontWeight="600" fontFamily="Poppins, sans-serif" letterSpacing="0.5px">
+      <text x={CENTER} y={CENTER + 16} textAnchor="middle" fill="hsl(var(--muted-foreground))" fontSize="11" fontWeight="600" fontFamily="Poppins, sans-serif" letterSpacing="0.5px">
         TARGET PROGRESS
       </text>
     </svg>
@@ -81,10 +81,10 @@ export default function SalesOverview({ overview }) {
   const isRevenueUp = data.revenueGrowth ? !data.revenueGrowth.startsWith('-') : true;
 
   return (
-    <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 flex flex-col h-full justify-between">
+    <div className="bg-card border border-border rounded-xl p-6 flex flex-col h-full justify-between">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-bold text-zinc-100 text-left">Sales Overview</h3>
-        <button className="text-zinc-500 hover:text-zinc-350 p-1 rounded-lg transition-colors" aria-label="More options">
+        <h3 className="text-lg font-bold text-foreground text-left">Sales Overview</h3>
+        <button className="text-muted-foreground hover:text-foreground p-1 rounded-lg transition-colors" aria-label="More options">
           <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
             <circle cx="4" cy="10" r="1.5" fill="currentColor" />
             <circle cx="10" cy="10" r="1.5" fill="currentColor" />
@@ -97,14 +97,14 @@ export default function SalesOverview({ overview }) {
         <SegmentedRing progress={data.growth ?? 0} />
       </div>
 
-      <div className="grid grid-cols-2 gap-4 pt-4 border-t border-zinc-850">
+      <div className="grid grid-cols-2 gap-4 pt-4 border-t border-border">
         <div className="text-left">
-          <span className="text-[10px] font-bold text-zinc-550 uppercase tracking-wider block">Number of Sales</span>
+          <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block">Number of Sales</span>
           <div className="flex items-center gap-2 mt-1.5 flex-wrap">
-            <span className="text-lg font-black text-zinc-100">{(data.salesCount ?? 0).toLocaleString("id-ID")}</span>
+            <span className="text-lg font-black text-foreground">{(data.salesCount ?? 0).toLocaleString("id-ID")}</span>
             {data.salesGrowth && data.salesGrowth !== '0%' && data.salesGrowth !== '+0%' && (
               <span className={`text-[9px] font-extrabold px-1.5 py-0.5 rounded-full flex items-center gap-0.5 ${
-                isSalesUp ? 'bg-zinc-200 text-zinc-950' : 'bg-zinc-950 text-zinc-400 border border-zinc-800'
+                isSalesUp ? 'bg-primary text-primary-foreground' : 'bg-secondary text-foreground border border-border'
               }`}>
                 {isSalesUp ? <ArrowUp /> : <ArrowDown />}
                 {data.salesGrowth.replace('+', '').replace('-', '')}
@@ -113,13 +113,13 @@ export default function SalesOverview({ overview }) {
           </div>
         </div>
 
-        <div className="text-left border-l border-zinc-850 pl-4">
-          <span className="text-[10px] font-bold text-zinc-550 uppercase tracking-wider block">Total Revenue</span>
+        <div className="text-left border-l border-border pl-4">
+          <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block">Total Revenue</span>
           <div className="flex items-center gap-2 mt-1.5 flex-wrap">
-            <span className="text-sm font-black text-zinc-150 truncate max-w-[100px]">{data.revenue || 'Rp 0'}</span>
+            <span className="text-sm font-black text-foreground truncate max-w-[100px]">{data.revenue || 'Rp 0'}</span>
             {data.revenueGrowth && data.revenueGrowth !== '0%' && data.revenueGrowth !== '+0%' && (
               <span className={`text-[9px] font-extrabold px-1.5 py-0.5 rounded-full flex items-center gap-0.5 ${
-                isRevenueUp ? 'bg-zinc-200 text-zinc-950' : 'bg-zinc-950 text-zinc-400 border border-zinc-800'
+                isRevenueUp ? 'bg-primary text-primary-foreground' : 'bg-secondary text-foreground border border-border'
               }`}>
                 {isRevenueUp ? <ArrowUp /> : <ArrowDown />}
                 {data.revenueGrowth.replace('+', '').replace('-', '')}

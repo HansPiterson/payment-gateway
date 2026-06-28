@@ -26,15 +26,15 @@ const CustomTooltip = ({ active, payload }) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload;
     return (
-      <div className="bg-zinc-950 border border-zinc-800 p-3 rounded-lg shadow-xl text-left">
-        <div className="text-xs font-bold text-zinc-400 mb-1">{data.label} 2026</div>
-        <div className="flex items-center gap-2 text-xs text-zinc-300">
-          <span className="w-1.5 h-1.5 bg-zinc-400 rounded-full" />
+      <div className="bg-popover border border-border p-3 rounded-lg shadow-xl text-left">
+        <div className="text-xs font-bold text-muted-foreground mb-1">{data.label} 2026</div>
+        <div className="flex items-center gap-2 text-xs text-foreground">
+          <span className="w-1.5 h-1.5 bg-muted-foreground rounded-full" />
           <span>Sales:</span>
           <span className="font-bold ml-4">{data.sales}</span>
         </div>
-        <div className="flex items-center gap-2 text-xs text-zinc-300 mt-1">
-          <span className="w-1.5 h-1.5 bg-zinc-200 rounded-full" />
+        <div className="flex items-center gap-2 text-xs text-foreground mt-1">
+          <span className="w-1.5 h-1.5 bg-foreground rounded-full" />
           <span>Revenue:</span>
           <span className="font-bold ml-4">{data.revenue}</span>
         </div>
@@ -55,16 +55,16 @@ export default function PerformanceChart({ chartData }) {
   };
 
   return (
-    <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 flex flex-col h-full min-h-[380px]">
+    <div className="bg-card border border-border rounded-xl p-6 flex flex-col h-full min-h-[380px]">
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-lg font-bold text-zinc-100">Performance Overview</h3>
-        <button className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-zinc-400 hover:text-zinc-200 border border-zinc-850 bg-zinc-950 rounded-lg transition-colors">
+        <h3 className="text-lg font-bold text-foreground">Performance Overview</h3>
+        <button className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground border border-border bg-background rounded-lg transition-colors">
           This Year
           <ArrowDown01Icon size={14} />
         </button>
       </div>
 
-      <div className="w-full flex-1 min-h-[260px] min-w-0 text-zinc-400">
+      <div className="w-full flex-1 min-h-[260px] min-w-0 text-muted-foreground">
         <ResponsiveContainer width="100%" height={260} minWidth={0}>
           <BarChart
             data={data}
@@ -75,29 +75,29 @@ export default function PerformanceChart({ chartData }) {
               }
             }}
           >
-            <CartesianGrid strokeDasharray="3 3" stroke="#1f1f22" vertical={false} />
+            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
             <XAxis
               dataKey="label"
-              stroke="#52525b"
+              stroke="hsl(var(--muted-foreground))"
               fontSize={11}
               tickLine={false}
               axisLine={false}
               dy={10}
             />
             <YAxis
-              stroke="#52525b"
+              stroke="hsl(var(--muted-foreground))"
               fontSize={11}
               tickLine={false}
               axisLine={false}
               tickFormatter={formatY}
               dx={-5}
             />
-            <Tooltip content={<CustomTooltip />} cursor={{ fill: 'transparent' }} />
+            <Tooltip content={<CustomTooltip />} cursor={{ fill: 'hsl(var(--muted) / 0.4)' }} />
             <Bar dataKey="value" radius={[6, 6, 0, 0]}>
               {data.map((entry, index) => (
                 <Cell
                   key={`cell-${index}`}
-                  fill={index === activeIndex ? '#f4f4f5' : '#27272a'}
+                  fill={index === activeIndex ? 'hsl(var(--primary))' : 'hsl(var(--muted))'}
                   className="transition-all duration-200"
                 />
               ))}

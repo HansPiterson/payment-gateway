@@ -114,7 +114,7 @@ export default function Navbar({ activeTab = 'dashboard', onTabChange, isDarkMod
         {/* Toggle Collapse Button (Desktop Only) */}
         <button
           onClick={() => setIsCollapsed(!isCollapsed)}
-          className="hidden md:flex absolute top-8 -right-3 w-6 h-6 bg-zinc-800 border border-zinc-700 text-zinc-400 hover:text-zinc-200 rounded-full items-center justify-center cursor-pointer shadow-md z-50 transition-colors"
+          className="hidden md:flex absolute top-8 -right-3 w-6 h-6 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 rounded-full items-center justify-center cursor-pointer shadow-md z-50 transition-colors"
           aria-label="Toggle Sidebar"
         >
           {isCollapsed ? <ArrowRight01Icon size={12} /> : <ArrowLeft01Icon size={12} />}
