@@ -6,6 +6,26 @@
 
 @layer base {
   :root {
+    /* ── Zinc scale (space-separated RGB triplets, consumed via rgb(var(--zinc-x) / <alpha>)) ── */
+    --zinc-50: 250 250 250;
+    --zinc-100: 244 244 245;
+    --zinc-150: 237 237 240;
+    --zinc-200: 228 228 231;
+    --zinc-300: 212 212 216;
+    --zinc-350: 188 188 195;
+    --zinc-400: 161 161 170;
+    --zinc-450: 137 137 146;
+    --zinc-500: 113 113 122;
+    --zinc-550: 98 98 107;
+    --zinc-600: 82 82 91;
+    --zinc-700: 63 63 70;
+    --zinc-800: 39 39 42;
+    --zinc-805: 36 36 39;
+    --zinc-850: 32 32 35;
+    --zinc-855: 30 30 33;
+    --zinc-900: 24 24 27;
+    --zinc-950: 9 9 11;
+
     --background: 0 0% 98%;
     --foreground: 0 0% 8%;
 
@@ -102,6 +122,10 @@
     @apply border-border;
   }
 
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
     @apply bg-background text-foreground font-sans antialiased;
     text-rendering: optimizeLegibility;
@@ -122,6 +146,22 @@
 @layer utilities {
   .transition-smooth {
     @apply transition-all duration-300 ease-out;
+  }
+
+  /* Subtle dotted grid background for hero/landing sections */
+  .bg-grid {
+    background-image: radial-gradient(circle, rgb(var(--zinc-400) / 0.35) 1px, transparent 1px);
+    background-size: 22px 22px;
+  }
+
+  .dark .bg-grid {
+    background-image: radial-gradient(circle, rgb(var(--zinc-700) / 0.4) 1px, transparent 1px);
+  }
+
+  /* Fade a section's background grid out toward the edges */
+  .mask-fade {
+    -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, #000 40%, transparent 100%);
+    mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, #000 40%, transparent 100%);
   }
 
   /* GPU acceleration for animations */

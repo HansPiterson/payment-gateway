@@ -1,4 +1,4 @@
-import { Upload04Icon, FilterIcon, ArrowDown01Icon, Refresh01Icon, Coins01Icon } from 'hugeicons-react';
+import { FilterIcon, ArrowDown01Icon, Refresh01Icon } from 'hugeicons-react';
 
 export default function PageHeader({
   title = 'Sales Overview',
@@ -7,36 +7,30 @@ export default function PageHeader({
   isLoading,
   onWithdraw,
 }) {
+  const btnBase =
+    'inline-flex items-center gap-2 py-2 px-3.5 bg-card border border-border text-foreground/80 hover:text-foreground hover:bg-secondary rounded-lg transition-colors text-sm font-medium disabled:opacity-50';
+
   return (
     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
       <div className="text-left">
-        <h1 className="text-2xl md:text-3xl font-extrabold text-zinc-100 tracking-tight">{title}</h1>
-        <p className="text-xs md:text-sm text-zinc-400 mt-1">{subtitle}</p>
+        <h1 className="text-2xl md:text-3xl font-extrabold text-foreground tracking-tight">{title}</h1>
+        <p className="text-xs md:text-sm text-muted-foreground mt-1">{subtitle}</p>
       </div>
 
-      <div className="flex flex-wrap items-center gap-2 md:gap-3">
-
-
+      <div className="flex flex-wrap items-center gap-2">
         {onRefresh && (
-          <button
-            className={`inline-flex items-center gap-2 py-2 px-4 bg-zinc-900 border border-zinc-800 text-zinc-300 hover:bg-zinc-850 hover:text-zinc-100 rounded-lg transition-all text-sm disabled:opacity-50`}
-            onClick={onRefresh}
-            disabled={isLoading}
-            title="Refresh Data"
-          >
+          <button className={btnBase} onClick={onRefresh} disabled={isLoading} title="Refresh Data">
             <Refresh01Icon size={16} className={isLoading ? 'animate-spin' : ''} />
-            {isLoading ? 'Loading...' : 'Refresh'}
+            {isLoading ? 'Memuat...' : 'Refresh'}
           </button>
         )}
 
-        <button className="inline-flex items-center gap-2 py-2 px-4 bg-zinc-900 border border-zinc-800 text-zinc-300 hover:bg-zinc-850 hover:text-zinc-100 rounded-lg transition-all text-sm">
+        <button className={btnBase}>
           This Month
           <ArrowDown01Icon size={16} />
         </button>
 
-
-
-        <button className="inline-flex items-center gap-2 py-2 px-4 bg-zinc-900 border border-zinc-800 text-zinc-300 hover:bg-zinc-850 hover:text-zinc-100 rounded-lg transition-all text-sm">
+        <button className={btnBase}>
           <FilterIcon size={16} />
           Filter
         </button>

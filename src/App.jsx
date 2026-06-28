@@ -258,8 +258,8 @@ export default function App() {
   // Show auth loading state briefly
   if (authLoading && activeTab !== 'pay-invoice' && activeTab !== 'donate-public' && activeTab !== 'donate-ended' && activeTab !== 'not-found') {
     return (
-      <div className="min-h-screen bg-zinc-950 flex items-center justify-center">
-        <div className="w-8 h-8 border-3 border-zinc-800 border-t-zinc-200 rounded-full animate-spin" />
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="w-8 h-8 border-[3px] border-muted border-t-foreground rounded-full animate-spin" />
       </div>
     );
   }
@@ -268,7 +268,7 @@ export default function App() {
   if (!session && activeTab !== 'pay-invoice' && activeTab !== 'donate-public' && activeTab !== 'donate-ended' && activeTab !== 'not-found') {
     return (
       <Login 
-        initialMode={activeTab === 'register' ? 'register' : 'login'} 
+        initialMode={activeTab === 'register' ? 'register' : activeTab === 'login' ? 'login' : 'landing'} 
         isDarkMode={isDarkMode} 
         toggleTheme={toggleTheme} 
       />
@@ -280,7 +280,7 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col md:flex-row font-sans">
+    <div className="min-h-screen bg-background text-foreground flex flex-col md:flex-row font-sans">
       {activeTab !== 'pay-invoice' && activeTab !== 'donate-public' && activeTab !== 'donate-ended' && (
         <Navbar 
           activeTab={activeTab} 
@@ -299,12 +299,12 @@ export default function App() {
               <DashboardSkeleton />
             ) : error ? (
               <div className="flex-1 flex items-center justify-center py-12">
-                <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 md:p-8 text-center max-w-sm w-full shadow-lg">
-                  <h3 className="text-lg font-bold text-zinc-100 mb-2">Terjadi Kesalahan</h3>
-                  <p className="text-xs text-zinc-400 mb-6 leading-relaxed">{error}</p>
+                <div className="bg-card border border-border rounded-xl p-6 md:p-8 text-center max-w-sm w-full shadow-lg">
+                  <h3 className="text-lg font-bold text-foreground mb-2">Terjadi Kesalahan</h3>
+                  <p className="text-xs text-muted-foreground mb-6 leading-relaxed">{error}</p>
                   <button
                     onClick={fetchDashboardData}
-                    className="w-full py-2.5 px-4 bg-zinc-100 hover:bg-zinc-200 text-zinc-950 font-bold rounded-lg transition-colors text-xs shadow-sm"
+                    className="w-full py-2.5 px-4 bg-primary hover:opacity-90 text-primary-foreground font-bold rounded-lg transition-opacity text-xs shadow-sm"
                   >
                     Coba Lagi
                   </button>
@@ -327,33 +327,40 @@ export default function App() {
                       <DonationStatsCard onClick={() => setActiveTab('donations')} />
                     </div>
                     <div className="lg:col-span-2">
-                      <div className="w-full text-left bg-zinc-900 border border-zinc-800 rounded-xl p-5 h-full">
-                        <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-4 flex items-center gap-2">
-                          <span className="w-1.5 h-1.5 rounded-full bg-zinc-400 animate-pulse" />
-                          Pemantauan API Bayar.gg
-                        </span>
-                        <div className="grid grid-cols-2 gap-4 h-[calc(100%-2rem)]">
-                          <div className="bg-zinc-950 border border-zinc-850 rounded-lg p-3 flex flex-col justify-center text-left">
-                            <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Total Transaksi</span>
-                            <span className="text-lg font-black text-zinc-150 mt-1">
+                      <div className="w-full text-left bg-card border border-border rounded-xl p-5 h-full">
+                        <div className="flex items-center justify-between mb-4">
+                          <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-foreground animate-pulse" />
+                            Pemantauan API BAYAR.dev
+                          </span>
+                          <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider px-2 py-0.5 rounded-full border border-border">
+                            Live
+                          </span>
+                        </div>
+                        <div className="grid grid-cols-2 gap-3 h-[calc(100%-2.5rem)]">
+                          <div className="bg-background border border-border rounded-lg p-4 flex flex-col justify-center text-left">
+                            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Total Transaksi</span>
+                            <span className="text-xl font-black text-foreground mt-1">
                               {dashboardData.apiSummary?.totalPayments ?? 0}
                             </span>
                           </div>
-                          <div className="bg-zinc-950 border border-zinc-850 rounded-lg p-3 flex flex-col justify-center text-left">
-                            <span className="text-[10px] font-bold text-green-500 uppercase tracking-wider">Sukses</span>
-                            <span className="text-lg font-black text-green-400 mt-1">
+                          <div className="bg-background border border-border rounded-lg p-4 flex flex-col justify-center text-left">
+                            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Sukses</span>
+                            <span className="text-xl font-black text-foreground mt-1 inline-flex items-center gap-1.5">
+                              <span className="w-1.5 h-1.5 rounded-full bg-foreground" />
                               {dashboardData.apiSummary?.paid ?? 0}
                             </span>
                           </div>
-                          <div className="bg-zinc-950 border border-zinc-850 rounded-lg p-3 flex flex-col justify-center text-left">
-                            <span className="text-[10px] font-bold text-yellow-500 uppercase tracking-wider">Pending</span>
-                            <span className="text-lg font-black text-yellow-400 mt-1">
+                          <div className="bg-background border border-border rounded-lg p-4 flex flex-col justify-center text-left">
+                            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Pending</span>
+                            <span className="text-xl font-black text-foreground mt-1 inline-flex items-center gap-1.5">
+                              <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground" />
                               {dashboardData.apiSummary?.pending ?? 0}
                             </span>
                           </div>
-                          <div className="bg-zinc-950 border border-zinc-850 rounded-lg p-3 flex flex-col justify-center text-left">
-                            <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Pendapatan Kotor</span>
-                            <span className="text-lg font-black text-zinc-150 mt-1">
+                          <div className="bg-background border border-border rounded-lg p-4 flex flex-col justify-center text-left">
+                            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Pendapatan Kotor</span>
+                            <span className="text-xl font-black text-foreground mt-1">
                               {dashboardData.apiSummary?.totalRevenue ?? 'Rp 0'}
                             </span>
                           </div>
@@ -388,10 +395,10 @@ export default function App() {
         {activeTab === 'payments' && (
           <main className="flex-1 w-full max-w-3xl mx-auto px-4 py-8 pb-28 md:pb-8 flex flex-col items-center justify-start animate-in fade-in duration-300">
             <header className="mb-8 text-center">
-              <h1 className="text-2xl md:text-3xl font-extrabold text-zinc-100 tracking-tight">
+              <h1 className="text-2xl md:text-3xl font-extrabold text-foreground tracking-tight">
                 Payment Link
               </h1>
-              <p className="text-xs text-zinc-400 mt-1.5">Buat tautan pembayaran QRIS dengan cepat.</p>
+              <p className="text-xs text-muted-foreground mt-1.5">Buat tautan pembayaran QRIS dengan cepat.</p>
             </header>
 
             <div className="w-full animate-in fade-in slide-in-from-bottom-3 duration-450">
@@ -469,12 +476,12 @@ export default function App() {
               <AnalyticsSkeleton />
             ) : error ? (
               <div className="flex-1 flex items-center justify-center py-12">
-                <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 md:p-8 text-center max-w-sm w-full shadow-lg">
-                  <h3 className="text-lg font-bold text-zinc-100 mb-2">Terjadi Kesalahan</h3>
-                  <p className="text-xs text-zinc-400 mb-6 leading-relaxed">{error}</p>
+                <div className="bg-card border border-border rounded-xl p-6 md:p-8 text-center max-w-sm w-full shadow-lg">
+                  <h3 className="text-lg font-bold text-foreground mb-2">Terjadi Kesalahan</h3>
+                  <p className="text-xs text-muted-foreground mb-6 leading-relaxed">{error}</p>
                   <button
                     onClick={fetchDashboardData}
-                    className="w-full py-2.5 px-4 bg-zinc-100 hover:bg-zinc-200 text-zinc-950 font-bold rounded-lg transition-colors text-xs shadow-sm"
+                    className="w-full py-2.5 px-4 bg-primary hover:opacity-90 text-primary-foreground font-bold rounded-lg transition-opacity text-xs shadow-sm"
                   >
                     Coba Lagi
                   </button>
@@ -506,21 +513,21 @@ export default function App() {
         {activeTab === 'settings' && (
           <main className="flex-1 w-full max-w-4xl mx-auto px-4 md:px-8 py-6 md:py-8 pb-28 md:pb-8 flex flex-col items-start text-left">
             <div className="animate-in fade-in slide-in-from-bottom-2 duration-300 w-full mb-8">
-              <h1 className="text-2xl md:text-3xl font-extrabold text-zinc-100 tracking-tight">
+              <h1 className="text-2xl md:text-3xl font-extrabold text-foreground tracking-tight">
                 Settings
               </h1>
-              <p className="text-xs text-zinc-400 mt-1.5">
+              <p className="text-xs text-muted-foreground mt-1.5">
                 Kelola preferensi akun dan tampilan aplikasi Anda.
               </p>
             </div>
 
-            <div className="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-              <h2 className="text-sm font-bold text-zinc-100 mb-6">Tampilan (Appearance)</h2>
+            <div className="w-full bg-card border border-border rounded-xl p-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <h2 className="text-sm font-bold text-foreground mb-6">Tampilan (Appearance)</h2>
               
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-sm font-semibold text-zinc-200">Mode Gelap (Dark Mode)</h3>
-                  <p className="text-xs text-zinc-400 mt-1">
+                  <h3 className="text-sm font-semibold text-foreground">Mode Gelap (Dark Mode)</h3>
+                  <p className="text-xs text-muted-foreground mt-1">
                     Ubah tema aplikasi antara mode gelap dan terang.
                   </p>
                 </div>
@@ -546,10 +553,10 @@ export default function App() {
         {activeTab === 'history' && (
           <main className="flex-1 w-full max-w-7xl mx-auto px-4 md:px-8 py-6 md:py-8 pb-28 md:pb-8 flex flex-col items-start text-left">
             <div className="animate-in fade-in slide-in-from-bottom-2 duration-300 w-full mb-6">
-              <h1 className="text-2xl md:text-3xl font-extrabold text-zinc-100 tracking-tight">
+              <h1 className="text-2xl md:text-3xl font-extrabold text-foreground tracking-tight">
                 Riwayat Transaksi
               </h1>
-              <p className="text-xs text-zinc-400 mt-1.5">
+              <p className="text-xs text-muted-foreground mt-1.5">
                 Daftar lengkap riwayat pembayaran dan status.
               </p>
             </div>
@@ -558,7 +565,7 @@ export default function App() {
               {dashboardData ? (
                 <RecentOrders orders={dashboardData.recentOrders} />
               ) : (
-                <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-8 text-center text-zinc-400 text-sm">
+                <div className="bg-card border border-border rounded-xl p-8 text-center text-muted-foreground text-sm">
                   Memuat data riwayat...
                 </div>
               )}

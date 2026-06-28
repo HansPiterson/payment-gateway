@@ -92,12 +92,12 @@ const avatarBgClasses = [
 const getStatusBadgeClass = (status) => {
   const s = String(status).toLowerCase();
   if (s === 'delivered' || s === 'paid' || s === 'success') {
-    return 'bg-zinc-100 text-zinc-950 font-bold border border-zinc-200';
+    return 'bg-primary text-primary-foreground font-bold';
   }
   if (s === 'cancelled' || s === 'expired') {
-    return 'bg-zinc-950 text-zinc-500 border border-zinc-850 font-medium';
+    return 'bg-muted text-muted-foreground border border-border font-medium';
   }
-  return 'bg-zinc-800 text-zinc-200 border border-zinc-700 font-semibold';
+  return 'bg-secondary text-foreground border border-border font-semibold';
 };
 
 export default function RecentOrders({ orders: propOrders }) {
@@ -151,17 +151,17 @@ export default function RecentOrders({ orders: propOrders }) {
   const ActionContent = () => (
     <div className="flex flex-col gap-4 w-full">
       <div className="flex flex-col gap-1 mb-2 text-left">
-        <h3 className="text-lg font-bold text-zinc-100">Detail Link Pembayaran</h3>
-        <p className="text-sm text-zinc-400">Order: {selectedOrder?.id} - {selectedOrder?.product}</p>
+        <h3 className="text-lg font-bold text-foreground">Detail Link Pembayaran</h3>
+        <p className="text-sm text-muted-foreground">Order: {selectedOrder?.id} - {selectedOrder?.product}</p>
       </div>
-      <div className="bg-zinc-950 border border-zinc-800 rounded-lg p-3 flex items-center justify-between gap-3 overflow-hidden">
-        <span className="text-xs text-zinc-300 truncate select-all">{paymentLink || 'Link tidak tersedia'}</span>
+      <div className="bg-background border border-border rounded-lg p-3 flex items-center justify-between gap-3 overflow-hidden">
+        <span className="text-xs text-foreground truncate select-all">{paymentLink || 'Link tidak tersedia'}</span>
       </div>
       <div className="flex gap-3 mt-4">
         <button
           onClick={handleCopy}
           disabled={!paymentLink}
-          className="flex-1 flex items-center justify-center gap-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-100 py-3 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50"
+          className="flex-1 flex items-center justify-center gap-2 bg-secondary hover:bg-muted text-foreground py-3 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50"
         >
           <Copy01Icon size={18} />
           {copied ? 'Tersalin!' : 'Salin Link'}
@@ -170,7 +170,7 @@ export default function RecentOrders({ orders: propOrders }) {
           href={paymentLink}
           target="_blank"
           rel="noopener noreferrer"
-          className={`flex-1 flex items-center justify-center gap-2 bg-zinc-100 hover:bg-zinc-200 text-zinc-950 py-3 rounded-lg text-sm font-bold transition-colors ${!paymentLink ? 'opacity-50 pointer-events-none' : ''}`}
+          className={`flex-1 flex items-center justify-center gap-2 bg-primary hover:opacity-90 text-primary-foreground py-3 rounded-lg text-sm font-bold transition-opacity ${!paymentLink ? 'opacity-50 pointer-events-none' : ''}`}
         >
           <LinkSquare02Icon size={18} />
           Buka Link
@@ -180,10 +180,10 @@ export default function RecentOrders({ orders: propOrders }) {
   );
 
   return (
-    <div className="bg-zinc-900 border border-zinc-800 rounded-xl py-6 flex flex-col w-full">
+    <div className="bg-card border border-border rounded-xl py-6 flex flex-col w-full">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between px-6 mb-5 gap-4">
-        <span className="text-lg font-bold text-zinc-100 text-left">Recent orders</span>
+        <span className="text-lg font-bold text-foreground text-left">Recent orders</span>
         <div className="flex items-center gap-3 w-full sm:w-auto">
           <div className="relative flex items-center flex-1 sm:flex-none">
             <span className="absolute left-3 pointer-events-none flex items-center">
@@ -191,12 +191,12 @@ export default function RecentOrders({ orders: propOrders }) {
             </span>
             <input
               type="text"
-              placeholder="Search orders..."
-              className="pl-9 pr-4 py-2 border border-zinc-800 rounded-lg text-xs bg-zinc-950 text-zinc-150 outline-none w-full sm:w-48 focus:border-zinc-500 transition-colors"
-              aria-label="Search orders"
+              placeholder="Cari order..."
+              className="pl-9 pr-4 py-2 border border-border rounded-lg text-xs bg-background text-foreground outline-none w-full sm:w-48 focus:border-ring transition-colors placeholder:text-muted-foreground"
+              aria-label="Cari order"
             />
           </div>
-          <button className="flex items-center gap-1.5 px-3 py-2 border border-zinc-800 rounded-lg bg-zinc-950 text-zinc-300 hover:text-zinc-100 text-xs font-semibold transition-colors">
+          <button className="flex items-center gap-1.5 px-3 py-2 border border-border rounded-lg bg-background text-foreground/70 hover:text-foreground text-xs font-semibold transition-colors">
             Sort by
             <ChevronDown />
           </button>
@@ -204,40 +204,40 @@ export default function RecentOrders({ orders: propOrders }) {
       </div>
 
       {/* Table Wrapper */}
-      <div className="overflow-x-auto w-full border-t border-zinc-850">
+      <div className="overflow-x-auto w-full border-t border-border">
         <table className="w-full border-collapse min-w-[800px] text-left">
           <thead>
-            <tr className="border-b border-zinc-850">
+            <tr className="border-b border-border">
               <th className="pl-6 py-3.5 w-10">
                 <input
                   type="checkbox"
-                  className="w-4 h-4 rounded border-zinc-800 text-zinc-600 bg-zinc-950 accent-zinc-200 cursor-pointer"
+                  className="w-4 h-4 rounded border-border bg-background accent-foreground cursor-pointer"
                   checked={ordersList.length > 0 && checkedRows.length === ordersList.length}
                   onChange={toggleAll}
                   aria-label="Select all"
                 />
               </th>
-              <th className="py-3.5 px-4 text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Product</th>
-              <th className="py-3.5 px-4 text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Order Id</th>
-              <th className="py-3.5 px-4 text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Date</th>
-              <th className="py-3.5 px-4 text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Payment</th>
-              <th className="py-3.5 px-4 text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Category</th>
-              <th className="py-3.5 px-4 text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Status</th>
-              <th className="py-3.5 px-4 text-[10px] font-bold text-zinc-400 uppercase tracking-wider text-center">Items</th>
-              <th className="py-3.5 pr-6 pl-4 text-[10px] font-bold text-zinc-400 uppercase tracking-wider text-right">Total</th>
-              <th className="py-3.5 px-4 text-[10px] font-bold text-zinc-400 uppercase tracking-wider text-center">Aksi</th>
+              <th className="py-3.5 px-4 text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Product</th>
+              <th className="py-3.5 px-4 text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Order Id</th>
+              <th className="py-3.5 px-4 text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Date</th>
+              <th className="py-3.5 px-4 text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Payment</th>
+              <th className="py-3.5 px-4 text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Category</th>
+              <th className="py-3.5 px-4 text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Status</th>
+              <th className="py-3.5 px-4 text-[10px] font-bold text-muted-foreground uppercase tracking-wider text-center">Items</th>
+              <th className="py-3.5 pr-6 pl-4 text-[10px] font-bold text-muted-foreground uppercase tracking-wider text-right">Total</th>
+              <th className="py-3.5 px-4 text-[10px] font-bold text-muted-foreground uppercase tracking-wider text-center">Aksi</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-zinc-850/30">
+          <tbody className="divide-y divide-border">
             {ordersList.map((order, i) => (
               <tr
                 key={order.id}
-                className="hover:bg-zinc-800/20 transition-colors cursor-default"
+                className="hover:bg-secondary/50 transition-colors cursor-default"
               >
                 <td className="pl-6 py-4 w-10">
                   <input
                     type="checkbox"
-                    className="w-4 h-4 rounded border-zinc-800 text-zinc-600 bg-zinc-950 accent-zinc-200 cursor-pointer"
+                    className="w-4 h-4 rounded border-border bg-background accent-foreground cursor-pointer"
                     checked={checkedRows.includes(order.id)}
                     onChange={() => toggleRow(order.id)}
                     aria-label={`Select ${order.product}`}
@@ -257,30 +257,30 @@ export default function RecentOrders({ orders: propOrders }) {
                       </div>
                     )}
                     <div>
-                      <div className="text-xs font-bold text-zinc-150 leading-tight">{order.product || 'Unknown Product'}</div>
-                      <div className="text-[10px] text-zinc-500 mt-0.5">{order.sku || '-'}</div>
+                      <div className="text-xs font-bold text-foreground leading-tight">{order.product || 'Unknown Product'}</div>
+                      <div className="text-[10px] text-muted-foreground mt-0.5">{order.sku || '-'}</div>
                     </div>
                   </div>
                 </td>
-                <td className="py-4 px-4 text-xs font-bold text-zinc-200">
+                <td className="py-4 px-4 text-xs font-bold text-foreground">
                   {order.id}
                 </td>
-                <td className="py-4 px-4 text-xs text-zinc-450">{order.date}</td>
-                <td className="py-4 px-4 text-xs text-zinc-200 font-medium">{order.customer}</td>
-                <td className="py-4 px-4 text-xs text-zinc-450">{order.category}</td>
+                <td className="py-4 px-4 text-xs text-muted-foreground">{order.date}</td>
+                <td className="py-4 px-4 text-xs text-foreground font-medium">{order.customer}</td>
+                <td className="py-4 px-4 text-xs text-muted-foreground">{order.category}</td>
                 <td className="py-4 px-4 text-xs">
                   <span className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] tracking-wide ${getStatusBadgeClass(order.status)}`}>
                     {order.status}
                   </span>
                 </td>
-                <td className="py-4 px-4 text-xs text-zinc-350 text-center">{order.items}</td>
-                <td className="py-4 pr-6 pl-4 text-xs font-extrabold text-zinc-150 text-right">
+                <td className="py-4 px-4 text-xs text-muted-foreground text-center">{order.items}</td>
+                <td className="py-4 pr-6 pl-4 text-xs font-extrabold text-foreground text-right">
                   {order.total}
                 </td>
                 <td className="py-4 px-4 text-center">
                   <button 
                     onClick={() => setSelectedOrder(order)}
-                    className="p-1.5 rounded-md hover:bg-zinc-800 text-zinc-500 hover:text-zinc-200 transition-colors inline-flex items-center justify-center"
+                    className="p-1.5 rounded-md hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors inline-flex items-center justify-center"
                     aria-label="Aksi"
                   >
                     <MoreHorizontalCircle01Icon size={18} />
@@ -290,7 +290,7 @@ export default function RecentOrders({ orders: propOrders }) {
             ))}
             {ordersList.length === 0 && (
               <tr>
-                <td colSpan="10" className="py-12 text-center text-xs text-zinc-500 font-medium">
+                <td colSpan="10" className="py-12 text-center text-xs text-muted-foreground font-medium">
                   Tidak ada transaksi baru.
                 </td>
               </tr>
