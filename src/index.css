@@ -50,6 +50,33 @@
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* ── Zinc scale (RGB triplets) — referenced by tailwind.config.js ── */
+    --zinc-50: 250 250 250;
+    --zinc-100: 244 244 245;
+    --zinc-150: 236 236 238;
+    --zinc-200: 228 228 231;
+    --zinc-300: 212 212 216;
+    --zinc-350: 187 187 193;
+    --zinc-400: 161 161 170;
+    --zinc-450: 137 137 145;
+    --zinc-500: 113 113 122;
+    --zinc-550: 98 98 106;
+    --zinc-600: 82 82 91;
+    --zinc-700: 63 63 70;
+    --zinc-800: 39 39 42;
+    --zinc-805: 35 35 39;
+    --zinc-850: 32 32 35;
+    --zinc-855: 30 30 33;
+    --zinc-900: 24 24 27;
+    --zinc-950: 9 9 11;
+
+    /* ── Glass system tokens ── */
+    --glass-fill-top: 255 255 255;
+    --glass-fill-bottom: 255 255 255;
+    --glass-border: 255 255 255;
+    --glass-blur: 16px;
+    --glass-radius: 16px;
   }
 
   .dark {
@@ -102,20 +129,169 @@
     @apply border-border;
   }
 
+  html {
+    @apply bg-background;
+  }
+
   body {
     @apply bg-background text-foreground font-sans antialiased;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    min-height: 100vh;
+  }
+
+  /* ── Dark soft gradient + faint noise backdrop (fixed, behind everything) ── */
+  .dark body {
+    background-color: #08080a;
+    background-image:
+      radial-gradient(120% 90% at 12% 0%, rgba(82, 82, 110, 0.16), transparent 55%),
+      radial-gradient(100% 80% at 95% 10%, rgba(48, 56, 82, 0.12), transparent 50%),
+      radial-gradient(120% 120% at 50% 100%, rgba(30, 30, 40, 0.5), transparent 60%),
+      linear-gradient(180deg, #0c0c10 0%, #070708 100%);
+    background-attachment: fixed;
+  }
+
+  /* Very subtle noise overlay for realism */
+  .dark body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* Keep app content above the noise layer */
+  #root {
+    position: relative;
+    z-index: 1;
   }
 
   h1, h2, h3, h4, h5, h6 {
     @apply font-semibold tracking-tight;
   }
 
-  /* Improve image loading */
   img {
     content-visibility: auto;
+  }
+}
+
+@layer components {
+  /* ════════════════════════════════════════════
+     GLASS SURFACE SYSTEM
+     ════════════════════════════════════════════ */
+
+  /* Base glass card — frosted, convex, soft shadow */
+  .glass-card {
+    position: relative;
+    background:
+      linear-gradient(
+        160deg,
+        rgba(255, 255, 255, 0.07) 0%,
+        rgba(255, 255, 255, 0.025) 45%,
+        rgba(255, 255, 255, 0.01) 100%
+      ),
+      rgba(20, 20, 26, 0.55);
+    backdrop-filter: blur(var(--glass-blur)) saturate(135%);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(135%);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: var(--glass-radius);
+    box-shadow:
+      0 10px 30px -12px rgba(0, 0, 0, 0.55),
+      0 2px 6px -2px rgba(0, 0, 0, 0.4),
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
+    transition:
+      transform 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+      box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+      border-color 0.25s ease,
+      background 0.25s ease;
+  }
+
+  /* Convex top highlight (brighter center-top) */
+  .glass-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background: radial-gradient(
+      130% 80% at 50% -10%,
+      rgba(255, 255, 255, 0.14) 0%,
+      rgba(255, 255, 255, 0.04) 35%,
+      transparent 65%
+    );
+  }
+
+  /* Convex depth — darker lower edges + inner ring */
+  .glass-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    box-shadow:
+      inset 0 -28px 48px -28px rgba(0, 0, 0, 0.55),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+  }
+
+  /* Stronger convex variant for hero / primary cards */
+  .glass-convex {
+    position: relative;
+    background:
+      linear-gradient(
+        160deg,
+        rgba(255, 255, 255, 0.1) 0%,
+        rgba(255, 255, 255, 0.03) 50%,
+        rgba(255, 255, 255, 0.005) 100%
+      ),
+      rgba(28, 28, 36, 0.6);
+    backdrop-filter: blur(20px) saturate(150%);
+    -webkit-backdrop-filter: blur(20px) saturate(150%);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: var(--glass-radius);
+    box-shadow:
+      0 16px 40px -14px rgba(0, 0, 0, 0.6),
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.16),
+      inset 0 -30px 56px -30px rgba(0, 0, 0, 0.6);
+    transition:
+      transform 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+      box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+      border-color 0.25s ease;
+  }
+
+  .glass-convex::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background: radial-gradient(
+      120% 75% at 50% -15%,
+      rgba(255, 255, 255, 0.2) 0%,
+      rgba(255, 255, 255, 0.05) 40%,
+      transparent 70%
+    );
+  }
+
+  /* Recessed / sunken inner panel (for chips, summaries, inputs wells) */
+  .glass-inset {
+    position: relative;
+    background: rgba(0, 0, 0, 0.28);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+    box-shadow:
+      inset 0 1px 3px rgba(0, 0, 0, 0.45),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.015);
+  }
+
+  /* Frosted bar — navbars, sticky headers, docks */
+  .glass-bar {
+    background: rgba(12, 12, 16, 0.6);
+    backdrop-filter: blur(18px) saturate(140%);
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
+    border-color: rgba(255, 255, 255, 0.08);
   }
 }
 
@@ -124,7 +300,22 @@
     @apply transition-all duration-300 ease-out;
   }
 
-  /* GPU acceleration for animations */
+  /* Hover lift + brighten for interactive glass cards */
+  .glass-hover {
+    cursor: pointer;
+  }
+  .glass-hover:hover {
+    transform: translateY(-3px);
+    border-color: rgba(255, 255, 255, 0.22);
+    box-shadow:
+      0 22px 48px -16px rgba(0, 0, 0, 0.6),
+      0 4px 10px -4px rgba(0, 0, 0, 0.5),
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.14);
+  }
+  .glass-hover:active {
+    transform: translateY(-1px) scale(0.997);
+  }
+
   .animate-fade-in {
     animation: fadeIn 0.3s ease-out;
     will-change: opacity, transform;
@@ -139,5 +330,37 @@
       opacity: 1;
       transform: translateY(0);
     }
+  }
+
+  /* Skeleton shimmer sweep */
+  .shimmer {
+    position: relative;
+    overflow: hidden;
+  }
+  .shimmer::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.07) 50%,
+      transparent 100%
+    );
+    animation: shimmer 1.6s ease-in-out infinite;
+  }
+  @keyframes shimmer {
+    100% {
+      transform: translateX(100%);
+    }
+  }
+
+  /* Press micro-interaction */
+  .press {
+    transition: transform 0.12s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .press:active {
+    transform: scale(0.96);
   }
 }

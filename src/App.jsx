@@ -258,7 +258,7 @@ export default function App() {
   // Show auth loading state briefly
   if (authLoading && activeTab !== 'pay-invoice' && activeTab !== 'donate-public' && activeTab !== 'donate-ended' && activeTab !== 'not-found') {
     return (
-      <div className="min-h-screen bg-zinc-950 flex items-center justify-center">
+      <div className="min-h-screen bg-transparent flex items-center justify-center">
         <div className="w-8 h-8 border-3 border-zinc-800 border-t-zinc-200 rounded-full animate-spin" />
       </div>
     );
@@ -280,7 +280,7 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col md:flex-row font-sans">
+    <div className="min-h-screen bg-transparent text-zinc-100 flex flex-col md:flex-row font-sans">
       {activeTab !== 'pay-invoice' && activeTab !== 'donate-public' && activeTab !== 'donate-ended' && (
         <Navbar 
           activeTab={activeTab} 
@@ -299,7 +299,7 @@ export default function App() {
               <DashboardSkeleton />
             ) : error ? (
               <div className="flex-1 flex items-center justify-center py-12">
-                <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 md:p-8 text-center max-w-sm w-full shadow-lg">
+                <div className="glass-card p-6 md:p-8 text-center max-w-sm w-full shadow-lg">
                   <h3 className="text-lg font-bold text-zinc-100 mb-2">Terjadi Kesalahan</h3>
                   <p className="text-xs text-zinc-400 mb-6 leading-relaxed">{error}</p>
                   <button
@@ -327,31 +327,31 @@ export default function App() {
                       <DonationStatsCard onClick={() => setActiveTab('donations')} />
                     </div>
                     <div className="lg:col-span-2">
-                      <div className="w-full text-left bg-zinc-900 border border-zinc-800 rounded-xl p-5 h-full">
+                      <div className="w-full text-left glass-card p-5 h-full">
                         <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-4 flex items-center gap-2">
                           <span className="w-1.5 h-1.5 rounded-full bg-zinc-400 animate-pulse" />
                           Pemantauan API Bayar.gg
                         </span>
                         <div className="grid grid-cols-2 gap-4 h-[calc(100%-2rem)]">
-                          <div className="bg-zinc-950 border border-zinc-850 rounded-lg p-3 flex flex-col justify-center text-left">
+                          <div className="glass-inset p-3 flex flex-col justify-center text-left">
                             <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Total Transaksi</span>
                             <span className="text-lg font-black text-zinc-150 mt-1">
                               {dashboardData.apiSummary?.totalPayments ?? 0}
                             </span>
                           </div>
-                          <div className="bg-zinc-950 border border-zinc-850 rounded-lg p-3 flex flex-col justify-center text-left">
+                          <div className="glass-inset p-3 flex flex-col justify-center text-left">
                             <span className="text-[10px] font-bold text-green-500 uppercase tracking-wider">Sukses</span>
                             <span className="text-lg font-black text-green-400 mt-1">
                               {dashboardData.apiSummary?.paid ?? 0}
                             </span>
                           </div>
-                          <div className="bg-zinc-950 border border-zinc-850 rounded-lg p-3 flex flex-col justify-center text-left">
+                          <div className="glass-inset p-3 flex flex-col justify-center text-left">
                             <span className="text-[10px] font-bold text-yellow-500 uppercase tracking-wider">Pending</span>
                             <span className="text-lg font-black text-yellow-400 mt-1">
                               {dashboardData.apiSummary?.pending ?? 0}
                             </span>
                           </div>
-                          <div className="bg-zinc-950 border border-zinc-850 rounded-lg p-3 flex flex-col justify-center text-left">
+                          <div className="glass-inset p-3 flex flex-col justify-center text-left">
                             <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Pendapatan Kotor</span>
                             <span className="text-lg font-black text-zinc-150 mt-1">
                               {dashboardData.apiSummary?.totalRevenue ?? 'Rp 0'}
@@ -440,7 +440,7 @@ export default function App() {
         )}
 
         {activeTab === 'pay-invoice' && (
-          <main className="flex-grow flex items-center justify-center p-4 min-h-screen bg-zinc-950">
+          <main className="flex-grow flex items-center justify-center p-4 min-h-screen bg-transparent">
             <div className="w-full max-w-xl animate-in fade-in slide-in-from-bottom-3 duration-450">
               <DirectPayView payInvoiceId={payInvoiceId} />
             </div>
@@ -448,7 +448,7 @@ export default function App() {
         )}
 
         {activeTab === 'donate-public' && (
-          <main className="flex-grow flex items-center justify-center p-0 min-h-screen bg-zinc-950">
+          <main className="flex-grow flex items-center justify-center p-0 min-h-screen bg-transparent">
             <div className="w-full h-full min-h-screen animate-in fade-in slide-in-from-bottom-3 duration-450">
               <DonateView campaignId={donateCampaignId} />
             </div>
@@ -456,7 +456,7 @@ export default function App() {
         )}
 
         {activeTab === 'donate-ended' && (
-          <main className="flex-grow flex items-center justify-center p-0 min-h-screen bg-zinc-950">
+          <main className="flex-grow flex items-center justify-center p-0 min-h-screen bg-transparent">
             <div className="w-full h-full min-h-screen animate-in fade-in slide-in-from-bottom-3 duration-450">
               <DonateEndedView campaignId={donateCampaignId} />
             </div>
@@ -469,7 +469,7 @@ export default function App() {
               <AnalyticsSkeleton />
             ) : error ? (
               <div className="flex-1 flex items-center justify-center py-12">
-                <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 md:p-8 text-center max-w-sm w-full shadow-lg">
+                <div className="glass-card p-6 md:p-8 text-center max-w-sm w-full shadow-lg">
                   <h3 className="text-lg font-bold text-zinc-100 mb-2">Terjadi Kesalahan</h3>
                   <p className="text-xs text-zinc-400 mb-6 leading-relaxed">{error}</p>
                   <button
@@ -514,7 +514,7 @@ export default function App() {
               </p>
             </div>
 
-            <div className="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div className="w-full glass-card p-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
               <h2 className="text-sm font-bold text-zinc-100 mb-6">Tampilan (Appearance)</h2>
               
               <div className="flex items-center justify-between">
@@ -558,7 +558,7 @@ export default function App() {
               {dashboardData ? (
                 <RecentOrders orders={dashboardData.recentOrders} />
               ) : (
-                <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-8 text-center text-zinc-400 text-sm">
+                <div className="glass-card p-8 text-center text-zinc-400 text-sm">
                   Memuat data riwayat...
                 </div>
               )}
